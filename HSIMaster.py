@@ -11,7 +11,6 @@ import threading
 
 sys.path.append(home + "/HSI/commands/")
 sys.path.append(home + "/HSI/thread/")
-sys.path.append(home + "/HSI/commands/")
 sys.path.append(home + "/HSI/commands/text-to-speech-command")
 sys.path.append(home + "/HSI/commands/external-camera-command")
 sys.path.append(home + "/HSI/commands/internal-camera-command")
