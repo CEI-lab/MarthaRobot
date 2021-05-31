@@ -3,7 +3,7 @@
 ### How to update a function to aero board?
 1. Create a command folder in <b>HSI/commands/</b> with naming convenction Delimiter-separated words which are all smaller case and hyphen between keywords. For example, "TimeOfFlighCommand" => "time-of-flight-command".
 2. Add a class function in the created folder with naming convention in CamelCase. Like, "TimeOfFlightCommand". 
-3. Finally, udpate <i>_my_self_singelton_command_registry</I> in function <i>initializeCommandRegistry</I> in HSIMaster.py. 
+3. Finally, update <i>_my_self_singelton_command_registry</I> in function <i>initializeCommandRegistry</I> in HSIMaster.py. 
 4. Update protocol document with the new function protocol. 
 
 ### How to make a function?
