@@ -19,33 +19,31 @@ CEI-LAB, Cornell University 2019
 
 class TCPManager(object):
     _instance = None
-
     _lock = Lock()
 
-    def __new__(cls, command_queue, status_queue):
+    def __new__(cls, command_queue, status_queue, command_event, status_event):
         """
         This method will make sure the TCPManager is singelton. 
 
             Inputs:
                 None.
 
-            Outputs:		
+            Outputs:        
                 None
 
         """
         if not cls._instance:
             cls._instance = super().__new__(cls)
-
         return cls._instance
 
-    def __init__(self, command_queue, status_queue):
+    def __init__(self, command_queue, status_queue, command_event, status_event):
         """
         This method will create the module TCPManager. 
 
             Inputs:
                 None.
 
-            Outputs:		
+            Outputs:        
                 None.
         """
         super().__init__()
@@ -58,17 +56,16 @@ class TCPManager(object):
         self._my_raspi_ip = CONFIGURATIONS.get("RASPI_IP_ADDRESS")  # The address stays the same forever
         self._my_tcp_port = CONFIGURATIONS.get("TCP_PORT")
         self._my_last_ip = self._my_ip
+        self._my_command_event = command_event
+        self._my_status_event = status_event
 
     def __del__(self):
         """
         This method will delete the TCPManager class after it closes. 
-
             Inputs:
                 None. 
-
-            Outputs:		
+            Outputs:        
                 None
-
         """
         self._lock.acquire()
         if self._sock is not None:
@@ -102,6 +99,7 @@ class TCPManager(object):
                 #data_arr = ComparableDict(eval(data[0].decode()))
                 data_arr["clientIPAddress"] = client_address
                 self._my_received_command_queue.enqueue(data_arr)
+                self._my_command_event.set()
         except Exception as ex:
             logging.error("_listenTCPHelper: " + str(ex))
         #finally:
@@ -118,7 +116,7 @@ class TCPManager(object):
             Inputs:
                 None. 
 
-            Outputs:		
+            Outputs:        
                 None
 
         """
@@ -148,7 +146,7 @@ class TCPManager(object):
             Inputs:
                 None. 
 
-            Outputs:		
+            Outputs:
                 None
 
         """
@@ -158,6 +156,7 @@ class TCPManager(object):
 
         try:
             self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             logging.info('TCPManager: starting up on port {}'.format(self._my_tcp_port))
             self._sock.bind(("", self._my_tcp_port))
             logging.info('TCPManager: after bind')
@@ -181,7 +180,7 @@ class TCPManager(object):
             Inputs:
                 String that contain the command input from the sender. 
 
-            Outputs:		
+            Outputs:
                 ValueObjects (eg. Command dictionaries) that is parsed from the string. 
 
         """
@@ -200,7 +199,7 @@ class TCPManager(object):
             Inputs:
                 None. 
 
-            Outputs:		
+            Outputs:
                 None. 
 
         """
@@ -224,7 +223,7 @@ class TCPManager(object):
             Inputs:
                 None. 
 
-            Outputs:		
+            Outputs:
                 None. 
 
         """
@@ -250,7 +249,7 @@ class TCPManager(object):
             Inputs:
                 ValueObject that indicate whether the execute status is successful or not. 
 
-            Outputs:		
+            Outputs:        
                 None. 
 
         """
@@ -265,17 +264,14 @@ class TCPManager(object):
             port = valueObject.get("receivingPort")
             if port is None:
                 port = CONFIGURATIONS.get("DEFAULT_RECEIVING_PORT")
-
             logging.info("TCPManager: Got the port {}".format(str(port)))
             s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             logging.info("TCPManager: Socket ready to send" + str(s))
-            # connect to server on local computer 
-            s.connect((client_address,port)) 
-            logging.info("TCPManager: Connected to receiving end")
-            
+            # connect to server on local computer
+            s.connect((client_address,port))
             # message you send to server 
             message = pickle.dumps(valueObject)
-
+            #message = str(valueObject).encode()
             # message sent to server 
             s.send(message)
             s.close()
@@ -293,18 +289,20 @@ class TCPManager(object):
             Inputs:
                 None. 
 
-            Outputs:		
+            Outputs:        
                 None. 
 
         """
         while True:
-            time.sleep(0.005)
+            self._my_status_event.wait()
             if self._my_status_queue.size() > 0:
                 status_obj = self._my_status_queue.dequeue()
                 if status_obj is not None:
                     self.sendOverTCP(status_obj)
                 else:
                     logging.warning("TCPManager: The statue queue has output a None object")
+            else:
+                self._my_status_event.clear()
 
 
 if __name__ == "__main__":

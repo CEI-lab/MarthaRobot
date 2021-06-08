@@ -16,13 +16,11 @@ command queue.
 CEI-LAB, Cornell University 2019
 """
 
-
 class CommandExecuter:
-
     _instance = None
     _lock = Lock()
 
-    def __new__(cls, comque, statque, comreg):
+    def __new__(cls, comque, statque, comreg, comevent, statevent):
         """
         Creates an instance of this class. Only changes _instance once, that is,
         this class can only be instantiated once.
@@ -32,10 +30,12 @@ class CommandExecuter:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, comque, statque, comreg):
-        self._my_command_queue = comque  # command queue
-        self._my_command_registry = comreg  # command registry
-        self._my_status_queue = statque  # status queue
+    def __init__(self, comque, statque, comreg, comevent, statevent):
+        self._my_command_queue = comque  #Command queue
+        self._my_command_registry = comreg  #Command registry
+        self._my_status_queue = statque  #Status queue
+        self._my_command_event = comevent #Command event
+        self._my_status_event = statevent #Status event
 
     def statusResponseCallback(self, json):
         """
@@ -59,6 +59,7 @@ class CommandExecuter:
                 json["response"] = "ID_FIELD_MISSING"
             # Will raise error if priority is not an int
             self._my_status_queue.enqueue(int(pri), json)
+        self._my_status_event.set()
         self._lock.release()
 
     def _parse_key(self, json):
@@ -90,6 +91,7 @@ class CommandExecuter:
                 logging.error('CommandExecuter : No entry in CommandRegistry for ' + str(key))
         else:
             logging.error('CommandExecuter : No command name in the JSON object')
+    
     def checkForCommand(self):
         """
         Check whether there is an command avaliable in the command queue.
@@ -99,10 +101,9 @@ class CommandExecuter:
             None.
         """
         while True:
-            # time.sleep(0.005)
-            # begin_time = time.time()
-            # There is at least one command in the command queue.
+            self._my_command_event.wait()
             if self._my_command_queue.size() > 0:
                 nextCommand = self._my_command_queue.dequeue()  # remove from the command queue
                 self.processCommand(nextCommand)
-                # print("fr is {}".format(1/(time.time()-begin_time)))
+            else:
+                self._my_command_event.clear()

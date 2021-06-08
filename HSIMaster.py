@@ -21,13 +21,14 @@ sys.path.append(home + "/HSI/commands/set-speed-command")
 sys.path.append(home + "/HSI/commands/time-of-flight-command")
 sys.path.append(home + "/HSI/commands/read-IMU-command")
 sys.path.append(home + "/HSI/commands/bladder-command")
+sys.path.append(home + "/HSI/commands/print-hello-command")
+sys.path.append(home + "/HSI/commands/sleep-twenty-secs-command")
 sys.path.append(home + "/HSI/command-executer")
 sys.path.append(home + "/HSI/resources/RealSense/")
 sys.path.append(home + "/HSI/resources/registries/")
 sys.path.append(home + "/HSI/resources/queues/")
 sys.path.append(home + "/HSI/resources/classes")
 sys.path.append(home + "/HSI/tcp-manager")
-
 sys.path.append(home + "/.local/lib/python3.7/site-packages/")
 
 import cv2
@@ -46,12 +47,14 @@ from CommandQueue import CommandQueue
 from TextToSpeechCommand import TextToSpeechCommand
 from ExternalCameraCommand import ExternalCameraCommand
 from InternalCameraCommand import InternalCameraCommand
-from RealSenseCommand import RealSenseCommand
+#from RealSenseCommand import RealSenseCommand
 from ImageCommand import ImageCommand
 from SetSpeedCommand import SetSpeedCommand
 from TimeofFlightCommand import TimeofFlightCommand
 from ReadIMUCommand import ReadIMUCommand
 from BladderCommand import BladderCommand
+from PrintHelloCommand import PrintHelloCommand
+from SleepTwentySecsCommand import SleepTwentySecsCommand
 
 """
 Implementation of the main entry class for the HSI code. The responsibility of this class is to create various
@@ -62,7 +65,6 @@ CEI-LAB, Cornell University 2019
 
 
 class HSIMaster(object):
-
     def __init__(self):
         if CONFIGURATIONS.get("ENABLE_FILE_LOGGING"):
             logging.basicConfig(filename=CONFIGURATIONS.get("LOG_FILENAME").format(home),
@@ -78,18 +80,26 @@ class HSIMaster(object):
 
         t1 = threading.Thread(target=self.displayHelper)
         t1.start()
+            
+        self._command_event = threading.Event()
+        self._status_event = threading.Event()
 
         self._my_singleton_received_command_queue = CommandQueue()
         self._my_singleton_status_queue = StatusQueue()
         self._my_singleton_command_registry = CommandRegistry()
         self._my_singleton_command_executor = CommandExecuter(self._my_singleton_received_command_queue,
                                                               self._my_singleton_status_queue,
-                                                              self._my_singleton_command_registry)
+                                                              self._my_singleton_command_registry,
+                                                              self._command_event,
+                                                              self._status_event)
         self._my_singleton_tcp_manager = TCPManager(self._my_singleton_received_command_queue,
-                                                    self._my_singleton_status_queue)
+                                                    self._my_singleton_status_queue,
+                                                    self._command_event,
+                                                    self._status_event)
         # To create threads
         self._my_singleton_thread_manager = ThreadManager()
         self._my_singleton_thread_manager.monitor_threads = True
+        
     def displayHelper(self):
         # To add a blank image on startup
         subprocess.run(["xdotool","mousemove","9999","9999"])
@@ -102,7 +112,10 @@ class HSIMaster(object):
                 cv2.waitKey(100)
             except:
                 logging.error("IMAGE NOT DISPLAYABLE")
+                
     def initializeCommandRegistry(self):
+        #self._my_singleton_command_registry.setObject("PrintHelloCommand", PrintHelloCommand())
+        #self._my_singleton_command_registry.setObject("SleepTwentySecsCommand", SleepTwentySecsCommand())
         self._my_singleton_command_registry.setObject("TextToSpeechCommand", TextToSpeechCommand())
         self._my_singleton_command_registry.setObject("ExternalCameraCommand", ExternalCameraCommand())
         self._my_singleton_command_registry.setObject("InternalCameraCommand", InternalCameraCommand())
@@ -115,12 +128,9 @@ class HSIMaster(object):
 
     def startSystem(self):
         self._my_singleton_thread_manager.new_onetime(self._my_singleton_tcp_manager.listenTCP, 'ListenTCP', True)
-        self._my_singleton_thread_manager.new_periodic(self._my_singleton_tcp_manager.checkForNewIP, 'CheckNewIP',
-                                                       CONFIGURATIONS.get("CHECK_NEW_IP_FROM_PI_FREQUENCY"), True)
-        self._my_singleton_thread_manager.new_onetime(self._my_singleton_tcp_manager.checkForStatus, 'CheckStatusQueue',
-                                                      True)
-        self._my_singleton_thread_manager.new_onetime(self._my_singleton_command_executor.checkForCommand,
-                                                      'CheckCommandQueue', True)
+        self._my_singleton_thread_manager.new_periodic(self._my_singleton_tcp_manager.checkForNewIP, 'CheckNewIP', CONFIGURATIONS.get("CHECK_NEW_IP_FROM_PI_FREQUENCY"), True)
+        self._my_singleton_thread_manager.new_onetime(self._my_singleton_tcp_manager.checkForStatus, 'CheckStatusQueue', True)
+        self._my_singleton_thread_manager.new_onetime(self._my_singleton_command_executor.checkForCommand, 'CheckCommandQueue', True)
         self._my_singleton_thread_manager.start_all()
         self._my_singleton_thread_manager.start()
         self._my_singleton_thread_manager.run_while_active()
