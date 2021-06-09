@@ -7,14 +7,14 @@ import socket
 import struct
 import cv2
 
-mc_ip_address = '224.0.0.1'
+mc_ip_address = '10.49.33.92'
 mode = "tof"
-ports = {"rs" : 1024,"tof" : 1025}
+ports = {"rs" : 28400,"tof" : 28300}
 port = ports[mode]
 chunk_size = 4096
 
-def main(argv):
-    multi_cast_message(mc_ip_address, port, 'boop')
+def main():
+    StreamingClient()
         
 #UDP client for each camera server 
 class ImageClient(asyncore.dispatcher):
@@ -29,6 +29,7 @@ class ImageClient(asyncore.dispatcher):
             cv2.namedWindow("window"+str(self.windowName))
         self.remainingBytes = 0
         self.frame_id = 0
+        self.handle_read()
        
     def handle_read(self):
         if self.remainingBytes == 0:
@@ -65,10 +66,12 @@ class StreamingClient(asyncore.dispatcher):
         self.server_address = ('', port)
         # create a socket for TCP connection between the client and server
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(5)
+        #self.socket.settimeout(5)
         
         self.bind(self.server_address) 	
         self.listen(10)
+        print("Listened")
+        self.handle_accept()
 
     def writable(self): 
         return False # don't want write notifies
@@ -80,6 +83,7 @@ class StreamingClient(asyncore.dispatcher):
         print("connection recvied")
 
     def handle_accept(self):
+        
         pair = self.accept()
         #print(self.recv(10))
         if pair is not None:
@@ -111,4 +115,5 @@ def multi_cast_message(ip_address, port, message):
         sock.close()
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    stream = StreamingClient()
+    print("Started")
