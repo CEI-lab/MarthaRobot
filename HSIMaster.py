@@ -47,7 +47,7 @@ from CommandQueue import CommandQueue
 from TextToSpeechCommand import TextToSpeechCommand
 from ExternalCameraCommand import ExternalCameraCommand
 from InternalCameraCommand import InternalCameraCommand
-#from RealSenseCommand import RealSenseCommand
+from RealSenseCommand import RealSenseCommand
 from ImageCommand import ImageCommand
 from SetSpeedCommand import SetSpeedCommand
 from TimeofFlightCommand import TimeofFlightCommand
@@ -114,8 +114,8 @@ class HSIMaster(object):
                 logging.error("IMAGE NOT DISPLAYABLE")
                 
     def initializeCommandRegistry(self):
-        #self._my_singleton_command_registry.setObject("PrintHelloCommand", PrintHelloCommand())
-        #self._my_singleton_command_registry.setObject("SleepTwentySecsCommand", SleepTwentySecsCommand())
+        self._my_singleton_command_registry.setObject("PrintHelloCommand", PrintHelloCommand())
+        self._my_singleton_command_registry.setObject("SleepTwentySecsCommand", SleepTwentySecsCommand())
         self._my_singleton_command_registry.setObject("TextToSpeechCommand", TextToSpeechCommand())
         self._my_singleton_command_registry.setObject("ExternalCameraCommand", ExternalCameraCommand())
         self._my_singleton_command_registry.setObject("InternalCameraCommand", InternalCameraCommand())
