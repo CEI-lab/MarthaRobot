@@ -29,7 +29,7 @@ def receiveResponse(port):
     s.close()
     data_arr = pickle.loads(b"".join(data))
     print(data_arr["data"])
-    # cv2.imshow("image",data_arr["data"]/np.amax(data_arr["data"]))
+    cv2.imshow("image",data_arr["data"]/np.amax(data_arr["data"]))
     # cv2.waitKey(0)
 
 camera = {
