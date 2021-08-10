@@ -4,7 +4,8 @@ import numpy as np
 import time
 def sendObject(message):
     # local host IP '127.0.0.1'
-    host = '10.49.33.92'
+    #host = '10.49.33.92'
+    host = '192.168.0.198'
     # Define the port on which you want to connect
     port = 65432
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -13,7 +14,16 @@ def sendObject(message):
     s.send(pickle.dumps(message))
     # s.send(json.dumps(message).encode())
     s.close()
-    
+
+def sendAgainAndAgain():
+    while(True):
+        myCommand = "ext single"
+        sendObject(parse_command(myCommand))
+        print("\n")
+        print(time.time())
+        receiveResponse(myCommand, 28200)
+
+
 def receiveResponse(command, port):
     command = command.split()
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -28,15 +38,18 @@ def receiveResponse(command, port):
         data.append(packet)
     s.close()
     data_arr = pickle.loads(b"".join(data))
+    print(data_arr)
     if command[0] == "image" and command[1] == "get" or command[0] == "int" and command[1] == "single" or command[0] == "ext" and command[1] == "single" or command[0] == "rs" and command[1] == "single":
         try:
             if (command[0]=="int" or command[0]=="ext"):
                 cv2.imshow("image",data_arr["data"][:, :, ::-1])
             if (command[0]=="image" or command[0]=="rs"):
                 cv2.imshow("image",data_arr["data"]/np.amax(data_arr["data"]))
-            cv2.waitKey(0)
+            cv2.waitKey(1)
         except:
             pass
+    elif command[0] == "ext" and command[1] == "streaming":
+        sendAgainAndAgain()
     else:
         try:
             print(data_arr["data"])
@@ -167,9 +180,11 @@ def parse_command(command):
         "id" : int(time.time()),
         "cmd" : "ExternalCameraCommand", #Command name
         "type" : command[1],#single, continuous-start, continuous-stop
-        "fps": 15,
+        "fps": 10,
         "priority" : 1,#, Priority, type int
-        "receivingPort" : 28200
+        "receivingPort" : 28200,
+        "height": 64,
+        "width": 48
         }
     elif command[0] == "rs":
         return {
