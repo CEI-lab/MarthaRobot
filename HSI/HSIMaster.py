@@ -78,8 +78,8 @@ class HSIMaster(object):
                                        '[File: {%(filename)s:%(lineno)d}] '
                                        '%(levelname)s - %(message)s')
 
-        t1 = threading.Thread(target=self.displayHelper)
-        t1.start()
+        #t1 = threading.Thread(target=self.displayHelper)
+        #t1.start()
             
         self._command_event = threading.Event()
         self._status_event = threading.Event()

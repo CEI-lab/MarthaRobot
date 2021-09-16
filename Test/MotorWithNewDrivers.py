@@ -13,12 +13,12 @@ MOTOR_B = 1
 FWD = 0
 BWD = 1
  
-enc11 = 9
-enc12 = 25
+enc11 = 17
+enc12 = 18
 enc21 = 11
 enc22 = 5
-enc31 = 20
-enc32 = 12
+enc31 = 19
+enc32 = 6
  
 GPIO.setmode(GPIO.BCM)
  
@@ -83,6 +83,7 @@ class Motor(object):
             self.pos -= 2
         # Check if the motors need to stop
         if self.move_dist:
+            print(self.addr, self.mot, self.pos)
             if abs(self.pos - self.init_pos) >= self.distance_to_move:
                 self.stop()
                 #print(self.addr, self.mot)
@@ -104,9 +105,9 @@ class Motor(object):
         
     def set_direction(self, direction):
         if direction == 'out' or direction == 1:
-            self.dir = 0
-        elif direction == 'in' or direction == 0:
             self.dir = 1
+        elif direction == 'in' or direction == 0:
+            self.dir = 0
  
     def move_distance(self, direction, speed, distance):
         if self.A and self.B:
@@ -155,33 +156,37 @@ def move_all_dist(dist1, dist2, dist3, direction, speed):
     m3.move_distance(direction, speed, dist3)
  
 def inflate():
+    print("Inflating...")
     fan.ChangeDutyCycle(100)
+    #time.sleep(10)
     m1Event.clear()
     m2Event.clear()
     m3Event.clear()
-    move_all_dist(120, 120, 120, 'out', 250)
+    move_all_dist(12, 12, 12, 'out', 250)
     m1Event.wait()
     m2Event.wait()
     m3Event.wait()
  
 def deflate():
-    fan.ChangeDutyCycle(30)
+    print("Deflating...")
+    fan.ChangeDutyCycle(70)
     m1Event.clear()
     m2Event.clear()
     m3Event.clear()
-    move_all_dist(120, 120, 120, 'in', 250)
+    move_all_dist(12, 12, 12, 'in', 250)
     m1Event.wait()
     m2Event.wait()
     m3Event.wait()
+    fan.ChangeDutyCycle(0)
  
 if __name__ == '__main__':
     try:
         for j in range(30000):
             inflate()
-            time.sleep(1)
+            time.sleep(5)
             deflate()
             print("Done: " + str(j))
-            time.sleep(2)
+            time.sleep(5)
         #time.sleep(30)
         #deflate()
         #time.sleep(30)

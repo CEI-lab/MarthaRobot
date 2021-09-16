@@ -7,7 +7,7 @@ import qwiic_scmd
 motor_3 = qwiic_scmd.QwiicScmd(0x5E)
 motor_1_2 = qwiic_scmd.QwiicScmd(0x5E)
 
-MOTOR_A = 1
+MOTOR_A = 0
 MOTOR_B = 1
 FWD = 0
 BWD = 1
@@ -40,10 +40,10 @@ def runExample():
     time.sleep(.250)
 
     while True:
-        speed = 100 # from 0-255
+        speed = 250 # from 0-255
 #         motor_1_2.set_drive(MOTOR_A,FWD,speed)
 #         motor_1_2.set_drive(MOTOR_B,FWD,speed)
-        motor_3.set_drive(MOTOR_A,FWD,speed)
+        motor_3.set_drive(MOTOR_B,FWD,speed)
 #         time.sleep(3)
 #         motor_1_2.set_drive(MOTOR_A,BWD,speed)
 #         motor_1_2.set_drive(MOTOR_B,BWD,speed)

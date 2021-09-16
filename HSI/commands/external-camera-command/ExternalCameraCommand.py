@@ -44,6 +44,26 @@ class ExternalCameraCommand(CommandInterface):
                 self.streaming = False
                 #asyncore.close()
                 self.server.closeServer()
+            if jsonObject["type"] == "rtsp-start" and not self.streaming:
+                if "port" in jsonObject:
+                    port = jsonObject["port"]
+                else:
+                    port = CONFIGURATIONS["DEFAULT_EXCAM_PORT"]
+                if "width" in jsonObject and "height" in jsonObject:
+                    width = jsonObject["width"]
+                    height = jsonObject["height"]
+                else:
+                    width = 10
+                    height = 10
+                if "fps" in jsonObject:
+                    fps = jsonObject["fps"]
+                else:
+                    fps = 25
+                self.pid = subprocess.Popen([CONFIGURATIONS["RTSP_COMMAND"], "-Q 1", "-P", str(port), "-W" , str(width), "-H", str(height), "-F", str(fps), CONFIGURATIONS["USB_CAM_ID"]]).pid
+                self.streaming = True
+            if jsonObject["type"] == "rtsp-stop" and self.streaming:
+                os.kill(self.pid, signal.SIGTERM)
+                self.streaming = False
         except Exception as e:
             logging.error('InternalCameraCommand : unknown error')
             logging.error(e)
