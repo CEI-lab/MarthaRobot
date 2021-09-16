@@ -5,23 +5,23 @@ import time
 import serial
 from multiprocessing import Lock
 from pathlib import Path
- 
+
 import gpiozero as gpio
 import Encoder
 import RPi.GPIO as GPIO
 import math
 import qwiic_scmd
- 
+
 from Configurations import *
 import threading
 from CommandInterface import CommandInterface
- 
+
 """
 Implementation of BladderCommand that will produce sound from text in json object.
- 
+
 CEI-LAB, Cornell University 2019
 """
- 
+
 class Motor(object):
     def __init__(self, address, mot, event, enc1 = None, enc2 = None):
         self.motor = qwiic_scmd.QwiicScmd(address)
@@ -112,10 +112,10 @@ class Motor(object):
     
     def enc_read(self): 
         return self.pos
- 
+
 class BladderCommand(CommandInterface):
     _t1 = None
-    _lock = Lock()
+    #_lock = Lock()
     
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
@@ -124,8 +124,8 @@ class BladderCommand(CommandInterface):
         self.FWD = 0
         self.BWD = 1
         
-        self.enc11 = 9
-        self.enc12 = 25
+        self.enc11 = 17
+        self.enc12 = 18
         self.enc21 = 11
         self.enc22 = 5
         self.enc31 = 19
@@ -176,7 +176,7 @@ class BladderCommand(CommandInterface):
         self.m3Event.wait()
      
     def deflate(self):
-        self.fan.ChangeDutyCycle(70)
+        self.fan.ChangeDutyCycle(100)
         self.m1Event.clear()
         self.m2Event.clear()
         self.m3Event.clear()
@@ -189,13 +189,13 @@ class BladderCommand(CommandInterface):
     def _inflate_deflate(self, responseStatusCallback, jsonObject):
         """
         This method will be called to inflate and deflate the air channels.
- 
+
         Inputs:
             responseStatusCallback : A callback function has to be passed, that will
                 send status of command execution. This callback will be passed by the
                 caller of execute().
             jsonObject : A JSON object containing text.
- 
+
         Outputs:
             None
         """
@@ -208,6 +208,7 @@ class BladderCommand(CommandInterface):
                     logging.info('BladderCommand : Inflate success')
                     jsonObject["response"] = "INFLATE_SUCCESS"
                 elif jsonObject["action"] == "deflate":
+                    logging.info('Deflating...')
                     self.deflate()
                     logging.info('BladderCommand : Deflate success')
                     jsonObject["response"] = "DEFLATE_SUCCESS"
@@ -219,15 +220,15 @@ class BladderCommand(CommandInterface):
             except:
                 logging.info('BladderCommand : can\'t open serial port.')
                 jsonObject["response"] = "SERIAL_CONNECTION_CLOSED"
- 
+
             if responseStatusCallback is not None:
                 responseStatusCallback(jsonObject)
             else:
                 print(jsonObject)
         except:
             logging.error('BladderCommand : Error probably in responseStatus call or resource is busy')
- 
- 
+
+
     def execute(self, responseStatusCallback, jsonObject):
         try:
             jsonObject["response"] = "ACTION_OR_SELECT_FIELD_NOT_IN_JSON"
@@ -236,15 +237,15 @@ class BladderCommand(CommandInterface):
                 self._t1.start()
                 logging.info('BladderCommand : Process bladder command')
                 jsonObject["response"] = "PROCESS_BLADDER_COMMAND"
- 
+
             if responseStatusCallback is not None:
                 responseStatusCallback(jsonObject)
             else:
                 print(jsonObject)
         except:
             logging.error('BladderCommand : Error no action or select field in json object')
- 
- 
+
+
 if __name__ == "__main__":
     obj = BladderCommand()
     obj.execute(None, {"select" : [1,0,0],'action': "inflate"})

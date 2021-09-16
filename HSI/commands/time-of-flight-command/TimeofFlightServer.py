@@ -114,7 +114,7 @@ class TOFMulticastServer(asyncore.dispatcher):
             data, addr = self.socket.recvfrom(42)
             logging.info('Recived Multicast message %s bytes from %s' % (data, addr))
            # Once the server recives the multicast signal, open the frame server
-            StreamingServer(addr)
+            self.server = StreamingServer(addr)
         except:
             logging.error("?TOF")
 
@@ -127,5 +127,11 @@ class TOFMulticastServer(asyncore.dispatcher):
     def handle_accept(self):
         channel, addr = self.accept()
         logging.info('received %s bytes from %s' % (data, addr))
+        
+    def closeServer(self):
+        print("Trying to close...")
+        asyncore.dispatcher.del_channel(self)
+        self.server.close()
+        self.close()
 
 

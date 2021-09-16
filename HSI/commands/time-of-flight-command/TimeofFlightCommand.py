@@ -63,9 +63,14 @@ class TimeofFlightCommand(CommandInterface):
                 if "count_period" in jsonObject:
                     CONFIGURATIONS["TIMEOFFLIGHT_COUNT_PERIOD"] = jsonObject["count_period"]
                 if self.streaming == False:
-                    server = TimeofFlightServer.TOFMulticastServer()
+                    self.server = TimeofFlightServer.TOFMulticastServer()
                     self.streaming = True
+                    if responseStatusCallback is not None:
+                        responseStatusCallback(jsonObject)
                     asyncore.loop()
+            if jsonObject["type"] == "stop" and self.streaming:
+                self.streaming = False
+                self.server.closeServer()
         except:
             logging.error('ToFCommand : error in jsonObject')
         finally:

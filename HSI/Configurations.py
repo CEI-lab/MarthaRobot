@@ -9,7 +9,7 @@ CONFIGURATIONS = {
     "DEFAULT_IMAGE_ON_STARTUP": "__0__.jpg",
     "DEFAULT_IMAGE_DEFAULT_LOCATION": "{}/HSI/resources/defaults/",
     "DEFAULT_IMAGE_OTHER_LOCATION": "{}/Images/",
-    "RASPI_IP_ADDRESS": "10.49.253.71",
+    "RASPI_IP_ADDRESS": "199.168.1.212",
     "LOOP_BACK_IP_ADDRESS": "127.0.0.1",
     "TCP_PORT": 65432,
     "TCP_ENCODING": "utf-8",

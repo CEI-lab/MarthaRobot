@@ -68,7 +68,7 @@ class InternalCameraCommand(CommandInterface):
                 result = subprocess.run(["v4l2-ctl","--list-devices"], capture_output=True)
                 device_list = result.stdout.decode().replace("\t","").split("\n")
                 dev = device_list[device_list.index("mmal service 16.1 (platform:bcm2835-v4l2):") + 1]
-                self.pid = subprocess.Popen([CONFIGURATIONS["RTSP_COMMAND"], "-P", str(port), "-W" , str(width), "-H", str(height), "-F", str(fps), dev]).pid
+                self.pid = subprocess.Popen([CONFIGURATIONS["RTSP_COMMAND"], "-Q 1", "-P", str(port), "-W" , str(width), "-H", str(height), "-F", str(fps), dev]).pid
                 self.streaming = True
             if jsonObject["type"] == "continuous-stop" and self.streaming:
                 os.kill(self.pid, signal.SIGTERM)

@@ -5,7 +5,7 @@ import time
 def sendObject(message):
     # local host IP '127.0.0.1'
     #host = '10.49.33.92'
-    host = '192.168.0.198'
+    host = '192.168.0.191'
     # Define the port on which you want to connect
     port = 65432
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -48,8 +48,8 @@ def receiveResponse(command, port):
             cv2.waitKey(1)
         except:
             pass
-    elif command[0] == "ext" and command[1] == "streaming":
-        sendAgainAndAgain()
+#    elif command[0] == "ext" and command[1] == "streaming":
+#        sendAgainAndAgain()
     else:
         try:
             print(data_arr["data"])
@@ -66,15 +66,6 @@ def parse_command(command):
         "priority" : 1,#, Priority, type int
         "leftSpeed" : -1*int(command[1]), ## Left speed value, type int
         "rightSpeed" : int(command[2]), ## Right speed value, type int
-        "receivingPort" : 28200
-        }
-    elif command[0] == "turn" or command[0] == 't':
-        return {
-        "id" : int(time.time()),
-        "cmd" : "SetSpeedCommand", 
-        "priority" : 1,#, Priority, type int
-        "leftSpeed" : 1500, ## Left speed value, type int
-        "rightSpeed" : 1500, ## Right speed value, type int
         "receivingPort" : 28200
         }
     elif command[0] == "hello" or command[0] == 'h':
@@ -106,8 +97,8 @@ def parse_command(command):
         "id" : int(time.time()),
         "cmd" : "SetSpeedCommand", 
         "priority" : 1,#, Priority, type int
-        "leftSpeed" : -1000, ## Left speed value, type int
-        "rightSpeed" : 1000, ## Right speed value, type int
+        "leftSpeed" : -1*int(command[1]), ## Left speed value, type int
+        "rightSpeed" : int(command[1]), ## Right speed value, type int
         "receivingPort" : 28200
         }
     elif command[0] == "back":
@@ -115,8 +106,8 @@ def parse_command(command):
         "id" : int(time.time()),
         "cmd" : "SetSpeedCommand", 
         "priority" : 1,#, Priority, type int
-        "leftSpeed" : 3200, ## Left speed value, type int
-        "rightSpeed" : -3200, ## Right speed value, type int
+        "leftSpeed" : int(command[1]), ## Left speed value, type int
+        "rightSpeed" : -1*int(command[1]), ## Right speed value, type int
         "receivingPort" : 28200
         }
     elif command[0] == "left":
@@ -124,8 +115,8 @@ def parse_command(command):
         "id" : int(time.time()),
         "cmd" : "SetSpeedCommand", 
         "priority" : 1,#, Priority, type int
-        "leftSpeed" : 3200, ## Left speed value, type int
-        "rightSpeed" : 3200, ## Right speed value, type int
+        "leftSpeed" : int(command[1]), ## Left speed value, type int
+        "rightSpeed" : int(command[1]), ## Right speed value, type int
         "receivingPort" : 28200
         }
     elif command[0] == "right":
@@ -133,8 +124,8 @@ def parse_command(command):
         "id" : int(time.time()),
         "cmd" : "SetSpeedCommand", 
         "priority" : 1,#, Priority, type int
-        "leftSpeed" : -3200, ## Left speed value, type int
-        "rightSpeed" : -3200, ## Right speed value, type int
+        "leftSpeed" : -1*int(command[1]), ## Left speed value, type int
+        "rightSpeed" : -1*int(command[1]), ## Right speed value, type int
         "receivingPort" : 28200
         }
     elif command[0] == "stop" or command[0] == "s":
@@ -201,6 +192,14 @@ def parse_command(command):
         "type" : command[1],#single, stream
         "priority" : 1,#, Priority, type int
         "receivingPort" : 28200
+        }
+    elif command[0] == "bc":
+        return {
+            "id" : int(time.time()),
+            "cmd" : "BladderCommand", #Command name
+            "action" : command[1],#single, stream
+            "priority" : 1,#, Priority, type int
+            "receivingPort" : 28200
         }
 #def s():
 #        sendObject(parse_command('stop'))
