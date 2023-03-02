@@ -10,3 +10,10 @@ improve inflation/deflation maintaining tension
 get rpi running
 
 decrease the inflation distance
+
+singleton motor controllers?
+    -currently seems like each command is processed by HSIMaster,
+    then passed to singleton command executer, to singleton thread 
+    specific to each type of command. however bladder spawns a new thread for
+    each new command, all of which access the same motors since htey are stored
+    in the singleton BladderCommand 
