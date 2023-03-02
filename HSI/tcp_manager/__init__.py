@@ -1,1 +1,1 @@
-from TCPManager import TCPManager
+from .TCPManager import TCPManager

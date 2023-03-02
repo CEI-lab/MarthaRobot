@@ -1,1 +1,1 @@
-from ThreadManager import ThreadManager
+from .ThreadManager import ThreadManager

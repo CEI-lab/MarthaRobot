@@ -33,11 +33,11 @@ import cv2
 # Utility Classes
 from thread_manager import ThreadManager
 from tcp_manager import TCPManager
-from CommandRegistry import CommandRegistry
+from resources.registries.CommandRegistry import CommandRegistry
 from command_executer import CommandExecuter
 
 # Resource classes
-from structures import *
+# from structures import *
 from StatusQueue import StatusQueue
 from CommandQueue import CommandQueue
 

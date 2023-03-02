@@ -4,7 +4,7 @@ from pathlib import Path
 home = str(Path.home())
 sys.path.append(home + "/HSI/commands/")
 import logging
-from CommandInterface import CommandInterface
+from commands.CommandInterface import CommandInterface
 from CommandRegistryInterface import CommandRegistryInterface
 
 """

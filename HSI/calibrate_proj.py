@@ -6,7 +6,7 @@ cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
 i = [int(1706/2), int(959/2),int(122)]
 
-while True:
+while False:
 
     img = np.zeros((959,1706))
     img = cv2.circle(img,(i[0],i[1]),i[2],(255,255,255),2)

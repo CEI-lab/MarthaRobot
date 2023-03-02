@@ -9,7 +9,7 @@ from multiprocessing import Lock
 import time
 
 from Configurations import *
-from ComparableDict import ComparableDict
+from resources.classes.ComparableDict import ComparableDict
 
 """ 
 TCPManager that creates the tcp connection. 
