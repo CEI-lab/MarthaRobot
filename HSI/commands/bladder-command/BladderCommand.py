@@ -2,19 +2,23 @@ from __future__ import print_function
 import logging
 import sys
 import time
-import serial
 from multiprocessing import Lock
 from pathlib import Path
 
 import gpiozero as gpio
 import Encoder
 import RPi.GPIO as GPIO
-import math
+
 import qwiic_scmd
 
 from Configurations import *
 import threading
 from CommandInterface import CommandInterface
+
+import math
+import serial
+
+
 
 """
 Implementation of BladderCommand that will produce sound from text in json object.
@@ -119,10 +123,10 @@ class BladderCommand(CommandInterface):
     
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
-        self.MOTOR_A = 0
-        self.MOTOR_B = 1
-        self.FWD = 0
-        self.BWD = 1
+        # self.MOTOR_A = 0
+        # self.MOTOR_B = 1
+        # self.FWD = 0
+        # self.BWD = 1
         
         self.enc11 = 17
         self.enc12 = 18

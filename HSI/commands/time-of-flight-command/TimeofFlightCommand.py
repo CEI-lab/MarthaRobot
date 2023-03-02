@@ -1,6 +1,5 @@
 import logging
 import sys
-import serial
 import time
 import random
 import re
