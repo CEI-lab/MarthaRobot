@@ -1,8 +1,5 @@
-import os
 import sys
-import time
 import logging
-import json
 from pathlib import Path
 from Configurations import *
 import numpy
@@ -34,27 +31,29 @@ sys.path.append(home + "/.local/lib/python3.7/site-packages/")
 import cv2
 
 # Utility Classes
-from ThreadManager import ThreadManager
-from TCPManager import TCPManager
+from thread_manager import ThreadManager
+from tcp_manager import TCPManager
 from CommandRegistry import CommandRegistry
-from CommandExecuter import CommandExecuter
+from command_executer import CommandExecuter
 
 # Resource classes
+from structures import *
 from StatusQueue import StatusQueue
 from CommandQueue import CommandQueue
 
 # Command classes
-from TextToSpeechCommand import TextToSpeechCommand
-from ExternalCameraCommand import ExternalCameraCommand
-from InternalCameraCommand import InternalCameraCommand
-from RealSenseCommand import RealSenseCommand
-from ImageCommand import ImageCommand
-from SetSpeedCommand import SetSpeedCommand
-from TimeofFlightCommand import TimeofFlightCommand
-from ReadIMUCommand import ReadIMUCommand
-from BladderCommand import BladderCommand
-from PrintHelloCommand import PrintHelloCommand
-from SleepTwentySecsCommand import SleepTwentySecsCommand
+from commands import *
+# from TextToSpeechCommand import TextToSpeechCommand
+# from ExternalCameraCommand import ExternalCameraCommand
+# from InternalCameraCommand import InternalCameraCommand
+# from RealSenseCommand import RealSenseCommand
+# from ImageCommand import ImageCommand
+# from SetSpeedCommand import SetSpeedCommand
+# from TimeofFlightCommand import TimeofFlightCommand
+# from ReadIMUCommand import ReadIMUCommand
+# from BladderCommand import BladderCommand
+# from PrintHelloCommand import PrintHelloCommand
+# from SleepTwentySecsCommand import SleepTwentySecsCommand
 
 """
 Implementation of the main entry class for the HSI code. The responsibility of this class is to create various

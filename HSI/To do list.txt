@@ -17,3 +17,12 @@ singleton motor controllers?
     specific to each type of command. however bladder spawns a new thread for
     each new command, all of which access the same motors since htey are stored
     in the singleton BladderCommand 
+
+controll.py
+.test.py.swo
+.test.py.swp
+calibrate_cam.py
+calibrate_proj.py
+test.py (or atleast move)
+move command executer to ./commands
+./resources in general

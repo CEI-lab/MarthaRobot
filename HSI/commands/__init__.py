@@ -1,3 +1,4 @@
+import CommandInterface
 from bladder.BladderCommand import BladderCommand
 from tts.TextToSpeechCommand import TextToSpeechCommand
 from tof.TimeofFlightCommand import TimeofFlightCommand
