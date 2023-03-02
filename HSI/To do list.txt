@@ -1,2 +1,12 @@
 1. Read asyncio
 2. Read asyncore
+
+reorganize imports and directories
+improve inflation/deflation maintaining tension
+    instead of direct connection to the bladder, 
+    go through the loop to a weight? would allow tension to 
+    maintain even when bladder is externally deformed
+
+get rpi running
+
+decrease the inflation distance

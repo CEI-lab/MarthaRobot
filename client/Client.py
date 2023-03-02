@@ -5,7 +5,8 @@ import time
 def sendObject(message):
     # local host IP '127.0.0.1'
     #host = '10.49.33.92'
-    host = '192.168.0.191'
+    host = '10.50.26.63'
+    # host = '192.168.0.191'
     # Define the port on which you want to connect
     port = 65432
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -193,14 +194,29 @@ def parse_command(command):
         "priority" : 1,#, Priority, type int
         "receivingPort" : 28200
         }
-    elif command[0] == "bc":
-        return {
-            "id" : int(time.time()),
-            "cmd" : "BladderCommand", #Command name
-            "action" : command[1],#single, stream
-            "priority" : 1,#, Priority, type int
-            "receivingPort" : 28200
-        }
+    elif command[0] == "bladder":
+        if len(command) == 5:
+            return {
+                "id" : int(time.time()),
+                "cmd" : "BladderCommand", #Command name
+                "action" : command[1],#single, stream
+                "motor" : command[2],
+                "direction" : command [3],
+                "dist" : command [4],
+                "priority" : 1,#, Priority, type int
+                "receivingPort" : 28200
+            }
+        else:
+            return {
+                "id" : int(time.time()),
+                "cmd" : "BladderCommand", #Command name
+                "action" : command[1],#single, stream
+                "priority" : 1,#, Priority, type int
+                "receivingPort" : 28200
+            }
+    else:
+        print("Invalid command")
+        return 
 #def s():
 #        sendObject(parse_command('stop'))
 #        receiveResponse('stop', 12346)
@@ -210,4 +226,4 @@ while True:
     sendObject(parse_command(command))
     print("\n")
     print(time.time())
-    receiveResponse(command, 28200)
+    # receiveResponse(command, 28200)
