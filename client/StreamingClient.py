@@ -8,7 +8,8 @@ import struct
 import cv2
 import time
 
-mc_ip_address = '224.0.0.1'
+# mc_ip_address = '224.0.0.1'
+mc_ip_address = '10.50.26.63'
 #mc_ip_address = '192.168.0.190'
 #mode = "tof"
 #mode = "rs"

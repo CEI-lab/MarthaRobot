@@ -72,5 +72,6 @@ class ExternalCameraCommand(CommandInterface):
                 responseStatusCallback(jsonObject)
 
     def execute(self, responseStatusCallback, jsonObject):
+        logging.info("Starting external camera stream")
         t1 = threading.Thread(target=self.execute_helper, args=(responseStatusCallback, jsonObject,), name = "ExtCamThread")
         t1.start()

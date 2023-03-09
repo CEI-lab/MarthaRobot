@@ -53,7 +53,7 @@ class SetSpeedCommand(CommandInterface):
                 logging.info("Running script to set speed commands simultaneously.")
                 jsonObject["response"] = "SUCCESS" 
                 # print("current_time is {}".format(time.time()))
-                subprocess.Popen(['sudo','/home/pi/HSI/commands/set-speed-command/./SetSpeed.sh', CONFIGURATIONS.get("LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"), str(left_speed), CONFIGURATIONS.get("RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"), str(right_speed)])
+                subprocess.Popen(['sudo','/home/pi/HSI/HSI/commands/set-speed-command/SetSpeed.sh', CONFIGURATIONS.get("LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"), str(left_speed), CONFIGURATIONS.get("RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"), str(right_speed)])
                 # print("2:{}".format(time.time()-begin_time))
             else:
                 if left_speed is not None:

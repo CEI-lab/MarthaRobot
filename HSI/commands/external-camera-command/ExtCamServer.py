@@ -46,7 +46,9 @@ class ExtStreamingServer(asyncore.dispatcher):
         return True
 
     def update_frame(self):
-        self.camera = cv2.VideoCapture(CONFIGURATIONS["USB_CAM_ID"])
+        # logging.debug("extCamServer - extStreamingServer updating frame")
+        # self.camera = cv2.VideoCapture(CONFIGURATIONS["USB_CAM_ID"])
+        self.camera = cv2.VideoCapture(2)
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
         ret, frame = self.camera.read()
@@ -59,8 +61,11 @@ class ExtStreamingServer(asyncore.dispatcher):
             length = struct.pack('<I', len(data))
         # for the message for transmission
             self.frame_data = b''.join([length, data])
+        else:
+            logging.warn("Could not retrieve frame from external camera")
 
     def handle_write(self):
+        # logging.debug(f"extCamServer - extStreamingServer handling write {len(self.frame_data)} remaining")
     # first time the handle_write is called
         if not hasattr(self, 'frame_data'):
             self.update_frame()

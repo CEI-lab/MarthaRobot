@@ -99,6 +99,7 @@ class TCPManager(object):
                 #data_arr = ComparableDict(eval(data[0].decode()))
                 data_arr["clientIPAddress"] = client_address
                 self._my_received_command_queue.enqueue(data_arr)
+                print("safe")
                 self._my_command_event.set()
         except Exception as ex:
             logging.error("_listenTCPHelper: " + str(ex))

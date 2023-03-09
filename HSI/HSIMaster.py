@@ -9,32 +9,33 @@ import numpy
 import subprocess
 import threading
 
-sys.path.append(home + "/HSI/commands/")
-sys.path.append(home + "/HSI/thread/")
-sys.path.append(home + "/HSI/commands/text-to-speech-command")
-sys.path.append(home + "/HSI/commands/external-camera-command")
-sys.path.append(home + "/HSI/commands/internal-camera-command")
-sys.path.append(home + "/HSI/commands/real-sense-command")
-sys.path.append(home + "/HSI/commands/image-command")
-sys.path.append(home + "/HSI/commands/get-images-names-command")
-sys.path.append(home + "/HSI/commands/set-speed-command")
-sys.path.append(home + "/HSI/commands/time-of-flight-command")
-sys.path.append(home + "/HSI/commands/read-IMU-command")
-sys.path.append(home + "/HSI/commands/bladder-command")
-sys.path.append(home + "/HSI/commands/print-hello-command")
-sys.path.append(home + "/HSI/commands/sleep-twenty-secs-command")
-sys.path.append(home + "/HSI/command-executer")
-sys.path.append(home + "/HSI/resources/RealSense/")
-sys.path.append(home + "/HSI/resources/registries/")
-sys.path.append(home + "/HSI/resources/queues/")
-sys.path.append(home + "/HSI/resources/classes")
-sys.path.append(home + "/HSI/tcp-manager")
+sys.path.append(home + "/HSI/HSI/commands/")
+sys.path.append(home + "/HSI/HSI/thread/")
+sys.path.append(home + "/HSI/HSI/commands/text-to-speech-command")
+sys.path.append(home + "/HSI/HSI/commands/external-camera-command")
+sys.path.append(home + "/HSI/HSI/commands/internal-camera-command")
+sys.path.append(home + "/HSI/HSI/commands/real-sense-command")
+sys.path.append(home + "/HSI/HSI/commands/image-command")
+sys.path.append(home + "/HSI/HSI/commands/get-images-names-command")
+sys.path.append(home + "/HSI/HSI/commands/set-speed-command")
+sys.path.append(home + "/HSI/HSI/commands/time-of-flight-command")
+sys.path.append(home + "/HSI/HSI/commands/read-IMU-command")
+sys.path.append(home + "/HSI/HSI/commands/bladder-command")
+sys.path.append(home + "/HSI/HSI/commands/print-hello-command")
+sys.path.append(home + "/HSI/HSI/commands/sleep-twenty-secs-command")
+sys.path.append(home + "/HSI/HSI/command-executer")
+sys.path.append(home + "/HSI/HSI/resources/RealSense/")
+sys.path.append(home + "/HSI/HSI/resources/SmcCmd/")
+sys.path.append(home + "/HSI/HSI/resources/registries/")
+sys.path.append(home + "/HSI/HSI/resources/queues/")
+sys.path.append(home + "/HSI/HSI/resources/classes")
+sys.path.append(home + "/HSI/HSI/tcp-manager")
 sys.path.append(home + "/.local/lib/python3.7/site-packages/")
 
 import cv2
 
 # Utility Classes
-from ThreadManager import ThreadManager
+from thread.ThreadManager import ThreadManager
 from TCPManager import TCPManager
 from CommandRegistry import CommandRegistry
 from CommandExecuter import CommandExecuter
@@ -55,6 +56,18 @@ from ReadIMUCommand import ReadIMUCommand
 from BladderCommand import BladderCommand
 from PrintHelloCommand import PrintHelloCommand
 from SleepTwentySecsCommand import SleepTwentySecsCommand
+
+# from commands.TextToSpeechCommand import TextToSpeechCommand
+# from commands.ExternalCameraCommand import ExternalCameraCommand
+# from commands.InternalCameraCommand import InternalCameraCommand
+# from commands.RealSenseCommand import RealSenseCommand
+# from commands.ImageCommand import ImageCommand
+# from commands.SetSpeedCommand import SetSpeedCommand
+# from commands.TimeofFlightCommand import TimeofFlightCommand
+# from commands.ReadIMUCommand import ReadIMUCommand
+# from commands.BladderCommand import BladderCommand
+# from commands.PrintHelloCommand import PrintHelloCommand
+# from commands.SleepTwentySecsCommand import SleepTwentySecsCommand
 
 """
 Implementation of the main entry class for the HSI code. The responsibility of this class is to create various
@@ -124,11 +137,11 @@ class HSIMaster(object):
         self._my_singleton_command_registry.setObject("SetSpeedCommand", SetSpeedCommand())
         self._my_singleton_command_registry.setObject("TimeofFlightCommand", TimeofFlightCommand())
         #self._my_singleton_command_registry.setObject("ReadIMUCommand", ReadIMUCommand())
-        #self._my_singleton_command_registry.setObject("BladderCommand", BladderCommand())
+        self._my_singleton_command_registry.setObject("BladderCommand", BladderCommand())
 
     def startSystem(self):
         self._my_singleton_thread_manager.new_onetime(self._my_singleton_tcp_manager.listenTCP, 'ListenTCP', True)
-        self._my_singleton_thread_manager.new_periodic(self._my_singleton_tcp_manager.checkForNewIP, 'CheckNewIP', CONFIGURATIONS.get("CHECK_NEW_IP_FROM_PI_FREQUENCY"), True)
+        # self._my_singleton_thread_manager.new_periodic(self._my_singleton_tcp_manager.checkForNewIP, 'CheckNewIP', CONFIGURATIONS.get("CHECK_NEW_IP_FROM_PI_FREQUENCY"), True)
         self._my_singleton_thread_manager.new_onetime(self._my_singleton_tcp_manager.checkForStatus, 'CheckStatusQueue', True)
         self._my_singleton_thread_manager.new_onetime(self._my_singleton_command_executor.checkForCommand, 'CheckCommandQueue', True)
         self._my_singleton_thread_manager.start_all()

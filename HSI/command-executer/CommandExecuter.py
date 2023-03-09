@@ -86,7 +86,11 @@ class CommandExecuter:
         if key is not None:
             cmd = self._my_command_registry.getObject(key)
             if cmd is not None:
+                logging.debug(f'CommandExecuter : Executing command {cmd}')
                 cmd.execute(self.statusResponseCallback, json)
+                # logging.debug(f'CommandExecuter : Finished command {cmd}')
+
+
             else:
                 logging.error('CommandExecuter : No entry in CommandRegistry for ' + str(key))
         else:

@@ -19,9 +19,9 @@ CONFIGURATIONS = {
     "CHECK_NEW_IP_FROM_PI_FREQUENCY": 0.333,
     "RASPI_TXT_FILE_FULL_PATH_NAME" : "{}/HSI/ip.txt",
     "SENDING_IP_ADDRESS_TO_PI_COMMAND" : "sudo -u pi scp -rp {} pi@{}:/home/pi/MEng/meng-hsi-group/tcp",
-    "SPEED_CONTROLLER_COMMAND" : "{}/HSI/resources/SmcCmd/./SmcCmd",
-    "LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID" : "52FF-7506-8365-5650-5940-2167",
-    "RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID" : "52FF-7206-8365-5650-1020-2567",
+    "SPEED_CONTROLLER_COMMAND" : "{}/HSI/HSI/resources/SmcCmd/./SmcCmd",    
+    "LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID" : "33FF-6D06-4D4B-3731-1919-1543",
+    "RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID" : "52FF-7606-7283-5255-1917-2267",
     "TIMEOFFLIGHT_COUNT_PERIOD" : 0.5, # Keep reading time-of-flight measurements and only send periodically on reading count. 
     "ENABLE_FILE_LOGGING" : False,
     "LOG_FILENAME" : "{}/hsi.log", # Always in home directory
@@ -36,20 +36,24 @@ CONFIGURATIONS = {
     "USB_CAM_ID" : "/dev/v4l/by-id/usb-HD_Camera_Manufacturer_VGA_USB_Camera_VGA_USB_Camera-video-index0",
     "RTSP_COMMAND" : "resources/v4l2rtspserver/v4l2rtspserver",
     "DISPLAY_IMAGE": None,
+    # bladder motor 1
     "DIR1_1_PIN": 10,
     "DIR2_1_PIN": 18,
     "ENC1_1_PIN": 9,
-    "ENC2_1_PIN": 11,
+    "ENC2_1_PIN": 25,
     "MPWM_1_PIN": 17,
+    # bladder motor 2
     "DIR1_2_PIN": 24,
     "DIR2_2_PIN": 15,
-    "ENC1_2_PIN": 25,
-    "ENC2_2_PIN": 5,
+    "ENC1_2_PIN": 17,
+    "ENC2_2_PIN": 18,
     "MPWM_2_PIN": 14,
+    # bladder motor 3
     "DIR1_3_PIN": 0,
     "DIR2_3_PIN": 22,
-    "ENC1_3_PIN": 1,
-    "ENC2_3_PIN": 12,
+    "ENC1_3_PIN": 19,
+    "ENC2_3_PIN": 6,
     "MPWM_3_PIN": 23,
-    "FAN_PIN": 21
+    "FAN_PIN": 21,
+    "BLADDER_SIZE": [160,160,160]
 }

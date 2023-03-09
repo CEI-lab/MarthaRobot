@@ -69,13 +69,13 @@ class ThreadManager(Thread):
         # This block of code periodically monitors the status of each child thread
         while self.alive_count > 0:
 
-            self.alive_count = sum([t.isAlive() for t in self.periodic_threads]) + sum(
-                [t.isAlive() for t in self.onetime_threads])
+            # self.alive_count = sum([t.isAlive() for t in self.periodic_threads]) + sum(
+            #     [t.isAlive() for t in self.onetime_threads])
 
-            if self.monitor_threads:
-                logging.debug('Number of active child threads: ' + str(self.alive_count))
-                for t in threading.enumerate():
-                    logging.debug(t)
+            # if self.monitor_threads:
+            #     logging.debug('Number of active child threads: ' + str(self.alive_count))
+            #     for t in threading.enumerate():
+            #         logging.debug(t)
 
             time.sleep(self.monitor_debug_period)
 

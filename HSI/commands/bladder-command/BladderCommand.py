@@ -23,8 +23,18 @@ CEI-LAB, Cornell University 2019
 """
 
 class Motor(object):
-    def __init__(self, address, mot, event, enc1 = None, enc2 = None):
+    motors = []
+
+    
+
+    def __str__(self):
+        return self.name if self.name else self
+
+    def __init__(self, address, mot, event, enc1 = None, enc2 = None,name = None):
+        Motor.motors += [self]
         self.motor = qwiic_scmd.QwiicScmd(address)
+        self.last_enc_time = time.time()
+        self.name = name
         if enc1 and enc2:
             # Set up GPIOs for encoders
             GPIO.setup(enc1, GPIO.IN)
@@ -61,6 +71,10 @@ class Motor(object):
             
  
     def __update(self, channel):
+        t = time.time()
+
+        self.last_enc_time = t
+        # print()
         state = self.state & 3
         if GPIO.input(self.A):
             state |= 4
@@ -78,6 +92,8 @@ class Motor(object):
         elif state == 6 or state == 9:
             self.pos -= 2
         # Check if the motors need to stop
+        logging.debug(f"{self.name} updated at {t} previously {self.last_enc_time} to {self.pos}")
+
         if self.move_dist:
             #print(self.addr, self.mot, self.pos)
             if abs(self.pos - self.init_pos) >= self.distance_to_move:
@@ -92,6 +108,8 @@ class Motor(object):
  
     def move_distance(self, direction, speed, distance):
         if self.A and self.B:
+            self.last_enc_time = time.time()
+            logging.debug(f"dir: {direction}, speed:{speed}, distance{distance}")
             self.init_pos = self.pos
             self.distance_to_move = distance
             self.move_dist = True
@@ -109,6 +127,8 @@ class Motor(object):
     def move(self, direction, speed):
         self.set_direction(direction)
         self.motor.set_drive(self.mot, self.dir, speed)
+        logging.debug("moving")
+
     
     def enc_read(self): 
         return self.pos
@@ -124,10 +144,10 @@ class BladderCommand(CommandInterface):
         self.FWD = 0
         self.BWD = 1
         
-        self.enc11 = 17
-        self.enc12 = 18
-        self.enc21 = 11
-        self.enc22 = 5
+        self.enc11 = 9
+        self.enc12 = 25
+        self.enc21 = 17
+        self.enc22 = 18
         self.enc31 = 19
         self.enc32 = 6
         
@@ -135,14 +155,34 @@ class BladderCommand(CommandInterface):
         self.m2Event = threading.Event()
         self.m3Event = threading.Event()
         
-        self.m1 = Motor(0x5E, 1, self.m1Event, self.enc11, self.enc12)
-        self.m2 = Motor(0x5E, 0, self.m2Event, self.enc21, self.enc22)
-        self.m3 = Motor(0x5D, 0, self.m3Event, self.enc31, self.enc32)
+        self.m1 = Motor(0x5E, 1, self.m1Event, self.enc11, self.enc12,name="m1")
+        self.m2 = Motor(0x5E, 0, self.m2Event, self.enc21, self.enc22,name="m2")
+        self.m3 = Motor(0x5D, 0, self.m3Event, self.enc31, self.enc32,name="m3")
+
         
+
         GPIO.setup(21, GPIO.OUT)
         self.fan = GPIO.PWM(21, 1000)
         self.fan.start(0)
     
+    def watch_all(self):
+        while True:
+            
+            time.sleep(1)
+            t = time.time()
+            c = False
+            for m in [self.m1,self.m2,self.m3]:
+                if m.move_dist:
+                    c = True
+                    # logging.debug(f"watching and see {m.name} last enc time = {m.last_enc_time} while time = {t}")
+                    if m.move_dist and t - m.last_enc_time > 3:
+                        m.stop()
+                        logging.warning(f"Motor {m} was stopped due to suspected stall. moved [{m.pos}]/[{m.distance_to_move}]")
+            if c:
+                continue
+            else:
+                logging.info("Bladder motors finished movements, or were stopped for stalling")
+                return
     def __del__(self):
         self.m1.motor.disable()
         self.m2.motor.disable()
@@ -158,11 +198,32 @@ class BladderCommand(CommandInterface):
         self.m1.move(direction, speed)
         self.m2.move(direction, speed)
         self.m3.move(direction, speed)
-     
+    
+    def calibrate(self, motorName, dir, dist):
+        logging.debug(f"\nCalibrate:\nmotor:{motorName}, direction:{dir}, dist:{dist}")
+        self.m1Event.clear()
+        self.m2Event.clear()
+        self.m3Event.clear()
+        logging.debug("cleared")
+        motorNames = ["m1","m2","m3"]
+
+        motor = self.m1 if motorName == "m1" else self.m2 if motorName == "m2" else self.m3 if motorName == "m3" else None
+
+        if motor:
+            motor.move_distance(dir, 250, int(dist))
+            self.watch_all()
+            # self.m1Event.wait()
+            # self.m2Event.wait()
+            # self.m3Event.wait()
+        else:
+            return False
+        return True
+
     def move_all_dist(self, dist1, dist2, dist3, direction, speed):
         self.m1.move_distance(direction, speed, dist1)
         self.m2.move_distance(direction, speed, dist2)
         self.m3.move_distance(direction, speed, dist3)
+        self.watch_all()
      
     def inflate(self):
         self.fan.ChangeDutyCycle(100)
@@ -170,7 +231,12 @@ class BladderCommand(CommandInterface):
         self.m1Event.clear()
         self.m2Event.clear()
         self.m3Event.clear()
-        self.move_all_dist(168, 168, 168, 'out', 250)
+        self.move_all_dist( CONFIGURATIONS["BLADDER_SIZE"][0],
+                            CONFIGURATIONS["BLADDER_SIZE"][1],
+                            CONFIGURATIONS["BLADDER_SIZE"][2], 
+                            'out',
+                             250
+        )
         self.m1Event.wait()
         self.m2Event.wait()
         self.m3Event.wait()
@@ -180,7 +246,8 @@ class BladderCommand(CommandInterface):
         self.m1Event.clear()
         self.m2Event.clear()
         self.m3Event.clear()
-        self.move_all_dist(168, 168, 168, 'in', 250)
+        self.move_all_dist(150, 200, 200, 'in', 250)
+        self.watch_all()
         self.m1Event.wait()
         self.m2Event.wait()
         self.m3Event.wait()
@@ -212,12 +279,31 @@ class BladderCommand(CommandInterface):
                     self.deflate()
                     logging.info('BladderCommand : Deflate success')
                     jsonObject["response"] = "DEFLATE_SUCCESS"
+                elif jsonObject["action"]== "calibrate":
+                    logging.info('calibrating')
+                    if self.calibrate(jsonObject["motor"],jsonObject["direction"],jsonObject["dist"]):
+                        jsonObject["response"] = "CALIBRATE_SUCCESS"
+                    else:
+                        jsonObject["response"] = "CALIBRATE_ERROR"
+                elif jsonObject["action"]== "stop":
+                    logging.info('Halting bladder')
+                    self.stop()
+                    jsonObject["response"] = "STOP_SUCCESS"
+                elif jsonObject["action"]== "fan":
+                    logging.info('setting fan')
+                    self.fan.ChangeDutyCycle(int(jsonObject["dist"]))
+                    jsonObject["response"] = "FAN_SUCCESS"
+
+                    
+
                 else:
                     logging.info('Error...')
                     logging.info('BladderCommand : There is a typo in the action field.')
                     jsonObject["response"] = "INCORRECT_INFLATE_DEFLATE_FIELD"
                        
-            except:
+            except Exception as e:
+                print(e)
+                logging.error(str(e))
                 logging.info('BladderCommand : can\'t open serial port.')
                 jsonObject["response"] = "SERIAL_CONNECTION_CLOSED"
 
