@@ -7,12 +7,14 @@ import socket
 import struct
 import cv2
 import time
+import logging
 
-mc_ip_address = '224.0.0.1'
+mc_ip_address = '10.50.26.63'
+# mc_ip_address = '224.0.0.1'
 #mc_ip_address = '192.168.0.190'
 #mode = "tof"
-#mode = "rs"
-mode = "tof"
+mode = "rs"
+# mode = "ext"
 ports = {"rs" : 1024,"tof" : 1025, "ext": 1028}
 port = ports[mode]
 chunk_size = 4096
@@ -30,6 +32,7 @@ class ImageClient(asyncore.dispatcher):
         self.buffer = bytearray()
         self.windowName = self.port
         # open cv window which is unique to the port 
+        logging.info("Opening window")
         if mode == "rs":
             cv2.namedWindow("depth"+str(self.windowName))
             cv2.namedWindow("color"+str(self.windowName))
@@ -37,8 +40,10 @@ class ImageClient(asyncore.dispatcher):
             cv2.namedWindow("ExtCam"+str(self.windowName))
         self.remainingBytes = 0
         self.frame_id = 0
+        logging.info("window setup complete")
        
     def handle_read(self):
+        # logging.debug("imageclient handle_read")
         if self.remainingBytes == 0:
             # get the expected frame size
             recieved = self.recv(4)
@@ -54,6 +59,8 @@ class ImageClient(asyncore.dispatcher):
             self.handle_frame()
 
     def handle_frame(self):
+        # logging.debug("imageclient handle_frame")
+
         # convert the frame from string to numerical data
         fps = 1/(time.time()-self.start_time)
         print(fps)
@@ -88,6 +95,7 @@ class ExtStreamingClient(asyncore.dispatcher):
         self.server_address = ('', port)
         # create a socket for TCP connection between the client and server
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        logging.debug("extStreamingClient created socket")
         self.socket.settimeout(5)
         
         self.bind(self.server_address) 	
@@ -103,11 +111,12 @@ class ExtStreamingClient(asyncore.dispatcher):
         print("connection recvied")
 
     def handle_accept(self):
+        logging.debug("extstreamingclient handle_accept")
         pair = self.accept()
         #print(self.recv(10))
         if pair is not None:
             sock, addr = pair
-            print ('Incoming connection from %s' % repr(addr))
+            logging.info('Incoming external camera connection from %s' % repr(addr))
             # when a connection is attempted, delegate image receival to the ImageClient 
             handler = ImageClient(sock, addr)
 
@@ -136,7 +145,7 @@ class RSStreamingClient(asyncore.dispatcher):
         #print(self.recv(10))
         if pair is not None:
             sock, addr = pair
-            print ('Incoming connection from %s' % repr(addr))
+            print('Incoming rss connection from %s' % repr(addr))
             # when a connection is attempted, delegate image receival to the ImageClient
             handler = ImageClient(sock, addr)
 
@@ -165,7 +174,7 @@ class TOFStreamingClient(asyncore.dispatcher):
         #print(self.recv(10))
         if pair is not None:
             sock, addr = pair
-            print ('Incoming connection from %s' % repr(addr))
+            print('Incoming tof connection from %s' % repr(addr))
             # when a connection is attempted, delegate image receival to the ImageClient
             handler = ImageClient(sock, addr)
 
@@ -176,17 +185,21 @@ def multi_cast_message(ip_address, port, message):
     connections = {}
     try:
         # Send data to the multicast group
-        print('sending "%s"' % message + str(multicast_group))
+        logging.info('sending "%s"' % message + str(multicast_group))
         sent = sock.sendto(message.encode(), multicast_group)
-        print('message sent')
+        logging.debug('message sent')
         # defer waiting for a response using Asyncore
         if mode == "rs":
+            logging.info("Preparing rss streaming client")
             client = RSStreamingClient()
         elif mode == "ext":
+            logging.info("Preparing external camera streaming client")
             client = ExtStreamingClient()
         elif mode == "tof":
+            logging.info("Preparing tof streaming client")
             client = TOFStreamingClient()
-        asyncore.loop()
+        logging.debug("entering asyncore loop")
+        asyncore.loop(30)
 
         # Look for responses from all recipients
         
@@ -197,4 +210,6 @@ def multi_cast_message(ip_address, port, message):
         sock.close()
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+
     main(sys.argv[1:])

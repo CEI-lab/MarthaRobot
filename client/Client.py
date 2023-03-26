@@ -1,3 +1,4 @@
+import logging
 import time, socket, json, pickle, ComparableDict
 import cv2
 import numpy as np
@@ -199,31 +200,45 @@ def parse_command(command):
             return {
                 "id" : int(time.time()),
                 "cmd" : "BladderCommand", #Command name
-                "action" : command[1],#single, stream
-                "motor" : command[2],
-                "direction" : command [3],
-                "dist" : command [4],
-                "priority" : 1,#, Priority, type int
-                "receivingPort" : 28200
+                "action": command[1],
+                "motor": command[2],
+                "direction": command[3],
+                "dist": command[4],
+                "priority": 1,  # , Priority, type int
+                "receivingPort": 28200
+            }
+        elif len(command) == 3:
+            return {
+                "id": int(time.time()),
+                "cmd": "BladderCommand",  # Command name
+                "action": command[1],  # single, stream
+                "dist": command[2],
+                "priority": 1,  # , Priority, type int
+                "receivingPort": 28200
             }
         else:
             return {
-                "id" : int(time.time()),
-                "cmd" : "BladderCommand", #Command name
-                "action" : command[1],#single, stream
-                "priority" : 1,#, Priority, type int
-                "receivingPort" : 28200
+                "id": int(time.time()),
+                "cmd": "BladderCommand",  # Command name
+                "action": command[1],  # single, stream
+                "priority": 1,  # , Priority, type int
+                "receivingPort": 28200
             }
     else:
         print("Invalid command")
-        return 
-#def s():
+        return
+
+
+# def s():
 #        sendObject(parse_command('stop'))
 #        receiveResponse('stop', 12346)
-#sendObject(parse_command("motor 0 0"))
+# sendObject(parse_command("motor 0 0"))
+logging.basicConfig(level=logging.DEBUG)
 while True:
-    command = input("Enter command:\n")
-    sendObject(parse_command(command))
     print("\n")
+    command = input("Enter command:\n")
+    parsed = parse_command(command)
+    logging.warning(f"sending {parsed}")
+    sendObject(parsed)
     print(time.time())
-    # receiveResponse(command, 28200)
+    receiveResponse(command, 28200)
