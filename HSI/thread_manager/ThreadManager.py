@@ -3,18 +3,14 @@ import logging
 import traceback
 from threading import Thread
 import time
-import sys
-
-"""
-This class can be used to start new threads and log messages messages. It is important to note that in any code that 
-leverages this thread manager should use the method "logging.debug()" instead of print. This allows messages to be 
-displayed with thread and time info. (Legacy Code - Only manually tested and reviewed)
-
-CEI-LAB, Cornell University 2019
-"""
 
 
 class ThreadManager(Thread):
+    """
+    ThreadManager This class can be used to start new threads and log messages messages. It is important to note that in any code that 
+    leverages this thread manager should use the method "logging.debug()" instead of print. This allows messages to be 
+    displayed with thread and time info. (Legacy Code - Only manually tested and reviewed)
+    """
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -37,31 +33,14 @@ class ThreadManager(Thread):
         self.periodic_count = 0
         self.onetime_count = 0
 
-        # time string for recording time in logging filename
-        # timestr = time.strftime("%Y%m%d-%H:%M:%S")
-
-        # Parameters for printing thread status
-        #logging.basicConfig(level=logging.DEBUG,
-        #                    format='[Time: %(relativeCreated)6d] ' \
-        #                           '[Thread: <%(threadName)s>] '
-        #                    # Uncomment the following line to include the function name in the log
-        #                    # '%(funcName)s in '
-        #                           '[File: {%(filename)s:%(lineno)d}] '
-        #                           '%(levelname)s - %(message)s')
         self.monitor_threads = False
         self.monitor_debug_period = 3.
         self.alive_count = 0
 
-    # filehandler = logging.FileHandler('logging_'+timestr+'.log')
-    # logger = logging.getLogger(__name__)
-    # logger.addHandler(filehandler)
-
     def run(self):
-
-        # This is the method that is called when the user calls the "start()" method.
-        # Its primary task is to monitor if the child threads are active and report
-        # thread status, It also is responsible for signaling the termination of the
-        # Thread Manager once all children threads have died.
+        """
+        run Called when user calls the :func:'~start' method.  Its primary task is to monitor if the child threads are active and report thread status, It also is responsible for signaling the termination of the ThreadManager once all children threads have died.
+        """
 
         if not self.monitor_threads:
             logging.debug('Thread Monitoring disabled for Thread Manager')
@@ -73,7 +52,8 @@ class ThreadManager(Thread):
                 [t.isAlive() for t in self.onetime_threads])
 
             if self.monitor_threads:
-                logging.debug('Number of active child threads: ' + str(self.alive_count))
+                logging.debug(
+                    'Number of active child threads: ' + str(self.alive_count))
                 for t in threading.enumerate():
                     logging.debug(t)
 
@@ -91,7 +71,8 @@ class ThreadManager(Thread):
                 found = True
 
         if not found:
-            logging.error('No periodic child thread with name "' + thread_name + '" found. Unable to stop thread')
+            logging.error('No periodic child thread with name "' +
+                          thread_name + '" found. Unable to stop thread')
 
     def resume_periodic_thread(self, thread_name):
 
@@ -105,14 +86,16 @@ class ThreadManager(Thread):
                 found = True
 
         if not found:
-            logging.error('No periodic child thread with name "' + thread_name + '" found. Unable to resume thread')
+            logging.error('No periodic child thread with name "' +
+                          thread_name + '" found. Unable to resume thread')
 
     def run_while_active(self):
 
         # This method should only be called from the main thread in order
         # to avoid the program becoming unresponsive
 
-        while self.isAlive(): time.sleep(.1)
+        while self.isAlive():
+            time.sleep(.1)
 
     def set_monitor_debug_frequency(self, frequency):
 
@@ -251,7 +234,7 @@ class PeriodicThread(Thread):
             try:
                 self.function(*self.args)
             except:
-                logging.error('PeriodicThread Error: ' )
+                logging.error('PeriodicThread Error: ')
                 logging.error(traceback.format_exc())
 
             # If execution time is greater than wait time, don't wait.
