@@ -1,0 +1,3 @@
+docs/build/**
+*.pyc
+docs/build/doctrees/calibrate_cam.doctree

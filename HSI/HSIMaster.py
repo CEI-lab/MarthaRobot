@@ -1,62 +1,60 @@
-from commands.sleep import SleepTwentySecsCommand
-from commands.hello import PrintHelloCommand
-from commands.bladder import BladderCommand
-from commands.imu import ReadIMUCommand
-from commands.tof import TimeofFlightCommand
-from commands.set_speed import SetSpeedCommand
-from commands.image import ImageCommand
-from commands.realsense import RealSenseCommand
-from commands.internal_camera import InternalCameraCommand
-from commands.external_camera import ExternalCameraCommand
-from commands.tts import TextToSpeechCommand
-from commands import *
-from commands import *
-from CommandQueue import CommandQueue
-from StatusQueue import StatusQueue
-from command_executer import CommandExecuter
-from resources.registries.CommandRegistry import CommandRegistry
-from tcp_manager import TCPManager
-from thread_manager import ThreadManager
-import cv2
+import os
 import sys
+import time
 import logging
+import json
 from pathlib import Path
-import Configurations as config
+from Configurations import *
 import numpy
 import subprocess
 import threading
 
+sys.path.append(home + "/HSI/commands/")
+sys.path.append(home + "/HSI/thread/")
+sys.path.append(home + "/HSI/commands/text-to-speech-command")
+sys.path.append(home + "/HSI/commands/external-camera-command")
+sys.path.append(home + "/HSI/commands/internal-camera-command")
+sys.path.append(home + "/HSI/commands/real-sense-command")
+sys.path.append(home + "/HSI/commands/image-command")
+sys.path.append(home + "/HSI/commands/get-images-names-command")
+sys.path.append(home + "/HSI/commands/set-speed-command")
+sys.path.append(home + "/HSI/commands/time-of-flight-command")
+sys.path.append(home + "/HSI/commands/read-IMU-command")
+sys.path.append(home + "/HSI/commands/bladder-command")
+sys.path.append(home + "/HSI/commands/print-hello-command")
+sys.path.append(home + "/HSI/commands/sleep-twenty-secs-command")
+sys.path.append(home + "/HSI/command-executer")
+sys.path.append(home + "/HSI/resources/RealSense/")
+sys.path.append(home + "/HSI/resources/registries/")
+sys.path.append(home + "/HSI/resources/queues/")
+sys.path.append(home + "/HSI/resources/classes")
+sys.path.append(home + "/HSI/tcp-manager")
+sys.path.append(home + "/.local/lib/python3.7/site-packages/")
 
-# TODO remove this once everything that depends on it has been corrected
-sys.path.append(config.home + "/HSI/commands/")
-sys.path.append(config.home + "/HSI/thread/")
-sys.path.append(config.home + "/HSI/commands/text-to-speech-command")
-sys.path.append(config.home + "/HSI/commands/external-camera-command")
-sys.path.append(config.home + "/HSI/commands/internal-camera-command")
-sys.path.append(config.home + "/HSI/commands/real-sense-command")
-sys.path.append(config.home + "/HSI/commands/image-command")
-sys.path.append(config.home + "/HSI/commands/get-images-names-command")
-sys.path.append(config.home + "/HSI/commands/set-speed-command")
-sys.path.append(config.home + "/HSI/commands/time-of-flight-command")
-sys.path.append(config.home + "/HSI/commands/read-IMU-command")
-sys.path.append(config.home + "/HSI/commands/bladder-command")
-sys.path.append(config.home + "/HSI/commands/print-hello-command")
-sys.path.append(config.home + "/HSI/commands/sleep-twenty-secs-command")
-sys.path.append(config.home + "/HSI/command-executer")
-sys.path.append(config.home + "/HSI/resources/RealSense/")
-sys.path.append(config.home + "/HSI/resources/registries/")
-sys.path.append(config.home + "/HSI/resources/queues/")
-sys.path.append(config.home + "/HSI/resources/classes")
-sys.path.append(config.home + "/HSI/tcp-manager")
-sys.path.append(config.home + "/.local/lib/python3.7/site-packages/")
-
+import cv2
 
 # Utility Classes
+from ThreadManager import ThreadManager
+from TCPManager import TCPManager
+from CommandRegistry import CommandRegistry
+from CommandExecuter import CommandExecuter
 
 # Resource classes
-# from structures import *
+from StatusQueue import StatusQueue
+from CommandQueue import CommandQueue
 
 # Command classes
+from TextToSpeechCommand import TextToSpeechCommand
+from ExternalCameraCommand import ExternalCameraCommand
+from InternalCameraCommand import InternalCameraCommand
+from RealSenseCommand import RealSenseCommand
+from ImageCommand import ImageCommand
+from SetSpeedCommand import SetSpeedCommand
+from TimeofFlightCommand import TimeofFlightCommand
+from ReadIMUCommand import ReadIMUCommand
+from BladderCommand import BladderCommand
+from PrintHelloCommand import PrintHelloCommand
+from SleepTwentySecsCommand import SleepTwentySecsCommand
 
 """
 Implementation of the main entry class for the HSI code. The responsibility of this class is to create various
@@ -68,21 +66,21 @@ CEI-LAB, Cornell University 2019
 
 class HSIMaster(object):
     def __init__(self):
-        if config.ENABLE_FILE_LOGGING:
-            logging.basicConfig(filename=config.LOG_FILENAME.format(config.home),
-                                level=config.LOGGING_LEVEL)
+        if CONFIGURATIONS.get("ENABLE_FILE_LOGGING"):
+            logging.basicConfig(filename=CONFIGURATIONS.get("LOG_FILENAME").format(home),
+                                level=CONFIGURATIONS.get("LOGGING_LEVEL"))
         else:
-            logging.basicConfig(level=config.LOGGING_LEVEL,
-                                format='[Time: %(relativeCreated)6d] '
+            logging.basicConfig(level=CONFIGURATIONS.get("LOGGING_LEVEL"),
+                                format='[Time: %(relativeCreated)6d] ' \
                                        '[Thread: <%(threadName)s>] '
                                 # Uncomment the following line to include the function name in the log
-                                '%(funcName)s in '
+                                # '%(funcName)s in '
                                        '[File: {%(filename)s:%(lineno)d}] '
                                        '%(levelname)s - %(message)s')
 
         #t1 = threading.Thread(target=self.displayHelper)
-        # t1.start()
-
+        #t1.start()
+            
         self._command_event = threading.Event()
         self._status_event = threading.Event()
 
@@ -101,52 +99,38 @@ class HSIMaster(object):
         # To create threads
         self._my_singleton_thread_manager = ThreadManager()
         self._my_singleton_thread_manager.monitor_threads = True
-
+        
     def displayHelper(self):
         # To add a blank image on startup
-        subprocess.run(["xdotool", "mousemove", "9999", "9999"])
+        subprocess.run(["xdotool","mousemove","9999","9999"])
         cv2.namedWindow("window", cv2.WINDOW_FREERATIO)
-        cv2.setWindowProperty(
-            "window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-        config.DISPLAY_IMAGE = numpy.ones((2, 2))
+        cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
+        CONFIGURATIONS["DISPLAY_IMAGE"] = numpy.ones((2,2))
         while True:
             try:
-                cv2.imshow('window', config.DISPLAY_IMAGE)
+                cv2.imshow('window', CONFIGURATIONS["DISPLAY_IMAGE"])
                 cv2.waitKey(100)
             except:
                 logging.error("IMAGE NOT DISPLAYABLE")
-
+                
     def initializeCommandRegistry(self):
-        self._my_singleton_command_registry.setObject(
-            "PrintHelloCommand", PrintHelloCommand())
-        self._my_singleton_command_registry.setObject(
-            "SleepTwentySecsCommand", SleepTwentySecsCommand())
-        self._my_singleton_command_registry.setObject(
-            "TextToSpeechCommand", TextToSpeechCommand())
-        self._my_singleton_command_registry.setObject(
-            "ExternalCameraCommand", ExternalCameraCommand())
-        self._my_singleton_command_registry.setObject(
-            "InternalCameraCommand", InternalCameraCommand())
-        self._my_singleton_command_registry.setObject(
-            "RealSenseCommand", RealSenseCommand())
-        self._my_singleton_command_registry.setObject(
-            "ImageCommand", ImageCommand())
-        self._my_singleton_command_registry.setObject(
-            "SetSpeedCommand", SetSpeedCommand())
-        self._my_singleton_command_registry.setObject(
-            "TimeofFlightCommand", TimeofFlightCommand())
+        self._my_singleton_command_registry.setObject("PrintHelloCommand", PrintHelloCommand())
+        self._my_singleton_command_registry.setObject("SleepTwentySecsCommand", SleepTwentySecsCommand())
+        self._my_singleton_command_registry.setObject("TextToSpeechCommand", TextToSpeechCommand())
+        self._my_singleton_command_registry.setObject("ExternalCameraCommand", ExternalCameraCommand())
+        self._my_singleton_command_registry.setObject("InternalCameraCommand", InternalCameraCommand())
+        self._my_singleton_command_registry.setObject("RealSenseCommand", RealSenseCommand())
+        self._my_singleton_command_registry.setObject("ImageCommand", ImageCommand())
+        self._my_singleton_command_registry.setObject("SetSpeedCommand", SetSpeedCommand())
+        self._my_singleton_command_registry.setObject("TimeofFlightCommand", TimeofFlightCommand())
         #self._my_singleton_command_registry.setObject("ReadIMUCommand", ReadIMUCommand())
         #self._my_singleton_command_registry.setObject("BladderCommand", BladderCommand())
 
     def startSystem(self):
-        self._my_singleton_thread_manager.new_onetime(
-            self._my_singleton_tcp_manager.listenTCP, 'ListenTCP', True)
-        self._my_singleton_thread_manager.new_periodic(
-            self._my_singleton_tcp_manager.checkForNewIP, 'CheckNewIP', config.CHECK_NEW_IP_FROM_PI_FREQUENCY, True)
-        self._my_singleton_thread_manager.new_onetime(
-            self._my_singleton_tcp_manager.checkForStatus, 'CheckStatusQueue', True)
-        self._my_singleton_thread_manager.new_onetime(
-            self._my_singleton_command_executor.checkForCommand, 'CheckCommandQueue', True)
+        self._my_singleton_thread_manager.new_onetime(self._my_singleton_tcp_manager.listenTCP, 'ListenTCP', True)
+        self._my_singleton_thread_manager.new_periodic(self._my_singleton_tcp_manager.checkForNewIP, 'CheckNewIP', CONFIGURATIONS.get("CHECK_NEW_IP_FROM_PI_FREQUENCY"), True)
+        self._my_singleton_thread_manager.new_onetime(self._my_singleton_tcp_manager.checkForStatus, 'CheckStatusQueue', True)
+        self._my_singleton_thread_manager.new_onetime(self._my_singleton_command_executor.checkForCommand, 'CheckCommandQueue', True)
         self._my_singleton_thread_manager.start_all()
         self._my_singleton_thread_manager.start()
         self._my_singleton_thread_manager.run_while_active()

@@ -1,3 +1,7 @@
+"""
+  Constants and variables for use throughout the project.  Includes GPIO pin numbers, IP addresses, hardware addresses, and more. 
+"""
+
 import logging
 import os
 
@@ -78,3 +82,6 @@ RESPONSE_PORT = 28200
 STREAM_PORTS = {"rs": 1024, "tof": 1025, "ext": 1028}
 MC_IP_ADDRESS = '224.0.0.1'
 STREAM_CHUNK_SIZE = 4096
+
+# RPI server to get IPs
+RPI_SERVER = ''
