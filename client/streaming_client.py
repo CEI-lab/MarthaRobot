@@ -8,7 +8,7 @@ import struct
 import cv2
 import time
 import logging as log
-import config
+import Configurations as config
 
 mode = ""
 port = ""
