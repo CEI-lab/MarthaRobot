@@ -8,7 +8,7 @@ import pickle
 import cv2
 import numpy as np
 import time
-import config
+import Configurations as config
 import logging as log
 
 
