@@ -58,8 +58,9 @@ class RSStreamingServer(asyncore.dispatcher):
         logging.info("Launching Realsense Camera Server")
         try:
             self.pipeline = openPipeline()
-        except:
+        except Exception as e:
             logging.error("Unexpected error: Real Sense Streaming Server")
+            logging.debug(e)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         logging.info('sending acknowledgement to {}'.format(address))
         
