@@ -8,7 +8,7 @@ import pickle
 import cv2
 import numpy as np
 import time
-import Configurations as config
+import configurations.Configurations as config
 import logging as log
 
 
@@ -30,7 +30,7 @@ def sendObject(message):
 
 
 def sendAgainAndAgain():
-    while(True):
+    while (True):
         myCommand = "ext single"
         sendObject(parse_command(myCommand))
         print("\n")
@@ -96,7 +96,7 @@ def parse_command(command):
             "receivingPort": config.response_port
         }
     elif command[0] == "hello" or command[0] == 'h':
-        return{
+        return {
             "id": int(time.time()),
             "cmd": "PrintHelloCommand",  # Command name
             "type": 'hello',
@@ -108,7 +108,7 @@ def parse_command(command):
             "receivingPort": config.response_port
         }
     elif command[0] == "sleep" or command[0] == 's':
-        return{
+        return {
             "id": int(time.time()),
             "cmd": "SleepTwentySecsCommand",  # Command name
             "type": 'hello',
