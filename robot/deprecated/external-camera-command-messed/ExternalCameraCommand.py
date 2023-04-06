@@ -6,8 +6,7 @@ from multiprocessing import Lock
 from pathlib import Path
 import cv2
 import time
-from configurations.Configurations import *
-from CommandInterface import CommandInterface
+import robot.configurations as configfrom CommandInterface import CommandInterface
 import subprocess
 import asyncore
 import ExtCamServer

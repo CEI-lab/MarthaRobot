@@ -3,9 +3,11 @@ import sys
 import threading
 from multiprocessing import Lock
 from pathlib import Path
+import logging
 
-from configurations.Configurations import *
-from CommandInterface import CommandInterface
+import robot.configurations as config
+from robot.commands.CommandInterface import CommandInterface
+
 
 """
 Implementation of GetImagesNamesCommand that will get all image names in folder home/HSI/Images.
@@ -33,8 +35,7 @@ class GetImagesNamesCommand(CommandInterface):
         try:
             self._lock.acquire()
             jsonObject["response"] = "UNKNOWN_ERROR"
-            files = os.listdir(CONFIGURATIONS.get(
-                "IMAGES_DIRECTORY").format(home))
+            files = os.listdir(config.IMAGES_DIRECTORY.format(config.home))
             imageName = [name for name in files]
 
             if len(imageName) > 0:

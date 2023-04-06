@@ -10,14 +10,13 @@ from multiprocessing import Lock
 from pathlib import Path
 
 import gpiozero as gpio
-import Encoder
 import RPi.GPIO as GPIO
 
 import qwiic_scmd
 
-from configurations.Configurations import *
+import robot.configurations as config
 import threading
-from CommandInterface import CommandInterface
+from robot.commands.CommandInterface import CommandInterface
 
 import math
 import serial

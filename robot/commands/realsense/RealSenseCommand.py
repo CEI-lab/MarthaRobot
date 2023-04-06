@@ -8,9 +8,10 @@ import logging
 import pyrealsense2 as rs
 import numpy as np
 import cv2
-from configurations.Configurations import *
-from CommandInterface import CommandInterface
-import RealSenseServer
+import robot.configurations as config
+from robot.commands.CommandInterface import CommandInterface
+
+from robot.commands.realsense import RealSenseServer
 import asyncore
 """
 Implementation of FetchInternalCameraCaptureCommand that will continously capture and send

@@ -4,8 +4,8 @@ from pathlib import Path
 home = str(Path.home())
 sys.path.append(home + "/HSI/commands/")
 import logging
-from commands.CommandInterface import CommandInterface
-from CommandRegistryInterface import CommandRegistryInterface
+from robot.commands.CommandInterface import CommandInterface
+from robot.commands.CommandRegistry.CommandRegistryInterface import CommandRegistryInterface
 
 """
 Implementation of a command registry (CommandRegistryInterface) that will store Command objects

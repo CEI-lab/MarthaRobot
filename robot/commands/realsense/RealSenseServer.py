@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 import socket
 import struct
-from configurations.Configurations import *
+import robot.configurations as config
 import time
 import logging
 import cv2
@@ -13,7 +13,7 @@ import cv2
 # mc_ip_address = '224.0.0.1'
 mc_ip_address = '10.49.33.92'
 # mc_ip_address = '192.168.0.176'
-port = CONFIGURATIONS["REALSENSE_PORT"]
+port = config.REALSENSE_PORT
 chunk_size = 4096
 
 

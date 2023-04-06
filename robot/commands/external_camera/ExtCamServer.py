@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 import socket
 import struct
-import configurations.Configurations as config
+import robot.configurations as config
 import time
 import logging
 import cv2

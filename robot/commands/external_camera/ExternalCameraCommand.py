@@ -6,11 +6,12 @@ from multiprocessing import Lock
 from pathlib import Path
 import cv2
 import time
-from configurations.Configurations import *
-from CommandInterface import CommandInterface
+import robot.configurations as config
+from robot.commands.CommandInterface import CommandInterface
+
 import subprocess
 import asyncore
-import ExtCamServer
+from robot.commands.external_camera import ExtCamServer
 
 """
 Implementation of FetchExternalCameraCaptureCommand that will capture an image

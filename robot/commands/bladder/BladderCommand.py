@@ -14,12 +14,12 @@ from pathlib import Path
 import RPi.GPIO as GPIO
 
 
-import configurations.Configurations as config
+import robot.configurations as config
 import threading
-from CommandInterface import CommandInterface
+from robot.commands.CommandInterface import CommandInterface
 
 
-from bladder_motor import bladder_motor as motor_controller
+from robot.commands.bladder.bladder_motor import bladder_motor as motor_controller
 
 
 class BladderCommand(CommandInterface):

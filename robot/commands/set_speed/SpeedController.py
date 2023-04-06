@@ -2,8 +2,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from configurations.Configurations import *
-
+import robot.configurations as config
 """
 Implementation of SpeedController that will get speed from and set speed for 
 the speed controller.

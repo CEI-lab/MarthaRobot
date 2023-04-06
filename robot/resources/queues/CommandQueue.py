@@ -1,9 +1,7 @@
 import sys
 from pathlib import Path
 
-home = str(Path.home())
-sys.path.append(home + "/HSI/resources/queues")
-from QueueInterface import QueueInterface
+from robot.resources.queues.QueueInterface import QueueInterface
 import queue
 import logging
 
@@ -26,10 +24,11 @@ class CommandQueue(QueueInterface):
 
             Outputs:		
                 Return Instance. 
-        
+
         """
         if not cls._instance:
-            cls._instance = super(CommandQueue, cls).__new__(cls, *args, **kwargs)
+            cls._instance = super(CommandQueue, cls).__new__(
+                cls, *args, **kwargs)
 
         return cls._instance
 
@@ -42,7 +41,7 @@ class CommandQueue(QueueInterface):
 
             Outputs:		
                 None
-        
+
         """
         self.my_queue = queue.Queue()
 
@@ -60,7 +59,7 @@ class CommandQueue(QueueInterface):
 
             Outputs:		
                 None
-        
+
         """
         self.my_queue.put(valueObject)
 
@@ -73,12 +72,13 @@ class CommandQueue(QueueInterface):
 
             Outputs:		
                 valueObject : Object taken out from the queue. None if queue is empty.
-        
+
         """
         try:
             return self.my_queue.get(block=False)
         except queue.Empty:
-            logging.warning("CommandQueue : Dequeuing attempt from an empty queue")
+            logging.warning(
+                "CommandQueue : Dequeuing attempt from an empty queue")
             return None
 
     def remove(self, keyString):
@@ -90,7 +90,7 @@ class CommandQueue(QueueInterface):
 
             Outputs:		
                 None.
-        
+
         """
         for queue_index in range(self.my_queue.qsize()):
             if list(self.my_dque[queue_index].keys())[0] == keyString:
@@ -105,7 +105,7 @@ class CommandQueue(QueueInterface):
 
             Outputs:		
                 Size of the queue.
-        
+
         """
         return self.my_queue.qsize()
 
@@ -120,7 +120,7 @@ class CommandQueue(QueueInterface):
 
             Outputs:		
                 Real size of the queue.
-        
+
         """
         tmp_realSize = 0
         for queue_index in range(self.my_queue.qsize()):

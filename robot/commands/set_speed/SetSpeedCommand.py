@@ -6,9 +6,10 @@ from pathlib import Path
 
 import time
 
-from configurations.Configurations import *
-from SpeedController import SpeedController
-from CommandInterface import CommandInterface
+import robot.configurations as config
+from robot.commands.set_speed import SpeedController
+from robot.commands.CommandInterface import CommandInterface
+
 import logging
 
 """

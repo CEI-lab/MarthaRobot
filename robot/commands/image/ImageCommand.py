@@ -7,8 +7,9 @@ import subprocess
 
 from PIL import Image
 
-from configurations.Configurations import *
-from CommandInterface import CommandInterface
+import robot.configurations as config
+from robot.commands.CommandInterface import CommandInterface
+
 
 import cv2
 

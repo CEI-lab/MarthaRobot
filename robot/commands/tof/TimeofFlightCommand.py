@@ -7,11 +7,12 @@ import os
 import threading
 from multiprocessing import Lock
 from pathlib import Path
-from CommandInterface import CommandInterface
-from configurations.Configurations import *
-import VL53L0X
+from robot.commands.CommandInterface import CommandInterface
+import robot.configurations as config
+# import VL53L0X
+import adafruit_vl53l0x as VL53L0X
 import RPi.GPIO as GPIO
-import TimeofFlightServer
+from robot.commands.tof import TimeofFlightServer
 import asyncore
 
 """
@@ -27,7 +28,7 @@ class TimeofFlightCommand(CommandInterface):
     def execute_helper(self, responseStatusCallback, jsonObject):
         try:
             if jsonObject["type"] == "single":
-                shutdown_pins = CONFIGURATIONS["TOF_PINS"]
+                shutdown_pins = config.TOF_PINS
                 GPIO.setmode(GPIO.BCM)
 
                 for pin in shutdown_pins:
@@ -64,7 +65,7 @@ class TimeofFlightCommand(CommandInterface):
                 jsonObject["data"] = _ToF
             if jsonObject["type"] == "stream":
                 if "count_period" in jsonObject:
-                    CONFIGURATIONS["TIMEOFFLIGHT_COUNT_PERIOD"] = jsonObject["count_period"]
+                    config.TIMEOFFLIGHT_COUNT_PERIOD = jsonObject["count_period"]
                 if self.streaming == False:
                     self.server = TimeofFlightServer.TOFMulticastServer()
                     self.streaming = True

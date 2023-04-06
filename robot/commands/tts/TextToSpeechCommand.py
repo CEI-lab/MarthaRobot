@@ -5,7 +5,8 @@ from pathlib import Path
 
 import pyttsx3
 import threading
-from CommandInterface import CommandInterface
+from robot.commands.CommandInterface import CommandInterface
+
 
 """
 Implementation of TextToSpeechCommand that will produce sound from text in json object.
@@ -42,10 +43,12 @@ class TextToSpeechCommand(CommandInterface):
                     jsonObject["response"] = "SUCCESS"
                 else:
                     jsonObject["response"] = "NO_TEXT_IN_JSON"
-                    logging.error('TextToSpeechCommand : No text field in jsonObject')
+                    logging.error(
+                        'TextToSpeechCommand : No text field in jsonObject')
             else:
                 jsonObject["response"] = "OS_SYSTEM_ERROR"
-                logging.error('TextToSpeechCommand : Speech engine not initialized')
+                logging.error(
+                    'TextToSpeechCommand : Speech engine not initialized')
 
             if responseStatusCallback is not None:
                 responseStatusCallback(jsonObject)
@@ -57,7 +60,8 @@ class TextToSpeechCommand(CommandInterface):
             self._lock.release()
 
     def execute(self, responseStatusCallback, jsonObject):
-        t1 = threading.Thread(target=self._speak, args=(responseStatusCallback, jsonObject,))
+        t1 = threading.Thread(target=self._speak, args=(
+            responseStatusCallback, jsonObject,))
         t1.start()
 
 

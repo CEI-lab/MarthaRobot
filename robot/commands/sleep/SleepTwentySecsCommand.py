@@ -6,7 +6,8 @@ from pathlib import Path
 
 import time
 
-from CommandInterface import CommandInterface
+from robot.commands.CommandInterface import CommandInterface
+
 import logging
 
 """
@@ -18,6 +19,7 @@ CEI-LAB, Cornell University 2019
 
 class SleepTwentySecsCommand(CommandInterface):
     _lock = Lock()
+
     def sleepTwenty(self, responseStatusCallback, jsonObject):
         """
         This method will be called to set speed for wheels.
@@ -55,4 +57,3 @@ class SleepTwentySecsCommand(CommandInterface):
         t1 = threading.Thread(target=self.sleepTwenty, args=(
             responseStatusCallback, jsonObject,))
         t1.start()
-

@@ -6,11 +6,12 @@ import threading
 import time
 import logging
 from math import cos, sin, radians
-from get_imu import *
-from get_mag import *
+from robot.commands.imu.get_imu import *
+from robot.commands.imu.get_mag import *
 
-from configurations.Configurations import *
-from CommandInterface import CommandInterface
+import robot.configurations as config
+from robot.commands.CommandInterface import CommandInterface
+
 
 """
 Implementation of ReadIMUCommand that will read IMU accelerometer data once, 

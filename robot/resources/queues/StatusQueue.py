@@ -1,7 +1,7 @@
 import logging
 import queue  # This requires python 3
 
-from QueueInterface import QueueInterface
+from robot.resources.queues.QueueInterface import QueueInterface
 
 """
 A singleton priority queue class. Implemented QueueInterface.
@@ -61,7 +61,8 @@ class StatusQueue(QueueInterface, object):  # This object is necessary
             res = self.my_queue.get(block=False)
             return res[1]
         except queue.Empty:
-            logging.warning("StatusQueue : Dequeuing attempt from an empty queue")
+            logging.warning(
+                "StatusQueue : Dequeuing attempt from an empty queue")
             return None
 
     def size(self):

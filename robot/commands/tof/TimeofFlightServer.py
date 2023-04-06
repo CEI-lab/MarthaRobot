@@ -4,14 +4,14 @@ import numpy as np
 import pickle
 import socket
 import struct
-from configurations.Configurations import *
+import robot.configurations as config
 import time
 import RPi.GPIO as GPIO
-import VL53L0X
+import adafruit_vl53l0x as VL53L0X
 import logging
 
 mc_ip_address = '224.0.0.1'
-port = CONFIGURATIONS["TOF_PORT"]
+port = config.TOF_PORT
 chunk_size = 4096
 
 
@@ -28,7 +28,7 @@ class StreamingServer(asyncore.dispatcher):
     def __init__(self, address):
         asyncore.dispatcher.__init__(self)
         try:
-            self.shutdown_pins = CONFIGURATIONS["TOF_PINS"]
+            self.shutdown_pins = config.TOF_PINS
             GPIO.setmode(GPIO.BCM)
 
             for pin in self.shutdown_pins:
@@ -61,7 +61,7 @@ class StreamingServer(asyncore.dispatcher):
         return True
 
     def update_frame(self):
-        time.sleep(CONFIGURATIONS["TIMEOFFLIGHT_COUNT_PERIOD"])
+        time.sleep(config.TIMEOFFLIGHT_COUNT_PERIOD)
         distances = [0, 0, 0]
 
         GPIO.setmode(GPIO.BCM)

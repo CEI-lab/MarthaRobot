@@ -1,4 +1,5 @@
 import json
+import logging
 import pickle
 import os
 import socket
@@ -8,8 +9,8 @@ from pathlib import Path
 from multiprocessing import Lock
 import time
 
-from configurations.Configurations import *
-from resources.classes.ComparableDict import ComparableDict
+import robot.configurations as config
+from robot.resources.classes.ComparableDict import ComparableDict
 
 """ 
 TCPManager that creates the tcp connection. 
@@ -53,10 +54,10 @@ class TCPManager(object):
 
         self._my_received_command_queue = command_queue
         self._my_status_queue = status_queue
-        self._my_ip = CONFIGURATIONS.get("LOOP_BACK_IP_ADDRESS")
+        self._my_ip = config.LOOP_BACK_IP_ADDRESS
         # The address stays the same forever
-        self._my_raspi_ip = CONFIGURATIONS.get("RASPI_IP_ADDRESS")
-        self._my_tcp_port = CONFIGURATIONS.get("TCP_PORT")
+        self._my_raspi_ip = config.RASPI_IP_ADDRESS
+        self._my_tcp_port = config.TCP_PORT
         self._my_last_ip = self._my_ip
         self._my_command_event = command_event
         self._my_status_event = status_event
@@ -165,8 +166,7 @@ class TCPManager(object):
                 'TCPManager: starting up on port {}'.format(self._my_tcp_port))
             self._sock.bind(("", self._my_tcp_port))
             logging.info('TCPManager: after bind')
-            self._sock.listen(CONFIGURATIONS.get(
-                "NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS"))
+            self._sock.listen(config.NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS)
             logging.info('TCPManager: after listen')
 
         except:
@@ -215,13 +215,12 @@ class TCPManager(object):
         try:
             logging.info("TCPManager: my ip changed from {} to {}".format(
                 self._my_last_ip, self._my_ip))
-            fname = CONFIGURATIONS.get(
-                "RASPI_TXT_FILE_FULL_PATH_NAME").format(home)
+            fname = config.RASPI_TXT_FILE_FULL_PATH_NAME.format(config.home)
             os.remove(fname)
             with open(fname, 'a') as out_file:
                 out_file.write("hsiip {}".format(self._my_ip) + "\n")
 
-            os.system(CONFIGURATIONS.get("SENDING_IP_ADDRESS_TO_PI_COMMAND").format(
+            os.system(config.SENDING_IP_ADDRESS_TO_PI_COMMAND.format(
                 fname, self._my_raspi_ip))
 
         except OSError:
@@ -276,7 +275,7 @@ class TCPManager(object):
 
             port = valueObject.get("receivingPort")
             if port is None:
-                port = CONFIGURATIONS.get("DEFAULT_RECEIVING_PORT")
+                port = config.DEFAULT_RECEIVING_PORT
             logging.info("TCPManager: Got the port {}".format(str(port)))
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             logging.info("TCPManager: Socket ready to send" + str(s))

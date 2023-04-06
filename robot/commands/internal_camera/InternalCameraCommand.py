@@ -8,8 +8,9 @@ import logging
 
 from picamera import PiCamera
 from picamera.array import PiRGBArray
-from configurations.Configurations import *
-from CommandInterface import CommandInterface
+import robot.configurations as config
+from robot.commands.CommandInterface import CommandInterface
+
 import asyncore
 import subprocess
 import os
