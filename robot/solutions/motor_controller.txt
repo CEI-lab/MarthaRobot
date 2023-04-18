@@ -1,0 +1,5 @@
+
+
+If the motor controller gives an error that it cannot access a motor controller:
+    Check wiring/USB all connected
+    Try calling smccmd with/without sudo (see robot/commands/set_speed/smc_linux/README.txt)

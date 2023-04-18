@@ -1,53 +1,14 @@
-# from SleepTwentySecsCommand import SleepTwentySecsCommand
-# from PrintHelloCommand import PrintHelloCommand
-# from BladderCommand import BladderCommand
-# from ReadIMUCommand import ReadIMUCommand
-# from TimeofFlightCommand import TimeofFlightCommand
-# from SetSpeedCommand import SetSpeedCommand
-# from ImageCommand import ImageCommand
-# from RealSenseCommand import RealSenseCommand
-# from InternalCameraCommand import InternalCameraCommand
-# from ExternalCameraCommand import ExternalCameraCommand
-# from TextToSpeechCommand import TextToSpeechCommand
-# from CommandQueue import CommandQueue
-# from StatusQueue import StatusQueue
-# from CommandExecuter import CommandExecuter
-# from CommandRegistry import CommandRegistry
-# from TCPManager import TCPManager
-# from ThreadManager import ThreadManager
-import cv2
-import os
 import sys
-import time
-import logging
-import json
-from pathlib import Path
-import numpy
-import subprocess
-import threading
+import os
 
 home = os.path.expanduser('~pi')
-# sys.path.append(home + "/HSI/commands/")
-# sys.path.append(home + "/HSI/thread/")
-# sys.path.append(home + "/HSI/commands/text-to-speech-command")
-# sys.path.append(home + "/HSI/commands/external-camera-command")
-# sys.path.append(home + "/HSI/commands/internal-camera-command")
-# sys.path.append(home + "/HSI/commands/real-sense-command")
-# sys.path.append(home + "/HSI/commands/image-command")
-# sys.path.append(home + "/HSI/commands/get-images-names-command")
-# sys.path.append(home + "/HSI/commands/set-speed-command")
-# sys.path.append(home + "/HSI/commands/time-of-flight-command")
-# sys.path.append(home + "/HSI/commands/read-IMU-command")
-# sys.path.append(home + "/HSI/commands/bladder-command")
-# sys.path.append(home + "/HSI/commands/print-hello-command")
-# sys.path.append(home + "/HSI/commands/sleep-twenty-secs-command")
-# sys.path.append(home + "/HSI/command-executer")
-# sys.path.append(home + "/HSI/resources/RealSense/")
-# sys.path.append(home + "/HSI/resources/registries/")
-# sys.path.append(home + "/HSI/resources/queues/")
-# sys.path.append(home + "/HSI/resources/classes")
-# sys.path.append(home + "/HSI/tcp-manager")
-# sys.path.append(home + "/.local/lib/python3.7/site-packages/")
+
+import numpy
+import cv2
+import os
+import logging
+import subprocess
+import threading
 
 # Utility Classes
 import robot.configurations as config

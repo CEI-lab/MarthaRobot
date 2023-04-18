@@ -16,7 +16,7 @@ class SpeedController:
     def __init__(self, name, speed=0):
         self.name = name
         self.speed = speed
-        self.cmd = CONFIGURATIONS.get("SPEED_CONTROLLER_COMMAND").format(home)
+        self.cmd = config.SPEED_CONTROLLER_COMMAND.format(home)
         self.d = '-d'
 
         self.resume()
