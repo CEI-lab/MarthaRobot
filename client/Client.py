@@ -1,3 +1,4 @@
+
 """
   A text based interface to send commands to and recieve responses from a marthabot.
 """
@@ -59,7 +60,8 @@ def receiveResponse(command, port):
             if (command[0] == "int" or command[0] == "ext"):
                 cv2.imshow("image", data_arr["data"][:, :, ::-1])
             if (command[0] == "image" or command[0] == "rs"):
-                cv2.imshow("image", data_arr["data"]/np.amax(data_arr["data"]))
+                cv2.imshow(
+                    "image", data_arr["data"] / np.amax(data_arr["data"]))
             cv2.waitKey(1)
         except:
             log.warning("Problem recieving response")
@@ -91,7 +93,7 @@ def parse_command(command):
             "id": int(time.time()),
             "cmd": "SetSpeedCommand",
             "priority": 1,  # , Priority, type int
-            "leftSpeed": -1*int(command[1]),  # Left speed value, type int
+            "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
             "rightSpeed": int(command[2]),  # Right speed value, type int
             "receivingPort": config.response_port
         }
@@ -124,7 +126,7 @@ def parse_command(command):
             "id": int(time.time()),
             "cmd": "SetSpeedCommand",
             "priority": 1,  # , Priority, type int
-            "leftSpeed": -1*int(command[1]),  # Left speed value, type int
+            "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
             "rightSpeed": int(command[1]),  # Right speed value, type int
             "receivingPort": config.response_port
         }
@@ -134,7 +136,7 @@ def parse_command(command):
             "cmd": "SetSpeedCommand",
             "priority": 1,  # , Priority, type int
             "leftSpeed": int(command[1]),  # Left speed value, type int
-            "rightSpeed": -1*int(command[1]),  # Right speed value, type int
+            "rightSpeed": -1 * int(command[1]),  # Right speed value, type int
             "receivingPort": config.response_port
         }
     elif command[0] == "left":
@@ -151,8 +153,8 @@ def parse_command(command):
             "id": int(time.time()),
             "cmd": "SetSpeedCommand",
             "priority": 1,  # , Priority, type int
-            "leftSpeed": -1*int(command[1]),  # Left speed value, type int
-            "rightSpeed": -1*int(command[1]),  # Right speed value, type int
+            "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
+            "rightSpeed": -1 * int(command[1]),  # Right speed value, type int
             "receivingPort": config.response_port
         }
     elif command[0] == "stop" or command[0] == "s":
@@ -228,13 +230,50 @@ def parse_command(command):
             "priority": 1,  # , Priority, type int
             "receivingPort": config.response_port
         }
+    elif command[0] == "bladder":
+        if len(command) == 5:
+            return {
+                "id": int(time.time()),
+                "cmd": "BladderCommand",  # Command name
+                "action": command[1],
+                "motor": command[2],
+                "direction": command[3],
+                "dist": command[4],
+                "priority": 1,  # , Priority, type int
+                "receivingPort": 28200
+            }
+        elif len(command) == 3:
+            return {
+                "id": int(time.time()),
+                "cmd": "BladderCommand",  # Command name
+                "action": command[1],  # single, stream
+                "dist": command[2],
+                "priority": 1,  # , Priority, type int
+                "receivingPort": 28200
+            }
+        else:
+            return {
+                "id": int(time.time()),
+                "cmd": "BladderCommand",  # Command name
+                "action": command[1],  # single, stream
+                "priority": 1,  # , Priority, type int
+                "receivingPort": 28200
+            }
     else:
-        log.warning("Command not recognized, please try again")
+        print("Invalid command")
+        return
 
 
+# def s():
+#        sendObject(parse_command('stop'))
+#        receiveResponse('stop', 12346)
+# sendObject(parse_command("motor 0 0"))
+logging.basicConfig(level=logging.DEBUG)
 while True:
-    command = input("Enter command:\n")
-    sendObject(parse_command(command))
     print("\n")
+    command = input("Enter command:\n")
+    parsed = parse_command(command)
+    logging.warning(f"sending {parsed}")
+    sendObject(parsed)
     print(time.time())
     receiveResponse(command, config.response_port)
