@@ -1,13 +1,13 @@
-thread\_manager package
-=======================
+robot.tcp\_manager package
+==========================
 
 Submodules
 ----------
 
-thread\_manager.ThreadManager module
+robot.tcp\_manager.TCPManager module
 ------------------------------------
 
-.. automodule:: thread_manager.ThreadManager
+.. automodule:: robot.tcp_manager.TCPManager
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ thread\_manager.ThreadManager module
 Module contents
 ---------------
 
-.. automodule:: thread_manager
+.. automodule:: robot.tcp_manager
    :members:
    :undoc-members:
    :show-inheritance:
