@@ -1,5 +1,5 @@
 """
-  Constants and variables for use throughout the project.  Includes GPIO pin numbers, IP addresses, hardware addresses, and more. 
+Constants and variables for use throughout the project.  Includes GPIO pin numbers, IP addresses, hardware addresses, and more. 
 """
 
 import logging
@@ -34,37 +34,40 @@ LOG_FILENAME = "{}/hsi.log"  # Always in home directory
 LOGGING_LEVEL = logging.DEBUG  # For detailed logs change this to 'logging.DEBUG'
 NUMBER_OF_AIRCHANNEL_PAIRS = 3  # Number of air-channel pairs or systems.
 TOF_PINS = [13, 26, 27]  # BCM [left middle right]
+
+# Streaming Ports
 REALSENSE_PORT = 1024
 TOF_PORT = 1025
 EXT_CAM_PORT = 1028
 DEFAULT_EXCAM_PORT = 1026
 DEFAULT_INCAM_PORT = 1027
+
 USB_CAM_ID = "/dev/v4l/by-id/usb-HD_Camera_Manufacturer_VGA_USB_Camera_VGA_USB_Camera-video-index0"
 RTSP_COMMAND = "resources/v4l2rtspserver/v4l2rtspserver"
 DISPLAY_IMAGE = None
 
-# bladdermotor 1
+# bladder motor 1
 DIR1_1_PIN = 10
 DIR2_1_PIN = 18
 M1_ADDRESS = 0x5E
 M1_SELECT = 1
 ENC1_1_PIN = 9
 ENC2_1_PIN = 25
-# bladdermotor 2
+# bladder motor 2
 DIR1_2_PIN = 24
 DIR2_2_PIN = 15
 M2_ADDRESS = 0x5E
 M1_SELECT = 0
 ENC1_2_PIN = 17
 ENC2_2_PIN = 18
-# bladdermotor 3
+# bladder motor 3
 DIR1_3_PIN = 0
 DIR2_3_PIN = 22
 M3_ADDRESS = 0xDE
 M1_SELECT = 0
 ENC1_3_PIN = 19
 ENC2_3_PIN = 6
-
+#bladder fan
 FAN_PIN = 21
 BLADDER_SIZE = [160, 160, 160]
 BLADDER_SPEED = 250
