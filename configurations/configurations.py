@@ -148,8 +148,3 @@ def update(k: str, v: str):
     formated = black.format_str(newSource, mode=black.Mode())
     with open(__file__, "w") as f:
         f.write(formated)
-
-
-fileruns = 194
-
-update("fileruns", str(fileruns + 1))
