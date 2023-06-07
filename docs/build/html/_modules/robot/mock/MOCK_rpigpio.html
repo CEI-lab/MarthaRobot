@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>robot.mock.MOCK_rpigpio &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.mock.MOCK_rpigpio</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for robot.mock.MOCK_rpigpio</h1><div class="highlight"><pre>
+<span></span><span class="c1"># IN =</span>
+<span class="c1"># OUT =</span>
+<span class="c1"># SPI =</span>
+<span class="c1"># I2C =</span>
+<span class="c1"># HARD_PWM =</span>
+<span class="c1"># SERIAL =</span>
+<span class="c1"># UNKNOWN =</span>
+
+
+<span class="n">INPUT</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">OUTPUT</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">HIGH</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">LOW</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># common.h</span>
+<span class="n">MODE_UNKNOWN</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">BOARD</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">BCM</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="n">SERIAL</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">SPI</span> <span class="o">=</span> <span class="mi">41</span>
+<span class="n">I2C</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">PWM</span> <span class="o">=</span> <span class="mi">43</span>
+
+<span class="c1"># event_gpio.h</span>
+<span class="n">NO_EDGE</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">RISING_EDGE</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">FALLING_EDGE</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">BOTH_EDGE</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># int add_edge_detect(unsigned int gpio, unsigned int edge, int bouncetime);</span>
+<span class="c1"># void remove_edge_detect(unsigned int gpio);</span>
+<span class="c1"># int add_edge_callback(unsigned int gpio, void (*func)(unsigned int gpio));</span>
+<span class="c1"># int event_detected(unsigned int gpio);</span>
+<span class="c1"># int gpio_event_added(unsigned int gpio);</span>
+<span class="c1"># int event_initialise(void);</span>
+<span class="c1"># void event_cleanup(int gpio);</span>
+<span class="c1"># void event_cleanup_all(void);</span>
+<span class="c1"># int blocking_wait_for_edge(unsigned int gpio, unsigned int edge, int bouncetime, int timeout);</span>
+
+
+<div class="viewcode-block" id="setmode"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.setmode.html#robot.mock.MOCK_rpigpio.setmode">[docs]</a><span class="k">def</span> <span class="nf">setmode</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the mode of this library to select the pin numbering.</span>
+
+<span class="sd">    :param mode: New Mode</span>
+<span class="sd">    :type mode: [BCM,BOARD]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="gpio_function"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.gpio_function.html#robot.mock.MOCK_rpigpio.gpio_function">[docs]</a><span class="k">def</span> <span class="nf">gpio_function</span><span class="p">(</span><span class="n">channel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check what a pin is currently set to (input/output/i2c/serial etc)</span>
+
+<span class="sd">    :param channel: Channel number</span>
+<span class="sd">    :type channel: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="getmode"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.getmode.html#robot.mock.MOCK_rpigpio.getmode">[docs]</a><span class="k">def</span> <span class="nf">getmode</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="setup"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.setup.html#robot.mock.MOCK_rpigpio.setup">[docs]</a><span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Setup a pin to be used as either input or output</span>
+
+<span class="sd">    :param channel: Channel number</span>
+<span class="sd">    :type channel: int</span>
+<span class="sd">    :param mode: The mode to be selected</span>
+<span class="sd">    :type mode: [INPUT,OUTPUT]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="setwarnings"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.setwarnings.html#robot.mock.MOCK_rpigpio.setwarnings">[docs]</a><span class="k">def</span> <span class="nf">setwarnings</span><span class="p">(</span><span class="n">enable</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="input"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.input.html#robot.mock.MOCK_rpigpio.input">[docs]</a><span class="k">def</span> <span class="nf">input</span><span class="p">(</span><span class="n">channel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the current value of a pin works both for input and output pins</span>
+
+<span class="sd">    :param channel: Channel number</span>
+<span class="sd">    :type channel: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="output"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.output.html#robot.mock.MOCK_rpigpio.output">[docs]</a><span class="k">def</span> <span class="nf">output</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the output of a pin</span>
+
+<span class="sd">    :param channel: Channel number</span>
+<span class="sd">    :type channel: int</span>
+<span class="sd">    :param state: Output signal</span>
+<span class="sd">    :type state: [HIGH,LOW]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="cleanup"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.cleanup.html#robot.mock.MOCK_rpigpio.cleanup">[docs]</a><span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stop controlling any pins, and free them up for future/parallel processes.  Can be provided one or many channels.  If no channel is provided defaults to all.</span>
+
+<span class="sd">    :param channel: Channel number</span>
+<span class="sd">    :type channel: [int,int list], optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="PWM"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.PWM.html#robot.mock.MOCK_rpigpio.PWM">[docs]</a><span class="k">class</span> <span class="nc">PWM</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Object to manage PWM on a specific pin.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">frequency</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor.  Creates a PWM object.</span>
+
+<span class="sd">        :param channel: channel to output on</span>
+<span class="sd">        :type channel: int</span>
+<span class="sd">        :param frequency: PWM frequency</span>
+<span class="sd">        :type frequency: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="PWM.start"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.PWM.html#robot.mock.MOCK_rpigpio.PWM.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duty</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start PWM with a set duty cycle</span>
+
+<span class="sd">        :param duty: duty cycle (0-100)</span>
+<span class="sd">        :type duty: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="PWM.ChangeFrequency"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.PWM.html#robot.mock.MOCK_rpigpio.PWM.ChangeFrequency">[docs]</a>    <span class="k">def</span> <span class="nf">ChangeFrequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Change the frequency of PWM</span>
+
+<span class="sd">        :param freq: New frequency</span>
+<span class="sd">        :type freq: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="PWM.ChangeDutyCycle"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.PWM.html#robot.mock.MOCK_rpigpio.PWM.ChangeDutyCycle">[docs]</a>    <span class="k">def</span> <span class="nf">ChangeDutyCycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duty</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;CHange the duty cycle of PWM</span>
+
+<span class="sd">        :param duty: New duty cycle</span>
+<span class="sd">        :type duty: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="PWM.stop"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.PWM.html#robot.mock.MOCK_rpigpio.PWM.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop performing PWM on this pin&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="set_rising_event"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.set_rising_event.html#robot.mock.MOCK_rpigpio.set_rising_event">[docs]</a><span class="k">def</span> <span class="nf">set_rising_event</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="set_falling_event"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.set_falling_event.html#robot.mock.MOCK_rpigpio.set_falling_event">[docs]</a><span class="k">def</span> <span class="nf">set_falling_event</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="set_high_event"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.set_high_event.html#robot.mock.MOCK_rpigpio.set_high_event">[docs]</a><span class="k">def</span> <span class="nf">set_high_event</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="set_low_event"><a class="viewcode-back" href="../../../_autosummary/robot.mock.MOCK_rpigpio.set_low_event.html#robot.mock.MOCK_rpigpio.set_low_event">[docs]</a><span class="k">def</span> <span class="nf">set_low_event</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.mock.MOCK_rpigpio</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

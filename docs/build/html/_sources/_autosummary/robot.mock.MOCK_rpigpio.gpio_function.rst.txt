@@ -1,0 +1,6 @@
+robot.mock.MOCK\_rpigpio.gpio\_function
+=======================================
+
+.. currentmodule:: robot.mock.MOCK_rpigpio
+
+.. autofunction:: gpio_function

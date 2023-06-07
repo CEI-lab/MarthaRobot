@@ -1,0 +1,6 @@
+robot.mock.MOCK\_rpigpio.getmode
+================================
+
+.. currentmodule:: robot.mock.MOCK_rpigpio
+
+.. autofunction:: getmode

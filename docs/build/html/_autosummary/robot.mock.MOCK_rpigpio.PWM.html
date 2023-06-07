@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PWM &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="resources" href="robot.resources.html" />
+    <link rel="prev" title="robot.mock.MOCK_rpigpio.setwarnings" href="robot.mock.MOCK_rpigpio.setwarnings.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.resources.html" title="resources"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="robot.mock.MOCK_rpigpio.setwarnings.html" title="robot.mock.MOCK_rpigpio.setwarnings"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.mock.html" >mock</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.mock.MOCK_rpigpio.html" accesskey="U">MOCK_rpigpio</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PWM</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="pwm">
+<h1>PWM<a class="headerlink" href="#pwm" title="Permalink to this heading">¶</a></h1>
+<p>robot.mock.MOCK_rpigpio.PWM</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="robot.mock.MOCK_rpigpio.PWM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PWM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/mock/MOCK_rpigpio.html#PWM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.mock.MOCK_rpigpio.PWM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Object to manage PWM on a specific pin.</p>
+<p>Constructor.  Creates a PWM object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> (<em>int</em>) – channel to output on</p></li>
+<li><p><strong>frequency</strong> (<em>float</em>) – PWM frequency</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.mock.MOCK_rpigpio.PWM.ChangeDutyCycle" title="robot.mock.MOCK_rpigpio.PWM.ChangeDutyCycle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChangeDutyCycle</span></code></a></p></td>
+<td><p>CHange the duty cycle of PWM</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.mock.MOCK_rpigpio.PWM.ChangeFrequency" title="robot.mock.MOCK_rpigpio.PWM.ChangeFrequency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChangeFrequency</span></code></a></p></td>
+<td><p>Change the frequency of PWM</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.mock.MOCK_rpigpio.PWM.start" title="robot.mock.MOCK_rpigpio.PWM.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a></p></td>
+<td><p>Start PWM with a set duty cycle</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.mock.MOCK_rpigpio.PWM.stop" title="robot.mock.MOCK_rpigpio.PWM.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a></p></td>
+<td><p>Stop performing PWM on this pin</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.mock.MOCK_rpigpio.PWM.ChangeDutyCycle">
+<span class="sig-name descname"><span class="pre">ChangeDutyCycle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duty</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/mock/MOCK_rpigpio.html#PWM.ChangeDutyCycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.mock.MOCK_rpigpio.PWM.ChangeDutyCycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>CHange the duty cycle of PWM</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>duty</strong> (<em>int</em>) – New duty cycle</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.mock.MOCK_rpigpio.PWM.ChangeFrequency">
+<span class="sig-name descname"><span class="pre">ChangeFrequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/mock/MOCK_rpigpio.html#PWM.ChangeFrequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.mock.MOCK_rpigpio.PWM.ChangeFrequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the frequency of PWM</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>freq</strong> (<em>float</em>) – New frequency</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.mock.MOCK_rpigpio.PWM.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duty</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/mock/MOCK_rpigpio.html#PWM.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.mock.MOCK_rpigpio.PWM.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start PWM with a set duty cycle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>duty</strong> (<em>int</em>) – duty cycle (0-100)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.mock.MOCK_rpigpio.PWM.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/mock/MOCK_rpigpio.html#PWM.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.mock.MOCK_rpigpio.PWM.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop performing PWM on this pin</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">PWM</a><ul>
+<li><a class="reference internal" href="#robot.mock.MOCK_rpigpio.PWM"><code class="docutils literal notranslate"><span class="pre">PWM</span></code></a><ul>
+<li><a class="reference internal" href="#robot.mock.MOCK_rpigpio.PWM.ChangeDutyCycle"><code class="docutils literal notranslate"><span class="pre">PWM.ChangeDutyCycle()</span></code></a></li>
+<li><a class="reference internal" href="#robot.mock.MOCK_rpigpio.PWM.ChangeFrequency"><code class="docutils literal notranslate"><span class="pre">PWM.ChangeFrequency()</span></code></a></li>
+<li><a class="reference internal" href="#robot.mock.MOCK_rpigpio.PWM.start"><code class="docutils literal notranslate"><span class="pre">PWM.start()</span></code></a></li>
+<li><a class="reference internal" href="#robot.mock.MOCK_rpigpio.PWM.stop"><code class="docutils literal notranslate"><span class="pre">PWM.stop()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="robot.mock.MOCK_rpigpio.setwarnings.html"
+                          title="previous chapter">robot.mock.MOCK_rpigpio.setwarnings</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="robot.resources.html"
+                          title="next chapter">resources</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.resources.html" title="resources"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="robot.mock.MOCK_rpigpio.setwarnings.html" title="robot.mock.MOCK_rpigpio.setwarnings"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.mock.html" >mock</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.mock.MOCK_rpigpio.html" >MOCK_rpigpio</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PWM</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+MOCK\_rpigpio
+=============
+
+robot.mock.MOCK_rpigpio
+
+
+
+
+.. automodule:: robot.mock.MOCK_rpigpio
+
+
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      cleanup
+      getmode
+      gpio_function
+      input
+      output
+      set_falling_event
+      set_high_event
+      set_low_event
+      set_rising_event
+      setmode
+      setup
+      setwarnings
+   
+   
+
+   
+    
+   
+
+    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      PWM
+   
+   
+
+   
+   
+   
+
+
+

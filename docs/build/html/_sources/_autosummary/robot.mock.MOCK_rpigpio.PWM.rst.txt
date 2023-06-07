@@ -1,0 +1,30 @@
+PWM
+===
+
+robot.mock.MOCK_rpigpio.PWM
+
+.. currentmodule:: robot.mock.MOCK_rpigpio
+
+.. autoclass:: PWM
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~PWM.ChangeDutyCycle
+      ~PWM.ChangeFrequency
+      ~PWM.start
+      ~PWM.stop
+   
+   
+
+   
+   
+   

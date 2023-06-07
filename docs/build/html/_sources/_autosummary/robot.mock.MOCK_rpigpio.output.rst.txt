@@ -1,0 +1,6 @@
+robot.mock.MOCK\_rpigpio.output
+===============================
+
+.. currentmodule:: robot.mock.MOCK_rpigpio
+
+.. autofunction:: output
