@@ -1,3 +1,7 @@
+"""
+TODO add docstrings to functions / attributes 
+"""
+
 # IN =
 # OUT =
 # SPI =

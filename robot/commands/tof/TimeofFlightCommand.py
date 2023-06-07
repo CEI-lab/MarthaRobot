@@ -12,7 +12,13 @@ import robot.configurations as config
 
 # import VL53L0X
 import adafruit_vl53l0x as VL53L0X
-import RPi.GPIO as GPIO
+
+try:
+    import RPi.GPIO as GPIO
+except:
+    logging.warning("Could not import RPi.GPIO, importing MOCK module instead")
+    from robot.mock import MOCK_rpigpio as GPIO
+
 from robot.commands.tof import TimeofFlightServer
 import asyncore
 
