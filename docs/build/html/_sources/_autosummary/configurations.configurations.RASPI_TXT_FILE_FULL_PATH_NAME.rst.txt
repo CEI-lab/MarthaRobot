@@ -1,0 +1,16 @@
+RASPI\_TXT\_FILE\_FULL\_PATH\_NAME
+==================================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪RASPI_TXT_FILE_FULL_PATH_NAME
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.RASPI_TXT_FILE_FULL_PATH_NAME
+   :no-value:
+   

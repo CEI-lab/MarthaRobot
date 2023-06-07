@@ -1,0 +1,47 @@
+get\_mag
+========
+
+robot.commands.imu.get_mag
+
+
+
+
+.. automodule:: robot.commands.imu.get_mag
+
+
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      check_data_ready
+      compensate_x
+      compensate_y
+      compensate_z
+      configure_bmi150
+      fuse_bits
+      read_mag_frame
+      read_trim_registers
+      twos_complement
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+

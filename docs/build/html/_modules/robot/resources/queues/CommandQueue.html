@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>robot.resources.queues.CommandQueue &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.resources.queues.CommandQueue</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for robot.resources.queues.CommandQueue</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">robot.resources.queues.QueueInterface</span> <span class="kn">import</span> <span class="n">QueueInterface</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interface to declare the format to be used by all the queues.</span>
+
+<span class="sd">CEI-LAB, Cornell University 2019</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="CommandQueue"><a class="viewcode-back" href="../../../../_autosummary/robot.resources.queues.CommandQueue.CommandQueue.html#robot.resources.queues.CommandQueue.CommandQueue">[docs]</a><span class="k">class</span> <span class="nc">CommandQueue</span><span class="p">(</span><span class="n">QueueInterface</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    A singleton queue to hold commands.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        This method ensures the CommandQueue is singelton.</span>
+
+
+<span class="sd">        :return: An singleton instance of CommandQueue</span>
+<span class="sd">        :rtype: :class:`robot.resources.queues.CommandQueue.CommandQueue`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">CommandQueue</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method will create a new queue in singelton.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+
+        <span class="c1"># queue_object.queue will return copy of your queue in a deque object which you can then use the slices of.</span>
+        <span class="c1"># which is not synchronized with the original queue, but will allow you to peek at the queue at the time of the</span>
+        <span class="c1"># copy.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_dque</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_queue</span><span class="o">.</span><span class="n">queue</span>
+
+<div class="viewcode-block" id="CommandQueue.enqueue"><a class="viewcode-back" href="../../../../_autosummary/robot.resources.queues.CommandQueue.CommandQueue.html#robot.resources.queues.CommandQueue.CommandQueue.enqueue">[docs]</a>    <span class="k">def</span> <span class="nf">enqueue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valueObject</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method will be called to add the passed object in the queue.</span>
+
+
+<span class="sd">        :param valueObject: Object to be added in the queue.</span>
+<span class="sd">        :type valueObject:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">valueObject</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandQueue.dequeue"><a class="viewcode-back" href="../../../../_autosummary/robot.resources.queues.CommandQueue.CommandQueue.html#robot.resources.queues.CommandQueue.CommandQueue.dequeue">[docs]</a>    <span class="k">def</span> <span class="nf">dequeue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method will be called to get the first element in the queue.</span>
+
+
+<span class="sd">        :return: Next command in queue. None if queue is empty.</span>
+<span class="sd">        :rtype:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;CommandQueue : Dequeuing attempt from an empty queue&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="CommandQueue.remove"><a class="viewcode-back" href="../../../../_autosummary/robot.resources.queues.CommandQueue.CommandQueue.html#robot.resources.queues.CommandQueue.CommandQueue.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyString</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove commands with the key equals to keyString.</span>
+
+<span class="sd">        TODO Seems to not be in use, and docstring is not clear</span>
+
+<span class="sd">        :param keyString: keyString for comparing each key in every dictionary.</span>
+
+<span class="sd">        :type keyString: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">queue_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_dque</span><span class="p">[</span><span class="n">queue_index</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">keyString</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">my_dque</span><span class="p">[</span><span class="n">queue_index</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CommandQueue.size"><a class="viewcode-back" href="../../../../_autosummary/robot.resources.queues.CommandQueue.CommandQueue.html#robot.resources.queues.CommandQueue.CommandQueue.size">[docs]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method will return the size of the queue even with empty dictionaries.</span>
+
+
+<span class="sd">        :return: size of queue</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CommandQueue.realSize"><a class="viewcode-back" href="../../../../_autosummary/robot.resources.queues.CommandQueue.CommandQueue.html#robot.resources.queues.CommandQueue.CommandQueue.realSize">[docs]</a>    <span class="k">def</span> <span class="nf">realSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ONLY FOR THE UNITTEST</span>
+<span class="sd">        This method will return the real size of the queue.</span>
+<span class="sd">        For instacne, an empty dictionary wouldn&#39;t considered a part of the queue.</span>
+
+<span class="sd">        :return: size of queue</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tmp_realSize</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">queue_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_dque</span><span class="p">[</span><span class="n">queue_index</span><span class="p">]</span> <span class="o">!=</span> <span class="p">{}:</span>
+                <span class="n">tmp_realSize</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">tmp_realSize</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.resources.queues.CommandQueue</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

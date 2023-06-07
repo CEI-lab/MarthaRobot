@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DEFAULT_RECEIVING_PORT &mdash; MarthaRobot  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/wrap_auto_summary.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS" href="configurations.configurations.NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS.html" />
+    <link rel="prev" title="TCP_ENCODING" href="configurations.configurations.TCP_ENCODING.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MarthaRobot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home page</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="configurations.configurations.html">configurations</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="configurations.configurations.html#module-attributes">Module Attributes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.IMAGES_DIRECTORY.html">IMAGES_DIRECTORY</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.IMAGES_DIRECTORY.html#configurations.configurations.IMAGES_DIRECTORY"><code class="docutils literal notranslate"><span class="pre">IMAGES_DIRECTORY</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.SHOW_DEFAULT_IMAGE.html">SHOW_DEFAULT_IMAGE</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.SHOW_DEFAULT_IMAGE.html#configurations.configurations.SHOW_DEFAULT_IMAGE"><code class="docutils literal notranslate"><span class="pre">SHOW_DEFAULT_IMAGE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.DEFAULT_IMAGE_ON_STARTUP.html">DEFAULT_IMAGE_ON_STARTUP</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.DEFAULT_IMAGE_ON_STARTUP.html#configurations.configurations.DEFAULT_IMAGE_ON_STARTUP"><code class="docutils literal notranslate"><span class="pre">DEFAULT_IMAGE_ON_STARTUP</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.DISPLAY_IMAGE.html">DISPLAY_IMAGE</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.DISPLAY_IMAGE.html#configurations.configurations.DISPLAY_IMAGE"><code class="docutils literal notranslate"><span class="pre">DISPLAY_IMAGE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.TCP_PORT.html">TCP_PORT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.TCP_PORT.html#configurations.configurations.TCP_PORT"><code class="docutils literal notranslate"><span class="pre">TCP_PORT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.TCP_ENCODING.html">TCP_ENCODING</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.TCP_ENCODING.html#configurations.configurations.TCP_ENCODING"><code class="docutils literal notranslate"><span class="pre">TCP_ENCODING</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">DEFAULT_RECEIVING_PORT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configurations.configurations.DEFAULT_RECEIVING_PORT"><code class="docutils literal notranslate"><span class="pre">DEFAULT_RECEIVING_PORT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS.html">NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS.html#configurations.configurations.NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS"><code class="docutils literal notranslate"><span class="pre">NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.MAX_BYTES_OVER_TCP.html">MAX_BYTES_OVER_TCP</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.MAX_BYTES_OVER_TCP.html#configurations.configurations.MAX_BYTES_OVER_TCP"><code class="docutils literal notranslate"><span class="pre">MAX_BYTES_OVER_TCP</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.RASPI_IP_ADDRESS.html">RASPI_IP_ADDRESS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.RASPI_IP_ADDRESS.html#configurations.configurations.RASPI_IP_ADDRESS"><code class="docutils literal notranslate"><span class="pre">RASPI_IP_ADDRESS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.LOOP_BACK_IP_ADDRESS.html">LOOP_BACK_IP_ADDRESS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.LOOP_BACK_IP_ADDRESS.html#configurations.configurations.LOOP_BACK_IP_ADDRESS"><code class="docutils literal notranslate"><span class="pre">LOOP_BACK_IP_ADDRESS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.CHECK_NEW_IP_FROM_PI_FREQUENCY.html">CHECK_NEW_IP_FROM_PI_FREQUENCY</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.CHECK_NEW_IP_FROM_PI_FREQUENCY.html#configurations.configurations.CHECK_NEW_IP_FROM_PI_FREQUENCY"><code class="docutils literal notranslate"><span class="pre">CHECK_NEW_IP_FROM_PI_FREQUENCY</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.RASPI_TXT_FILE_FULL_PATH_NAME.html">RASPI_TXT_FILE_FULL_PATH_NAME</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.RASPI_TXT_FILE_FULL_PATH_NAME.html#configurations.configurations.RASPI_TXT_FILE_FULL_PATH_NAME"><code class="docutils literal notranslate"><span class="pre">RASPI_TXT_FILE_FULL_PATH_NAME</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.SENDING_IP_ADDRESS_TO_PI_COMMAND.html">SENDING_IP_ADDRESS_TO_PI_COMMAND</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.SENDING_IP_ADDRESS_TO_PI_COMMAND.html#configurations.configurations.SENDING_IP_ADDRESS_TO_PI_COMMAND"><code class="docutils literal notranslate"><span class="pre">SENDING_IP_ADDRESS_TO_PI_COMMAND</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.SPEED_CONTROLLER_COMMAND.html">SPEED_CONTROLLER_COMMAND</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.SPEED_CONTROLLER_COMMAND.html#configurations.configurations.SPEED_CONTROLLER_COMMAND"><code class="docutils literal notranslate"><span class="pre">SPEED_CONTROLLER_COMMAND</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID.html">LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID.html#configurations.configurations.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"><code class="docutils literal notranslate"><span class="pre">LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID.html">RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID.html#configurations.configurations.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"><code class="docutils literal notranslate"><span class="pre">RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.FAN_PIN.html">FAN_PIN</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.FAN_PIN.html#configurations.configurations.FAN_PIN"><code class="docutils literal notranslate"><span class="pre">FAN_PIN</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.BLADDER_SIZE.html">BLADDER_SIZE</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.BLADDER_SIZE.html#configurations.configurations.BLADDER_SIZE"><code class="docutils literal notranslate"><span class="pre">BLADDER_SIZE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.BLADDER_SPEED.html">BLADDER_SPEED</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.BLADDER_SPEED.html#configurations.configurations.BLADDER_SPEED"><code class="docutils literal notranslate"><span class="pre">BLADDER_SPEED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.HOST.html">HOST</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.HOST.html#configurations.configurations.HOST"><code class="docutils literal notranslate"><span class="pre">HOST</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.COMMAND_PORT.html">COMMAND_PORT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.COMMAND_PORT.html#configurations.configurations.COMMAND_PORT"><code class="docutils literal notranslate"><span class="pre">COMMAND_PORT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.BYTES_PER_PACKET.html">BYTES_PER_PACKET</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.BYTES_PER_PACKET.html#configurations.configurations.BYTES_PER_PACKET"><code class="docutils literal notranslate"><span class="pre">BYTES_PER_PACKET</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.RESPONSE_PORT.html">RESPONSE_PORT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.RESPONSE_PORT.html#configurations.configurations.RESPONSE_PORT"><code class="docutils literal notranslate"><span class="pre">RESPONSE_PORT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="configurations.configurations.update.html">configurations.configurations.update</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="configurations.configurations.update.html#configurations.configurations.update"><code class="docutils literal notranslate"><span class="pre">update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client.Client.html">Client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="client.Client.exit_handler.html">client.Client.exit_handler</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.Client.exit_handler.html#client.Client.exit_handler"><code class="docutils literal notranslate"><span class="pre">exit_handler()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.Client.parse_command.html">client.Client.parse_command</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.Client.parse_command.html#client.Client.parse_command"><code class="docutils literal notranslate"><span class="pre">parse_command()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.Client.receiveResponse.html">client.Client.receiveResponse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.Client.receiveResponse.html#client.Client.receiveResponse"><code class="docutils literal notranslate"><span class="pre">receiveResponse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.Client.sendAgainAndAgain.html">client.Client.sendAgainAndAgain</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.Client.sendAgainAndAgain.html#client.Client.sendAgainAndAgain"><code class="docutils literal notranslate"><span class="pre">sendAgainAndAgain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.Client.sendObject.html">client.Client.sendObject</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.Client.sendObject.html#client.Client.sendObject"><code class="docutils literal notranslate"><span class="pre">sendObject()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client.Configurations.html">Configurations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="client.Configurations.update.html">client.Configurations.update</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.Configurations.update.html#client.Configurations.update"><code class="docutils literal notranslate"><span class="pre">update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client.streaming_client.html">streaming_client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="client.streaming_client.main.html">client.streaming_client.main</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.streaming_client.main.html#client.streaming_client.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.streaming_client.multi_cast_message.html">client.streaming_client.multi_cast_message</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.streaming_client.multi_cast_message.html#client.streaming_client.multi_cast_message"><code class="docutils literal notranslate"><span class="pre">multi_cast_message()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.streaming_client.ExtStreamingClient.html">ExtStreamingClient</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.streaming_client.ExtStreamingClient.html#client.streaming_client.ExtStreamingClient"><code class="docutils literal notranslate"><span class="pre">ExtStreamingClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.streaming_client.ImageClient.html">ImageClient</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.streaming_client.ImageClient.html#client.streaming_client.ImageClient"><code class="docutils literal notranslate"><span class="pre">ImageClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.streaming_client.RSStreamingClient.html">RSStreamingClient</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.streaming_client.RSStreamingClient.html#client.streaming_client.RSStreamingClient"><code class="docutils literal notranslate"><span class="pre">RSStreamingClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.streaming_client.TOFStreamingClient.html">TOFStreamingClient</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.streaming_client.TOFStreamingClient.html#client.streaming_client.TOFStreamingClient"><code class="docutils literal notranslate"><span class="pre">TOFStreamingClient</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="robot.html">robot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="robot.HSIMaster.html">HSIMaster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robot.HSIMaster.HSIMaster.html">HSIMaster</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.HSIMaster.HSIMaster.html#robot.HSIMaster.HSIMaster"><code class="docutils literal notranslate"><span class="pre">HSIMaster</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robot.calibrate_cam.html">calibrate_cam</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robot.commands.html">commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.CommandExecuter.html">CommandExecuter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.CommandExecuter.CommandExecuter.html">CommandExecuter</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.CommandInterface.html">CommandInterface</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.CommandInterface.CommandInterface.html">CommandInterface</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.CommandRegistry.html">CommandRegistry</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.CommandRegistry.CommandRegistry.html">CommandRegistry</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.bladder.html">bladder</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.bladder.BladderCommand.html">BladderCommand</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.bladder.bladder_motor.html">bladder_motor</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.external_camera.html">external_camera</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.external_camera.ExtCamServer.html">ExtCamServer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.external_camera.ExternalCameraCommand.html">ExternalCameraCommand</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.hello.html">hello</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.hello.PrintHelloCommand.html">PrintHelloCommand</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.image.html">image</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.image.ImageCommand.html">ImageCommand</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.image_names.html">image_names</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.image_names.GetImagesNamesCommand.html">GetImagesNamesCommand</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.imu.html">imu</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.imu.ReadIMUCommand.html">ReadIMUCommand</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.imu.bmi150_regmap.html">bmi150_regmap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.imu.bmi160_regmap.html">bmi160_regmap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.imu.get_imu.html">get_imu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.imu.get_mag.html">get_mag</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.internal_camera.html">internal_camera</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.internal_camera.InternalCameraCommand.html">InternalCameraCommand</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.realsense.html">realsense</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.realsense.RealSenseCommand.html">RealSenseCommand</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.realsense.RealSenseServer.html">RealSenseServer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.set_speed.html">set_speed</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.set_speed.SetSpeedCommand.html">SetSpeedCommand</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.set_speed.SpeedController.html">SpeedController</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.sleep.html">sleep</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.sleep.SleepTwentySecsCommand.html">SleepTwentySecsCommand</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.commands.tof.html">tof</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.tof.TimeofFlightCommand.html">TimeofFlightCommand</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.commands.tof.TimeofFlightServer.html">TimeofFlightServer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robot.configurations.html">configurations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robot.configurations.update.html">robot.configurations.update</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.configurations.update.html#robot.configurations.update"><code class="docutils literal notranslate"><span class="pre">update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robot.mock.html">mock</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robot.mock.MOCK_rpigpio.html">MOCK_rpigpio</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.cleanup.html">robot.mock.MOCK_rpigpio.cleanup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.getmode.html">robot.mock.MOCK_rpigpio.getmode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.gpio_function.html">robot.mock.MOCK_rpigpio.gpio_function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.input.html">robot.mock.MOCK_rpigpio.input</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.output.html">robot.mock.MOCK_rpigpio.output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.set_falling_event.html">robot.mock.MOCK_rpigpio.set_falling_event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.set_high_event.html">robot.mock.MOCK_rpigpio.set_high_event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.set_low_event.html">robot.mock.MOCK_rpigpio.set_low_event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.set_rising_event.html">robot.mock.MOCK_rpigpio.set_rising_event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.setmode.html">robot.mock.MOCK_rpigpio.setmode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.setup.html">robot.mock.MOCK_rpigpio.setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.setwarnings.html">robot.mock.MOCK_rpigpio.setwarnings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.mock.MOCK_rpigpio.PWM.html">PWM</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robot.resources.html">resources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robot.resources.classes.html">classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.resources.classes.ComparableDict.html">ComparableDict</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="robot.resources.queues.html">queues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.resources.queues.CommandQueue.html">CommandQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.resources.queues.QueueInterface.html">QueueInterface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.resources.queues.StatusQueue.html">StatusQueue</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robot.tcp_manager.html">tcp_manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robot.tcp_manager.TCPManager.html">TCPManager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.tcp_manager.TCPManager.TCPManager.html">TCPManager</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="robot.thread_manager.html">thread_manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="robot.thread_manager.ThreadManager.html">ThreadManager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="robot.thread_manager.ThreadManager.OnetimeThread.html">OnetimeThread</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.thread_manager.ThreadManager.PeriodicThread.html">PeriodicThread</a></li>
+<li class="toctree-l4"><a class="reference internal" href="robot.thread_manager.ThreadManager.ThreadManager.html">ThreadManager</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MarthaRobot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../configurations.html">&lt;no title&gt;</a></li>
+          <li class="breadcrumb-item"><a href="configurations.configurations.html">configurations</a></li>
+      <li class="breadcrumb-item active">DEFAULT_RECEIVING_PORT</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/configurations.configurations.DEFAULT_RECEIVING_PORT.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="default-receiving-port">
+<h1>DEFAULT_RECEIVING_PORT<a class="headerlink" href="#default-receiving-port" title="Permalink to this heading"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py" id="configurations.configurations.DEFAULT_RECEIVING_PORT">
+<span class="sig-name descname"><span class="pre">DEFAULT_RECEIVING_PORT</span></span><a class="headerlink" href="#configurations.configurations.DEFAULT_RECEIVING_PORT" title="Permalink to this definition"></a></dt>
+<dd><p>Port to send TCP messages from rover -&gt; computer</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="configurations.configurations.TCP_ENCODING.html" class="btn btn-neutral float-left" title="TCP_ENCODING" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="configurations.configurations.NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS.html" class="btn btn-neutral float-right" title="NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, CEI-Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

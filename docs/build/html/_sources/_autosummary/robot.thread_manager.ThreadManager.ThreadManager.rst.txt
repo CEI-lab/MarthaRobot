@@ -1,0 +1,54 @@
+ThreadManager
+=============
+
+robot.thread_manager.ThreadManager.ThreadManager
+
+.. currentmodule:: robot.thread_manager.ThreadManager
+
+.. autoclass:: ThreadManager
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ThreadManager.getName
+      ~ThreadManager.isAlive
+      ~ThreadManager.isDaemon
+      ~ThreadManager.is_alive
+      ~ThreadManager.join
+      ~ThreadManager.join_all
+      ~ThreadManager.join_by_name
+      ~ThreadManager.new_onetime
+      ~ThreadManager.new_periodic
+      ~ThreadManager.resume_periodic_thread
+      ~ThreadManager.run
+      ~ThreadManager.run_while_active
+      ~ThreadManager.setDaemon
+      ~ThreadManager.setName
+      ~ThreadManager.set_monitor_debug_frequency
+      ~ThreadManager.start
+      ~ThreadManager.start_all
+      ~ThreadManager.start_by_name
+      ~ThreadManager.stop_periodic_thread
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ThreadManager.daemon
+      ~ThreadManager.ident
+      ~ThreadManager.name
+      ~ThreadManager.native_id
+   
+   

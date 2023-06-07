@@ -1,0 +1,6 @@
+configurations.configurations.update
+====================================
+
+.. currentmodule:: configurations.configurations
+
+.. autofunction:: update

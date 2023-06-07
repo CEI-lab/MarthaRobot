@@ -1,0 +1,6 @@
+robot.commands.realsense.RealSenseServer.openPipeline
+=====================================================
+
+.. currentmodule:: robot.commands.realsense.RealSenseServer
+
+.. autofunction:: openPipeline

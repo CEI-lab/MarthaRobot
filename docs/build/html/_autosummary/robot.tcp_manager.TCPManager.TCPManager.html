@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>TCPManager &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="thread_manager" href="robot.thread_manager.html" />
+    <link rel="prev" title="TCPManager" href="robot.tcp_manager.TCPManager.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.thread_manager.html" title="thread_manager"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="robot.tcp_manager.TCPManager.html" title="TCPManager"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.tcp_manager.html" >tcp_manager</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.tcp_manager.TCPManager.html" accesskey="U">TCPManager</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">TCPManager</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="tcpmanager">
+<h1>TCPManager<a class="headerlink" href="#tcpmanager" title="Permalink to this heading">¶</a></h1>
+<p>robot.tcp_manager.TCPManager.TCPManager</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="robot.tcp_manager.TCPManager.TCPManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TCPManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command_queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/tcp_manager/TCPManager.html#TCPManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.tcp_manager.TCPManager.TCPManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This method will create the module TCPManager.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Inputs:</dt><dd><p>None.</p>
+</dd>
+<dt>Outputs:        </dt><dd><p>None.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.tcp_manager.TCPManager.TCPManager.checkForNewIP" title="robot.tcp_manager.TCPManager.TCPManager.checkForNewIP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">checkForNewIP</span></code></a></p></td>
+<td><p>This method will check if the host has changed the IP address or not.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.tcp_manager.TCPManager.TCPManager.checkForStatus" title="robot.tcp_manager.TCPManager.TCPManager.checkForStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">checkForStatus</span></code></a></p></td>
+<td><p>This method will check if the status queue is empty or not and send status over.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.tcp_manager.TCPManager.TCPManager.listenTCP" title="robot.tcp_manager.TCPManager.TCPManager.listenTCP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listenTCP</span></code></a></p></td>
+<td><p>This method will be keep listening to the input data, parse it and enqueue to the command queue.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.tcp_manager.TCPManager.TCPManager.sendOverTCP" title="robot.tcp_manager.TCPManager.TCPManager.sendOverTCP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sendOverTCP</span></code></a></p></td>
+<td><p>This method will send the execute status to the sender side.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.tcp_manager.TCPManager.TCPManager.checkForNewIP">
+<span class="sig-name descname"><span class="pre">checkForNewIP</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/tcp_manager/TCPManager.html#TCPManager.checkForNewIP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.tcp_manager.TCPManager.TCPManager.checkForNewIP" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will check if the host has changed the IP address or not.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Inputs:</dt><dd><p>None.</p>
+</dd>
+<dt>Outputs:</dt><dd><p>None.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.tcp_manager.TCPManager.TCPManager.checkForStatus">
+<span class="sig-name descname"><span class="pre">checkForStatus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/tcp_manager/TCPManager.html#TCPManager.checkForStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.tcp_manager.TCPManager.TCPManager.checkForStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will check if the status queue is empty or not and send status over.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Inputs:</dt><dd><p>None.</p>
+</dd>
+<dt>Outputs:        </dt><dd><p>None.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.tcp_manager.TCPManager.TCPManager.listenTCP">
+<span class="sig-name descname"><span class="pre">listenTCP</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/tcp_manager/TCPManager.html#TCPManager.listenTCP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.tcp_manager.TCPManager.TCPManager.listenTCP" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be keep listening to the input data, parse it and enqueue to the command queue.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Inputs:</dt><dd><p>None.</p>
+</dd>
+<dt>Outputs:        </dt><dd><p>None</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.tcp_manager.TCPManager.TCPManager.sendOverTCP">
+<span class="sig-name descname"><span class="pre">sendOverTCP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valueObject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/tcp_manager/TCPManager.html#TCPManager.sendOverTCP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.tcp_manager.TCPManager.TCPManager.sendOverTCP" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will send the execute status to the sender side.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Inputs:</dt><dd><p>ValueObject that indicate whether the execute status is successful or not.</p>
+</dd>
+<dt>Outputs:        </dt><dd><p>None.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">TCPManager</a><ul>
+<li><a class="reference internal" href="#robot.tcp_manager.TCPManager.TCPManager"><code class="docutils literal notranslate"><span class="pre">TCPManager</span></code></a><ul>
+<li><a class="reference internal" href="#robot.tcp_manager.TCPManager.TCPManager.checkForNewIP"><code class="docutils literal notranslate"><span class="pre">TCPManager.checkForNewIP()</span></code></a></li>
+<li><a class="reference internal" href="#robot.tcp_manager.TCPManager.TCPManager.checkForStatus"><code class="docutils literal notranslate"><span class="pre">TCPManager.checkForStatus()</span></code></a></li>
+<li><a class="reference internal" href="#robot.tcp_manager.TCPManager.TCPManager.listenTCP"><code class="docutils literal notranslate"><span class="pre">TCPManager.listenTCP()</span></code></a></li>
+<li><a class="reference internal" href="#robot.tcp_manager.TCPManager.TCPManager.sendOverTCP"><code class="docutils literal notranslate"><span class="pre">TCPManager.sendOverTCP()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="robot.tcp_manager.TCPManager.html"
+                          title="previous chapter">TCPManager</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="robot.thread_manager.html"
+                          title="next chapter">thread_manager</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.thread_manager.html" title="thread_manager"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="robot.tcp_manager.TCPManager.html" title="TCPManager"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.tcp_manager.html" >tcp_manager</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.tcp_manager.TCPManager.html" >TCPManager</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">TCPManager</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

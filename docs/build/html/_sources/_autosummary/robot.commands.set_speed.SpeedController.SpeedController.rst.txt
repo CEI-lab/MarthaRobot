@@ -1,0 +1,31 @@
+SpeedController
+===============
+
+robot.commands.set_speed.SpeedController.SpeedController
+
+.. currentmodule:: robot.commands.set_speed.SpeedController
+
+.. autoclass:: SpeedController
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~SpeedController.brake
+      ~SpeedController.get_speed
+      ~SpeedController.resume
+      ~SpeedController.set_speed
+      ~SpeedController.stop
+   
+   
+
+   
+   
+   

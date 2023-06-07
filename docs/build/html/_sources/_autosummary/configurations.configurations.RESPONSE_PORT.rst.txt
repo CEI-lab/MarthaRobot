@@ -1,0 +1,16 @@
+RESPONSE\_PORT
+==============
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪RESPONSE_PORT
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.RESPONSE_PORT
+   :no-value:
+   

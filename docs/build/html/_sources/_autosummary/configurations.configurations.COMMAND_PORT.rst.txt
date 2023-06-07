@@ -1,0 +1,16 @@
+COMMAND\_PORT
+=============
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪COMMAND_PORT
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.COMMAND_PORT
+   :no-value:
+   

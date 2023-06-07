@@ -1,0 +1,6 @@
+robot.commands.imu.get\_mag.twos\_complement
+============================================
+
+.. currentmodule:: robot.commands.imu.get_mag
+
+.. autofunction:: twos_complement

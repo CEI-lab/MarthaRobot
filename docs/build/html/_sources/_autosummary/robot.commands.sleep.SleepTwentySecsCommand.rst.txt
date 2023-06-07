@@ -1,0 +1,42 @@
+SleepTwentySecsCommand
+======================
+
+robot.commands.sleep.SleepTwentySecsCommand
+
+
+
+
+.. automodule:: robot.commands.sleep.SleepTwentySecsCommand
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+
+    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      SleepTwentySecsCommand
+   
+   
+
+   
+   
+   
+
+
+

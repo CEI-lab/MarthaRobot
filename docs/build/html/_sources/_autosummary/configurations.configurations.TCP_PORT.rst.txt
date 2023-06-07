@@ -1,0 +1,16 @@
+TCP\_PORT
+=========
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪TCP_PORT
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.TCP_PORT
+   :no-value:
+   

@@ -1,0 +1,29 @@
+CommandExecuter
+===============
+
+robot.commands.CommandExecuter.CommandExecuter
+
+.. currentmodule:: robot.commands.CommandExecuter
+
+.. autoclass:: CommandExecuter
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~CommandExecuter.checkForCommand
+      ~CommandExecuter.processCommand
+      ~CommandExecuter.statusResponseCallback
+   
+   
+
+   
+   
+   

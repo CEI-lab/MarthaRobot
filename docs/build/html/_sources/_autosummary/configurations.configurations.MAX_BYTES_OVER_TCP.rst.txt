@@ -1,0 +1,16 @@
+MAX\_BYTES\_OVER\_TCP
+=====================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪MAX_BYTES_OVER_TCP
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.MAX_BYTES_OVER_TCP
+   :no-value:
+   

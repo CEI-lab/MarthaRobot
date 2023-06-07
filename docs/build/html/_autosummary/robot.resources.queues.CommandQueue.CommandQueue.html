@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CommandQueue &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="QueueInterface" href="robot.resources.queues.QueueInterface.html" />
+    <link rel="prev" title="CommandQueue" href="robot.resources.queues.CommandQueue.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.resources.queues.QueueInterface.html" title="QueueInterface"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="robot.resources.queues.CommandQueue.html" title="CommandQueue"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.resources.html" >resources</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.resources.queues.html" >queues</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="robot.resources.queues.CommandQueue.html" accesskey="U">CommandQueue</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CommandQueue</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="commandqueue">
+<h1>CommandQueue<a class="headerlink" href="#commandqueue" title="Permalink to this heading">¶</a></h1>
+<p>robot.resources.queues.CommandQueue.CommandQueue</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="robot.resources.queues.CommandQueue.CommandQueue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CommandQueue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/resources/queues/CommandQueue.html#CommandQueue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.resources.queues.CommandQueue.CommandQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="robot.resources.queues.QueueInterface.QueueInterface.html#robot.resources.queues.QueueInterface.QueueInterface" title="robot.resources.queues.QueueInterface.QueueInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueueInterface</span></code></a></p>
+<p>A singleton queue to hold commands.</p>
+<p>This method will create a new queue in singelton.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.dequeue" title="robot.resources.queues.CommandQueue.CommandQueue.dequeue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dequeue</span></code></a></p></td>
+<td><p>This method will be called to get the first element in the queue.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.enqueue" title="robot.resources.queues.CommandQueue.CommandQueue.enqueue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enqueue</span></code></a></p></td>
+<td><p>This method will be called to add the passed object in the queue.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.realSize" title="robot.resources.queues.CommandQueue.CommandQueue.realSize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">realSize</span></code></a></p></td>
+<td><p>ONLY FOR THE UNITTEST This method will return the real size of the queue.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.remove" title="robot.resources.queues.CommandQueue.CommandQueue.remove"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove</span></code></a></p></td>
+<td><p>Remove commands with the key equals to keyString.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.size" title="robot.resources.queues.CommandQueue.CommandQueue.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></p></td>
+<td><p>This method will return the size of the queue even with empty dictionaries.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.resources.queues.CommandQueue.CommandQueue.dequeue">
+<span class="sig-name descname"><span class="pre">dequeue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/resources/queues/CommandQueue.html#CommandQueue.dequeue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.resources.queues.CommandQueue.CommandQueue.dequeue" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be called to get the first element in the queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Next command in queue. None if queue is empty.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.resources.queues.CommandQueue.CommandQueue.enqueue">
+<span class="sig-name descname"><span class="pre">enqueue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valueObject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/resources/queues/CommandQueue.html#CommandQueue.enqueue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.resources.queues.CommandQueue.CommandQueue.enqueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be called to add the passed object in the queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>valueObject</strong> – Object to be added in the queue.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.resources.queues.CommandQueue.CommandQueue.realSize">
+<span class="sig-name descname"><span class="pre">realSize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/resources/queues/CommandQueue.html#CommandQueue.realSize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.resources.queues.CommandQueue.CommandQueue.realSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>ONLY FOR THE UNITTEST
+This method will return the real size of the queue.
+For instacne, an empty dictionary wouldn’t considered a part of the queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>size of queue</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.resources.queues.CommandQueue.CommandQueue.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyString</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/resources/queues/CommandQueue.html#CommandQueue.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.resources.queues.CommandQueue.CommandQueue.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove commands with the key equals to keyString.</p>
+<p>TODO Seems to not be in use, and docstring is not clear</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keyString</strong> (<em>str</em>) – keyString for comparing each key in every dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.resources.queues.CommandQueue.CommandQueue.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/resources/queues/CommandQueue.html#CommandQueue.size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.resources.queues.CommandQueue.CommandQueue.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will return the size of the queue even with empty dictionaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>size of queue</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">CommandQueue</a><ul>
+<li><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue"><code class="docutils literal notranslate"><span class="pre">CommandQueue</span></code></a><ul>
+<li><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.dequeue"><code class="docutils literal notranslate"><span class="pre">CommandQueue.dequeue()</span></code></a></li>
+<li><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.enqueue"><code class="docutils literal notranslate"><span class="pre">CommandQueue.enqueue()</span></code></a></li>
+<li><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.realSize"><code class="docutils literal notranslate"><span class="pre">CommandQueue.realSize()</span></code></a></li>
+<li><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.remove"><code class="docutils literal notranslate"><span class="pre">CommandQueue.remove()</span></code></a></li>
+<li><a class="reference internal" href="#robot.resources.queues.CommandQueue.CommandQueue.size"><code class="docutils literal notranslate"><span class="pre">CommandQueue.size()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="robot.resources.queues.CommandQueue.html"
+                          title="previous chapter">CommandQueue</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="robot.resources.queues.QueueInterface.html"
+                          title="next chapter">QueueInterface</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.resources.queues.QueueInterface.html" title="QueueInterface"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="robot.resources.queues.CommandQueue.html" title="CommandQueue"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.resources.html" >resources</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.resources.queues.html" >queues</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="robot.resources.queues.CommandQueue.html" >CommandQueue</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CommandQueue</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

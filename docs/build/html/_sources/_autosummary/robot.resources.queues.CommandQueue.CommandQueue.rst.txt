@@ -1,0 +1,31 @@
+CommandQueue
+============
+
+robot.resources.queues.CommandQueue.CommandQueue
+
+.. currentmodule:: robot.resources.queues.CommandQueue
+
+.. autoclass:: CommandQueue
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~CommandQueue.dequeue
+      ~CommandQueue.enqueue
+      ~CommandQueue.realSize
+      ~CommandQueue.remove
+      ~CommandQueue.size
+   
+   
+
+   
+   
+   

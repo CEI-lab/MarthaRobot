@@ -1,0 +1,16 @@
+NUMBER\_OF\_ALLOWED\_FAILED\_TCP\_CONNECTIONS
+=============================================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS
+   :no-value:
+   

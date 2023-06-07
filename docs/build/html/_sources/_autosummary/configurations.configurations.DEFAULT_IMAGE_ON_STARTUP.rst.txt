@@ -1,0 +1,16 @@
+DEFAULT\_IMAGE\_ON\_STARTUP
+===========================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪DEFAULT_IMAGE_ON_STARTUP
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.DEFAULT_IMAGE_ON_STARTUP
+   :no-value:
+   

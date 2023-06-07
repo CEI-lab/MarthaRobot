@@ -1,0 +1,16 @@
+TCP\_ENCODING
+=============
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪TCP_ENCODING
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.TCP_ENCODING
+   :no-value:
+   

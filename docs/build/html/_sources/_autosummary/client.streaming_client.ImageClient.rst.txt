@@ -1,0 +1,67 @@
+ImageClient
+===========
+
+client.streaming_client.ImageClient
+
+.. currentmodule:: client.streaming_client
+
+.. autoclass:: ImageClient
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ImageClient.accept
+      ~ImageClient.add_channel
+      ~ImageClient.bind
+      ~ImageClient.close
+      ~ImageClient.connect
+      ~ImageClient.create_socket
+      ~ImageClient.del_channel
+      ~ImageClient.handle_accept
+      ~ImageClient.handle_accepted
+      ~ImageClient.handle_close
+      ~ImageClient.handle_connect
+      ~ImageClient.handle_connect_event
+      ~ImageClient.handle_error
+      ~ImageClient.handle_expt
+      ~ImageClient.handle_expt_event
+      ~ImageClient.handle_frame
+      ~ImageClient.handle_read
+      ~ImageClient.handle_read_event
+      ~ImageClient.handle_write
+      ~ImageClient.handle_write_event
+      ~ImageClient.listen
+      ~ImageClient.log
+      ~ImageClient.log_info
+      ~ImageClient.readable
+      ~ImageClient.recv
+      ~ImageClient.send
+      ~ImageClient.set_reuse_addr
+      ~ImageClient.set_socket
+      ~ImageClient.writable
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ImageClient.accepting
+      ~ImageClient.addr
+      ~ImageClient.closing
+      ~ImageClient.connected
+      ~ImageClient.connecting
+      ~ImageClient.debug
+      ~ImageClient.ignore_log_types
+   
+   

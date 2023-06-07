@@ -1,0 +1,16 @@
+SHOW\_DEFAULT\_IMAGE
+====================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪SHOW_DEFAULT_IMAGE
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.SHOW_DEFAULT_IMAGE
+   :no-value:
+   

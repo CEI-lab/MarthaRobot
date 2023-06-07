@@ -1,0 +1,32 @@
+BladderCommand
+==============
+
+robot.commands.bladder.BladderCommand.BladderCommand
+
+.. currentmodule:: robot.commands.bladder.BladderCommand
+
+.. autoclass:: BladderCommand
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~BladderCommand.deflate
+      ~BladderCommand.execute
+      ~BladderCommand.inflate
+      ~BladderCommand.move_all
+      ~BladderCommand.move_all_dist
+      ~BladderCommand.stop
+   
+   
+
+   
+   
+   

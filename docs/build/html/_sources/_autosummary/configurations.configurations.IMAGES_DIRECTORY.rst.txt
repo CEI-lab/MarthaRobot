@@ -1,0 +1,16 @@
+IMAGES\_DIRECTORY
+=================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪IMAGES_DIRECTORY
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.IMAGES_DIRECTORY
+   :no-value:
+   

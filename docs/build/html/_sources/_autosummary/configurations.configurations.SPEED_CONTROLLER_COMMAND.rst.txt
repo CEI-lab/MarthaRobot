@@ -1,0 +1,16 @@
+SPEED\_CONTROLLER\_COMMAND
+==========================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪SPEED_CONTROLLER_COMMAND
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.SPEED_CONTROLLER_COMMAND
+   :no-value:
+   

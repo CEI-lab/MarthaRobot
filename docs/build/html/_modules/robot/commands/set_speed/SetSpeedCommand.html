@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>robot.commands.set_speed.SetSpeedCommand &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.set_speed.SetSpeedCommand</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for robot.commands.set_speed.SetSpeedCommand</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">robot.configurations</span> <span class="k">as</span> <span class="nn">config</span>
+<span class="kn">from</span> <span class="nn">robot.commands.set_speed</span> <span class="kn">import</span> <span class="n">SpeedController</span>
+<span class="kn">from</span> <span class="nn">robot.commands.CommandInterface</span> <span class="kn">import</span> <span class="n">CommandInterface</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of SetSpeedCommand that will set speed for right and left wheels.</span>
+
+<span class="sd">CEI-LAB, Cornell University 2019</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="SetSpeedCommand"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.set_speed.SetSpeedCommand.SetSpeedCommand.html#robot.commands.set_speed.SetSpeedCommand.SetSpeedCommand">[docs]</a><span class="k">class</span> <span class="nc">SetSpeedCommand</span><span class="p">(</span><span class="n">CommandInterface</span><span class="p">):</span>
+    <span class="n">_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_motor_left</span> <span class="o">=</span> <span class="n">SpeedController</span><span class="p">(</span>
+                <span class="n">CONFIGURATIONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_motor_right</span> <span class="o">=</span> <span class="n">SpeedController</span><span class="p">(</span>
+                <span class="n">CONFIGURATIONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;SetSpeedCommand : SpeedController objects not created&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setSpeed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">responseStatusCallback</span><span class="p">,</span> <span class="n">jsonObject</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method will be called to set speed for wheels.</span>
+
+<span class="sd">        :param responseStatusCallback: A callback function has to be passed, that will</span>
+<span class="sd">                send status of command execution back to the controller. This callback will be passed by the</span>
+<span class="sd">                caller of execute().</span>
+<span class="sd">        :type responseStatusCallback: func</span>
+<span class="sd">        :param jsonObject: A JSON object initially containing the command json, modified to include response information.</span>
+<span class="sd">        :type jsonObject: dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+            <span class="n">begin_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;UNKNOWN_ERROR&quot;</span>
+
+            <span class="n">left_speed</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;leftSpeed&quot;</span><span class="p">)</span>
+            <span class="n">right_speed</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rightSpeed&quot;</span><span class="p">)</span>
+            <span class="c1"># print(&quot;1:{}&quot;.format(time.time()-begin_time))</span>
+            <span class="k">if</span> <span class="n">left_speed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">right_speed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running script to set speed commands simultaneously.&quot;</span><span class="p">)</span>
+                <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;SUCCESS&quot;</span>
+                <span class="c1"># print(&quot;current_time is {}&quot;.format(time.time()))</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="s2">&quot;sudo&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;/home/pi/HSI/commands/set-speed-command/./SetSpeed.sh&quot;</span><span class="p">,</span>
+                        <span class="n">CONFIGURATIONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID&quot;</span><span class="p">),</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">left_speed</span><span class="p">),</span>
+                        <span class="n">CONFIGURATIONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID&quot;</span><span class="p">),</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">right_speed</span><span class="p">),</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+                <span class="c1"># print(&quot;2:{}&quot;.format(time.time()-begin_time))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">left_speed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;SetSpeedCommand : Set left speed: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">left_speed</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;SUCCESS&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_motor_left</span><span class="o">.</span><span class="n">set_speed</span><span class="p">(</span><span class="n">left_speed</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">right_speed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;SetSpeedCommand : Set right speed: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">right_speed</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;SUCCESS&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_motor_right</span><span class="o">.</span><span class="n">set_speed</span><span class="p">(</span><span class="n">right_speed</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">left_speed</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">right_speed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;SPEED_VALUES_NOT_PROVIDED&quot;</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;SetSpeedCommand : There are no speed values.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># print(&quot;3:{}&quot;.format(time.time()-begin_time))</span>
+            <span class="k">if</span> <span class="n">responseStatusCallback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">responseStatusCallback</span><span class="p">(</span><span class="n">jsonObject</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">jsonObject</span><span class="p">)</span>
+            <span class="c1"># print(&quot;4:{}&quot;.format(time.time()-begin_time))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;SetSpeedCommand : speed controller probably does not exit&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SetSpeedCommand.execute"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.set_speed.SetSpeedCommand.SetSpeedCommand.html#robot.commands.set_speed.SetSpeedCommand.SetSpeedCommand.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">responseStatusCallback</span><span class="p">,</span> <span class="n">jsonObject</span><span class="p">):</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_setSpeed</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">responseStatusCallback</span><span class="p">,</span>
+                <span class="n">jsonObject</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.set_speed.SetSpeedCommand</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

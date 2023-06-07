@@ -1,0 +1,16 @@
+SENDING\_IP\_ADDRESS\_TO\_PI\_COMMAND
+=====================================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪SENDING_IP_ADDRESS_TO_PI_COMMAND
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.SENDING_IP_ADDRESS_TO_PI_COMMAND
+   :no-value:
+   

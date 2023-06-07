@@ -1,0 +1,43 @@
+Client
+======
+
+client.Client
+
+
+
+
+.. automodule:: client.Client
+
+
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      exit_handler
+      parse_command
+      receiveResponse
+      sendAgainAndAgain
+      sendObject
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+

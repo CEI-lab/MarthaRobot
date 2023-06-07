@@ -1,0 +1,16 @@
+LEFT\_WHEEL\_SPEED\_CONTROLLER\_SERIAL\_ID
+==========================================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID
+   :no-value:
+   

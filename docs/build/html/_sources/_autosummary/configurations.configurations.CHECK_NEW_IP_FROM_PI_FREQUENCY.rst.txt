@@ -1,0 +1,16 @@
+CHECK\_NEW\_IP\_FROM\_PI\_FREQUENCY
+===================================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪CHECK_NEW_IP_FROM_PI_FREQUENCY
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.CHECK_NEW_IP_FROM_PI_FREQUENCY
+   :no-value:
+   

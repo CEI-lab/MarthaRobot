@@ -1,0 +1,16 @@
+DISPLAY\_IMAGE
+==============
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪DISPLAY_IMAGE
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.DISPLAY_IMAGE
+   :no-value:
+   

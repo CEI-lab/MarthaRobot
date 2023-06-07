@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>bmi160_regmap &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="robot.commands.imu.bmi160_regmap.STEP_CONF" href="robot.commands.imu.bmi160_regmap.STEP_CONF.html" />
+    <link rel="prev" title="bmi150_regmap" href="robot.commands.imu.bmi150_regmap.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.imu.bmi160_regmap.STEP_CONF.html" title="robot.commands.imu.bmi160_regmap.STEP_CONF"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.imu.bmi150_regmap.html" title="bmi150_regmap"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.commands.html" >commands</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.commands.imu.html" accesskey="U">imu</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">bmi160_regmap</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="bmi160-regmap">
+<h1>bmi160_regmap<a class="headerlink" href="#bmi160-regmap" title="Permalink to this heading">¶</a></h1>
+<p>robot.commands.imu.bmi160_regmap</p>
+<span class="target" id="module-robot.commands.imu.bmi160_regmap"></span><p>Author:                 Matthew Wnuk
+Business:               None of Yours Incorporated
+Date Modified:          Feb 2018
+Discription:            Register Map for BMI_160 IMU</p>
+<dl class="simple">
+<dt>Notes:</dt><dd><p>Default register values do not seem to match the stated values (this may be a function of configuration by the Intel-Aero RTF in which I am accessing the sensor), and LSBs of ‘MAG_CONF’ are listed as contents of ‘GYR_RANGE’ register</p>
+</dd>
+</dl>
+<p>Page numbers refer to Data Sheet DS000-07-786474</p>
+<p class="rubric">Module attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="robot.commands.imu.bmi160_regmap.STEP_CONF.html#robot.commands.imu.bmi160_regmap.STEP_CONF" title="robot.commands.imu.bmi160_regmap.STEP_CONF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STEP_CONF</span></code></a></p></td>
+<td><p>magnetometer is accesses via indirect addressing using MAG_IF(5 bytes) register MAG_IF_0 = [0b0010-0000]        #I2C device address for bmi150 magnetometer MAG_IF_1 = [0b1000-0000] = [manual_en(7), reserved, mag_offset(5:2), mag_rd_burst(1:0) MAG_IF_2 = BMI150 register to read MAG_IF_3 = BMI150 register to write to MAG_IF_4 = Data to write to BMI150</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="robot.commands.imu.bmi150_regmap.html"
+                          title="previous chapter">bmi150_regmap</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="robot.commands.imu.bmi160_regmap.STEP_CONF.html"
+                          title="next chapter">robot.commands.imu.bmi160_regmap.STEP_CONF</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.imu.bmi160_regmap.STEP_CONF.html" title="robot.commands.imu.bmi160_regmap.STEP_CONF"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.imu.bmi150_regmap.html" title="bmi150_regmap"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.commands.html" >commands</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.commands.imu.html" >imu</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">bmi160_regmap</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+BLADDER\_SPEED
+==============
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪BLADDER_SPEED
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.BLADDER_SPEED
+   :no-value:
+   

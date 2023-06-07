@@ -1,0 +1,16 @@
+LOOP\_BACK\_IP\_ADDRESS
+=======================
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪LOOP_BACK_IP_ADDRESS
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.LOOP_BACK_IP_ADDRESS
+   :no-value:
+   

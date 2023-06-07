@@ -1,0 +1,16 @@
+HOST
+====
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪HOST
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.HOST
+   :no-value:
+   

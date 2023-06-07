@@ -1,0 +1,16 @@
+BLADDER\_SIZE
+=============
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪BLADDER_SIZE
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.BLADDER_SIZE
+   :no-value:
+   

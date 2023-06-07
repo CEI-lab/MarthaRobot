@@ -1,0 +1,16 @@
+FAN\_PIN
+========
+
+..
+   old hacky method
+   
+
+   .. line-block:: 
+      :mod:`configurations.configurations`
+      ↪FAN_PIN
+
+.. ↪ :mod:`configurations.configurations`
+
+.. autodata:: configurations.configurations.FAN_PIN
+   :no-value:
+   
