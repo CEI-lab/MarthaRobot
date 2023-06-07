@@ -1,0 +1,46 @@
+PeriodicThread
+==============
+
+robot.thread_manager.ThreadManager.PeriodicThread
+
+.. currentmodule:: robot.thread_manager.ThreadManager
+
+.. autoclass:: PeriodicThread
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~PeriodicThread.getName
+      ~PeriodicThread.isAlive
+      ~PeriodicThread.isDaemon
+      ~PeriodicThread.is_alive
+      ~PeriodicThread.join
+      ~PeriodicThread.resume_thread
+      ~PeriodicThread.run
+      ~PeriodicThread.setDaemon
+      ~PeriodicThread.setName
+      ~PeriodicThread.start
+      ~PeriodicThread.stop_thread
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PeriodicThread.daemon
+      ~PeriodicThread.ident
+      ~PeriodicThread.name
+      ~PeriodicThread.native_id
+   
+   

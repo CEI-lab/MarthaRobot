@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>BladderCommand &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bladder_motor" href="robot.commands.bladder.bladder_motor.html" />
+    <link rel="prev" title="BladderCommand" href="robot.commands.bladder.BladderCommand.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.bladder.bladder_motor.html" title="bladder_motor"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.bladder.BladderCommand.html" title="BladderCommand"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.commands.html" >commands</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.commands.bladder.html" >bladder</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="robot.commands.bladder.BladderCommand.html" accesskey="U">BladderCommand</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">BladderCommand</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="bladdercommand">
+<h1>BladderCommand<a class="headerlink" href="#bladdercommand" title="Permalink to this heading">¶</a></h1>
+<p>robot.commands.bladder.BladderCommand.BladderCommand</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="robot.commands.bladder.BladderCommand.BladderCommand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BladderCommand</span></span><a class="reference internal" href="../_modules/robot/commands/bladder/BladderCommand.html#BladderCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.bladder.BladderCommand.BladderCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="robot.commands.CommandInterface.CommandInterface.html#robot.commands.CommandInterface.CommandInterface" title="robot.commands.CommandInterface.CommandInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandInterface</span></code></a></p>
+<p>__init__ Create a Bladder Command object.  Takes in commands and performs the appropriate actions.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.deflate" title="robot.commands.bladder.BladderCommand.BladderCommand.deflate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deflate</span></code></a></p></td>
+<td><p>deflate Deflate the robots bladder</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.execute" title="robot.commands.bladder.BladderCommand.BladderCommand.execute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute</span></code></a></p></td>
+<td><p>This method will be called to execute the functionality implemented in a command.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.inflate" title="robot.commands.bladder.BladderCommand.BladderCommand.inflate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inflate</span></code></a></p></td>
+<td><p>inflate Inflate the robot's bladder</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.move_all" title="robot.commands.bladder.BladderCommand.BladderCommand.move_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_all</span></code></a></p></td>
+<td><p>move_all Move all bladder motors at a specified speed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.move_all_dist" title="robot.commands.bladder.BladderCommand.BladderCommand.move_all_dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_all_dist</span></code></a></p></td>
+<td><p>move_all Move all bladder motors a distance in a specified direction</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.stop" title="robot.commands.bladder.BladderCommand.BladderCommand.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a></p></td>
+<td><p>stop Stop all of the motors.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.commands.bladder.BladderCommand.BladderCommand.deflate">
+<span class="sig-name descname"><span class="pre">deflate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/commands/bladder/BladderCommand.html#BladderCommand.deflate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.bladder.BladderCommand.BladderCommand.deflate" title="Permalink to this definition">¶</a></dt>
+<dd><p>deflate Deflate the robots bladder</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.commands.bladder.BladderCommand.BladderCommand.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">responseStatusCallback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jsonObject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/commands/bladder/BladderCommand.html#BladderCommand.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.bladder.BladderCommand.BladderCommand.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will be called to execute the functionality implemented in a command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>responseStatusCallback</strong> (<em>function</em>) – A callback function has to be passed, that will
+send status of command execution. This callback will be passed by the
+caller of execute().</p></li>
+<li><p><strong>jsonObject</strong> (<em>json object</em>) – A JSON object containing relevant data for a command.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – abstract class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.commands.bladder.BladderCommand.BladderCommand.inflate">
+<span class="sig-name descname"><span class="pre">inflate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/commands/bladder/BladderCommand.html#BladderCommand.inflate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.bladder.BladderCommand.BladderCommand.inflate" title="Permalink to this definition">¶</a></dt>
+<dd><p>inflate Inflate the robot’s bladder</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.commands.bladder.BladderCommand.BladderCommand.move_all">
+<span class="sig-name descname"><span class="pre">move_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/commands/bladder/BladderCommand.html#BladderCommand.move_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.bladder.BladderCommand.BladderCommand.move_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>move_all Move all bladder motors at a specified speed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> (<em>_type_</em>) – Direction to move motors</p></li>
+<li><p><strong>speed</strong> (<em>int</em>) – Speed to move at.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.commands.bladder.BladderCommand.BladderCommand.move_all_dist">
+<span class="sig-name descname"><span class="pre">move_all_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/commands/bladder/BladderCommand.html#BladderCommand.move_all_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.bladder.BladderCommand.BladderCommand.move_all_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>move_all Move all bladder motors a distance in a specified direction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> (<em>_type_</em>) – Direction to move motors</p></li>
+<li><p><strong>dist1</strong> (<em>int</em>) – Distance to move motor 1</p></li>
+<li><p><strong>dist2</strong> (<em>int</em>) – Distance to move motor 2</p></li>
+<li><p><strong>dist2</strong> – Distance to move motor 3</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.commands.bladder.BladderCommand.BladderCommand.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/commands/bladder/BladderCommand.html#BladderCommand.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.bladder.BladderCommand.BladderCommand.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>stop Stop all of the motors.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">BladderCommand</a><ul>
+<li><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand"><code class="docutils literal notranslate"><span class="pre">BladderCommand</span></code></a><ul>
+<li><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.deflate"><code class="docutils literal notranslate"><span class="pre">BladderCommand.deflate()</span></code></a></li>
+<li><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.execute"><code class="docutils literal notranslate"><span class="pre">BladderCommand.execute()</span></code></a></li>
+<li><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.inflate"><code class="docutils literal notranslate"><span class="pre">BladderCommand.inflate()</span></code></a></li>
+<li><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.move_all"><code class="docutils literal notranslate"><span class="pre">BladderCommand.move_all()</span></code></a></li>
+<li><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.move_all_dist"><code class="docutils literal notranslate"><span class="pre">BladderCommand.move_all_dist()</span></code></a></li>
+<li><a class="reference internal" href="#robot.commands.bladder.BladderCommand.BladderCommand.stop"><code class="docutils literal notranslate"><span class="pre">BladderCommand.stop()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="robot.commands.bladder.BladderCommand.html"
+                          title="previous chapter">BladderCommand</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="robot.commands.bladder.bladder_motor.html"
+                          title="next chapter">bladder_motor</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.bladder.bladder_motor.html" title="bladder_motor"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.bladder.BladderCommand.html" title="BladderCommand"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.commands.html" >commands</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.commands.bladder.html" >bladder</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="robot.commands.bladder.BladderCommand.html" >BladderCommand</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">BladderCommand</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

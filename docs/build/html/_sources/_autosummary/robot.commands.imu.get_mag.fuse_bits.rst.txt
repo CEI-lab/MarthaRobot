@@ -1,0 +1,6 @@
+robot.commands.imu.get\_mag.fuse\_bits
+======================================
+
+.. currentmodule:: robot.commands.imu.get_mag
+
+.. autofunction:: fuse_bits

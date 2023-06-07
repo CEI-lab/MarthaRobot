@@ -1,0 +1,39 @@
+configurations
+==============
+
+configurations.configurations
+
+
+
+
+.. automodule:: configurations.configurations
+
+
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      update
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+

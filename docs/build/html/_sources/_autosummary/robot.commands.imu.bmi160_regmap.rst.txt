@@ -1,0 +1,38 @@
+bmi160\_regmap
+==============
+
+robot.commands.imu.bmi160_regmap
+
+
+
+
+.. automodule:: robot.commands.imu.bmi160_regmap
+
+
+
+   
+   
+   .. rubric:: Module attributes
+
+   .. autosummary::
+      :toctree:
+   
+      STEP_CONF
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+

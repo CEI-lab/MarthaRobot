@@ -1,0 +1,28 @@
+PrintHelloCommand
+=================
+
+robot.commands.hello.PrintHelloCommand.PrintHelloCommand
+
+.. currentmodule:: robot.commands.hello.PrintHelloCommand
+
+.. autoclass:: PrintHelloCommand
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~PrintHelloCommand.execute
+      ~PrintHelloCommand.printHello
+   
+   
+
+   
+   
+   

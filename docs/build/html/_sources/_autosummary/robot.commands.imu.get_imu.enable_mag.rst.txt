@@ -1,0 +1,6 @@
+robot.commands.imu.get\_imu.enable\_mag
+=======================================
+
+.. currentmodule:: robot.commands.imu.get_imu
+
+.. autofunction:: enable_mag

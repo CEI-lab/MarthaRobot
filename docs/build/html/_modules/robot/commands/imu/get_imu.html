@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>robot.commands.imu.get_imu &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.imu.get_imu</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for robot.commands.imu.get_imu</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">spidev</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">smbus</span>
+<span class="kn">from</span> <span class="nn">robot.commands.imu.bmi150_regmap</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">robot.commands.imu.bmi160_regmap</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">radians</span>
+
+
+<div class="viewcode-block" id="open_imu"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.open_imu.html#robot.commands.imu.get_imu.open_imu">[docs]</a><span class="k">def</span> <span class="nf">open_imu</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Opens BMI_160 imu on bus 3, cs 0 associated with the Intel-Aero RTF platform</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">imu</span> <span class="o">=</span> <span class="n">spidev</span><span class="o">.</span><span class="n">SpiDev</span><span class="p">()</span>
+    <span class="n">opened</span> <span class="o">=</span> <span class="n">imu</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>		<span class="c1"># SPI bus 3, CS 0</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">opened</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to open&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">imu</span></div>
+
+
+<div class="viewcode-block" id="hardware_init"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.hardware_init.html#robot.commands.imu.get_imu.hardware_init">[docs]</a><span class="k">def</span> <span class="nf">hardware_init</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    ###############################################################################</span>
+<span class="sd">    Need to write a while catch to ensure registers are writen to before moving on.</span>
+<span class="sd">    ###############################################################################</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># print( &#39;Reset BMI160&#39; )</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">CMD</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="n">SOFTRESET</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+
+    <span class="c1"># After reset, read from register 0x7f as per datasheet recommendation</span>
+    <span class="c1"># print( &#39;Read 0x7F: &#39;, imu.xfer2([0x7F + read, 0x00])[1] )</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="mh">0x7F</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])</span>
+    <span class="c1"># Check chip ID</span>
+    <span class="c1"># print( &#39;Chip ID (should be 0xD1): &#39;, format(imu.xfer2([CHIP_ID + read, 0x00])[1], &#39;#04X&#39;) )</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">CHIP_ID</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])</span></div>
+
+    <span class="c1"># Reset the FIFO</span>
+    <span class="c1"># imu.xfer2([CMD + write, FIFO_FLUSH])</span>
+    <span class="c1"># time.sleep(0.05)</span>
+    <span class="c1"># print( &#39;FIFO Length: &#39;, imu.xfer2([FIFO_LENGTH + read, 0,0])[1:]</span>
+
+
+<div class="viewcode-block" id="fifo_flush"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.fifo_flush.html#robot.commands.imu.get_imu.fifo_flush">[docs]</a><span class="k">def</span> <span class="nf">fifo_flush</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    ###############################################################################</span>
+<span class="sd">    Need to write a while catch to ensure registers are writen to before moving on.</span>
+<span class="sd">    ###############################################################################</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Reset the FIFO</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Reset FIFO&#39;</span><span class="p">)</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">CMD</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="n">FIFO_FLUSH</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;FIFO Length: &#39;</span><span class="p">,</span> <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">FIFO_LENGTH</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">:])</span></div>
+
+
+<div class="viewcode-block" id="configure_pmu"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.configure_pmu.html#robot.commands.imu.get_imu.configure_pmu">[docs]</a><span class="k">def</span> <span class="nf">configure_pmu</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    ###############################################################################</span>
+<span class="sd">    Need to write a while catch to ensure registers are writen to before moving on.</span>
+<span class="sd">    ###############################################################################</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">CMD</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="n">ACC_NORMAL</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">CMD</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="n">GYR_NORMAL</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="c1"># imu.xfer2([CMD + write, MAG_NORMAL])</span>
+    <span class="c1"># print( &#39;pmu status: &#39;, format(imu.xfer2([PMU_STATUS + read, 0x00])[1], &#39;#04X&#39;) )</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">PMU_STATUS</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="calibrate"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.calibrate.html#robot.commands.imu.get_imu.calibrate">[docs]</a><span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    ###############################################################################</span>
+<span class="sd">    Need to write a while catch to ensure registers are writen to before moving on.</span>
+<span class="sd">    ###############################################################################</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Check offset before</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Offset AX (before): &#39;</span><span class="p">,</span> <span class="nb">format</span><span class="p">(</span>
+        <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">OFFSET</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;#04X&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Offset GX (before): &#39;</span><span class="p">,</span> <span class="nb">format</span><span class="p">(</span>
+        <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">OFFSET</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;#04X&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Offset 6 (before): &#39;</span><span class="p">,</span> <span class="nb">format</span><span class="p">(</span>
+        <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">OFFSET</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;#04X&#39;</span><span class="p">))</span>
+    <span class="c1"># Enable offset for GYR and ACC</span>
+    <span class="c1"># imu.xfer2([OFFSET + 6 + write, 0xc0])</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">OFFSET</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">])</span>
+    <span class="c1"># Calibrate</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">FOC_CONF</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="mh">0x7d</span><span class="p">])</span>  <span class="c1"># all</span>
+    <span class="c1"># imu.xfer2([FOC_CONF + write, 0x40]) #gyro</span>
+    <span class="c1"># imu.xfer2([FOC_CONF + write, 0x3d]) #acc</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">CMD</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="n">START_FOC</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># check offset after</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Offset AX (after): &#39;</span><span class="p">,</span> <span class="nb">format</span><span class="p">(</span>
+        <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">OFFSET</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;#04X&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Offset GX (after): &#39;</span><span class="p">,</span> <span class="nb">format</span><span class="p">(</span>
+        <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">OFFSET</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;#04X&#39;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Offset 6 (after): &#39;</span><span class="p">,</span> <span class="nb">format</span><span class="p">(</span>
+        <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">OFFSET</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;#04X&#39;</span><span class="p">))</span>
+    <span class="c1"># Reset the FIFO</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">CMD</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="n">FIFO_FLUSH</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="configure_acc"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.configure_acc.html#robot.commands.imu.get_imu.configure_acc">[docs]</a><span class="k">def</span> <span class="nf">configure_acc</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Set Acc Data Rate @ 100Hz, see page 56</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">ACC_CONF</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="c1"># print( &#39;ACC Range: &#39;, format(imu.xfer2([ACC_RANGE + read, 0x00])[1], &#39;#04X&#39;) )</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">ACC_RANGE</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="configure_gyr"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.configure_gyr.html#robot.commands.imu.get_imu.configure_gyr">[docs]</a><span class="k">def</span> <span class="nf">configure_gyr</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Set Gyro Data Rate @ 100Hz, see page 57</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">GYR_CONF</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">GYR_RANGE</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])</span>  <span class="c1"># 0=&gt;2000 deg/s</span>
+    <span class="c1"># imu.xfer2([GYR_RANGE + write, 0x03]) # 3=&gt;250 deg/s</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="c1"># print( &#39;GYR Range: &#39;, format(imu.xfer2([GYR_RANGE + read, 0x00])[1], &#39;#04X&#39;) )</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">GYR_RANGE</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="enable_mag"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.enable_mag.html#robot.commands.imu.get_imu.enable_mag">[docs]</a><span class="k">def</span> <span class="nf">enable_mag</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">MAG_IF_1</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">Aux_Data2write</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">Aux_Reg2write</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;STATUS: &#39;</span><span class="p">,</span> <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">STATUS</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">])[</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="configure_FIFO"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.configure_FIFO.html#robot.commands.imu.get_imu.configure_FIFO">[docs]</a><span class="k">def</span> <span class="nf">configure_FIFO</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Set Acc &amp; Gyro Feeds to FIFO</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">FIFO_CONFIG2</span> <span class="o">+</span> <span class="n">write</span><span class="p">,</span> <span class="mh">0xC0</span><span class="p">])</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_FIFO_frame"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.read_FIFO_frame.html#robot.commands.imu.get_imu.read_FIFO_frame">[docs]</a><span class="k">def</span> <span class="nf">read_FIFO_frame</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+    <span class="c1"># Check if the FIFO is empty</span>
+    <span class="n">FIFO_Length</span> <span class="o">=</span> <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">FIFO_LENGTH</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">FIFO_Length</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">FIFO_Length</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">256</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">):</span>  <span class="c1"># If not, read frame</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">FIFO_DATA</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                         <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">gx</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">gy</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">gz</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
+        <span class="n">ay</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">])</span>
+        <span class="n">az</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">11</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">gx</span><span class="p">,</span> <span class="n">gy</span><span class="p">,</span> <span class="n">gz</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">]</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="fuse_bits"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.fuse_bits.html#robot.commands.imu.get_imu.fuse_bits">[docs]</a><span class="k">def</span> <span class="nf">fuse_bits</span><span class="p">(</span><span class="n">lsb</span><span class="p">,</span> <span class="n">msb</span><span class="p">):</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">lsb</span> <span class="o">+</span> <span class="mi">256</span> <span class="o">*</span> <span class="n">msb</span>
+    <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">15</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">-=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span>
+    <span class="k">return</span> <span class="n">val</span></div>
+
+
+<div class="viewcode-block" id="read_raw_sensors"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.read_raw_sensors.html#robot.commands.imu.get_imu.read_raw_sensors">[docs]</a><span class="k">def</span> <span class="nf">read_raw_sensors</span><span class="p">(</span><span class="n">imu</span><span class="p">):</span>
+    <span class="n">ACC</span> <span class="o">=</span> <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">ACC_ALL</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">GYR</span> <span class="o">=</span> <span class="n">imu</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">GYR_ALL</span> <span class="o">+</span> <span class="n">read</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="n">gx</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">GYR</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">GYR</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">gy</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">GYR</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">GYR</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">gz</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">GYR</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">GYR</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">ACC</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ACC</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ay</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">ACC</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ACC</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">az</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">ACC</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">ACC</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">gx</span><span class="p">,</span> <span class="n">gy</span><span class="p">,</span> <span class="n">gz</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="configure_bmi160"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_imu.configure_bmi160.html#robot.commands.imu.get_imu.configure_bmi160">[docs]</a><span class="k">def</span> <span class="nf">configure_bmi160</span><span class="p">():</span>
+    <span class="n">imu</span> <span class="o">=</span> <span class="n">open_imu</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">imu</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">exit</span><span class="p">()</span>
+    <span class="n">hardware_init</span><span class="p">(</span><span class="n">imu</span><span class="p">)</span>
+    <span class="n">configure_pmu</span><span class="p">(</span><span class="n">imu</span><span class="p">)</span>
+    <span class="c1"># calibrate(imu)</span>
+    <span class="n">configure_acc</span><span class="p">(</span><span class="n">imu</span><span class="p">)</span>
+    <span class="n">configure_gyr</span><span class="p">(</span><span class="n">imu</span><span class="p">)</span>
+    <span class="c1"># fifo_flush(imu)</span>
+
+    <span class="c1"># imu.xfer2([FIFO_CONFIG2 + write, 0xD0])</span>
+    <span class="c1"># imu.xfer2([FIFO_CONFIG2 + write, 0xC0])</span>
+    <span class="c1"># fifo_flush(imu)</span>
+
+    <span class="k">return</span> <span class="n">imu</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">imu</span> <span class="o">=</span> <span class="n">configure_bmi160</span><span class="p">()</span>
+    <span class="n">gyr_fact</span> <span class="o">=</span> <span class="mf">32768.0</span> <span class="o">/</span> <span class="mf">2000.0</span>  <span class="c1"># range 2000</span>
+    <span class="c1"># gyr_fact = 32768.0 / 250 #range 250</span>
+    <span class="c1"># gyr_fact = 32768.0 / 125 #range 125</span>
+    <span class="n">acc_fact</span> <span class="o">=</span> <span class="mf">32768.0</span> <span class="o">/</span> <span class="mf">2.0</span>  <span class="c1"># range 2G</span>
+    <span class="c1"># fifo_flush(imu)</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">check</span> <span class="o">=</span> <span class="n">read_raw_sensors</span><span class="p">(</span><span class="n">imu</span><span class="p">)</span>
+        <span class="c1"># check = read_FIFO_frame(imu)</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">check</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">((</span><span class="n">seq</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;IMU: &#39;</span><span class="p">,</span> <span class="n">check</span><span class="p">)</span>
+            <span class="p">[</span><span class="n">gx</span><span class="p">,</span> <span class="n">gy</span><span class="p">,</span> <span class="n">gz</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">]</span> <span class="o">=</span> <span class="n">check</span>
+            <span class="c1"># print( &#39;gx deg: &#39;, (gx / gyr_fact) )</span>
+            <span class="c1"># print( &#39;gx rad: &#39;, radians(gx / gyr_fact) )</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;acc (g): &#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">ax</span> <span class="o">/</span> <span class="n">acc_fact</span><span class="p">),</span>
+                  <span class="p">(</span><span class="n">ay</span> <span class="o">/</span> <span class="n">acc_fact</span><span class="p">),</span> <span class="p">(</span><span class="n">az</span> <span class="o">/</span> <span class="n">acc_fact</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;gyr (d): &#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">gx</span> <span class="o">/</span> <span class="n">gyr_fact</span><span class="p">),</span>
+                  <span class="p">(</span><span class="n">gy</span> <span class="o">/</span> <span class="n">gyr_fact</span><span class="p">),</span> <span class="p">(</span><span class="n">gz</span> <span class="o">/</span> <span class="n">gyr_fact</span><span class="p">))</span>
+        <span class="n">seq</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">imu</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.imu.get_imu</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

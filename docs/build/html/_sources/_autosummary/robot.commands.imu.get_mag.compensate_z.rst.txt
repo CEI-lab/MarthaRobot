@@ -1,0 +1,6 @@
+robot.commands.imu.get\_mag.compensate\_z
+=========================================
+
+.. currentmodule:: robot.commands.imu.get_mag
+
+.. autofunction:: compensate_z

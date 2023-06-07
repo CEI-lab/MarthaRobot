@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>commands &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CommandExecuter" href="robot.commands.CommandExecuter.html" />
+    <link rel="prev" title="calibrate_cam" href="robot.calibrate_cam.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.CommandExecuter.html" title="CommandExecuter"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="robot.calibrate_cam.html" title="calibrate_cam"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" accesskey="U">robot</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">commands</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="commands">
+<h1>commands<a class="headerlink" href="#commands" title="Permalink to this heading">¶</a></h1>
+<p>robot.commands</p>
+<span class="target" id="module-robot.commands"></span><p>Package containing commands. All sub packages should contain a module that implements <a class="reference internal" href="robot.commands.CommandInterface.html#module-robot.commands.CommandInterface" title="robot.commands.CommandInterface"><code class="xref py py-mod docutils literal notranslate"><span class="pre">robot.commands.CommandInterface</span></code></a></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="robot.commands.CommandExecuter.html#module-robot.commands.CommandExecuter" title="robot.commands.CommandExecuter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.CommandExecuter</span></code></a></p></td>
+<td><p>Implementation of a command executer that will execute a command extracted from command queue.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="robot.commands.CommandInterface.html#module-robot.commands.CommandInterface" title="robot.commands.CommandInterface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.CommandInterface</span></code></a></p></td>
+<td><p>Interface to declare the format to be used by all the commands.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="robot.commands.CommandRegistry.html#module-robot.commands.CommandRegistry" title="robot.commands.CommandRegistry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.CommandRegistry</span></code></a></p></td>
+<td><p>Implementation of a command registry that will store Command objects along their respective command names as used in the JSON protocol.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="robot.commands.bladder.html#module-robot.commands.bladder" title="robot.commands.bladder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.bladder</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="robot.commands.external_camera.html#module-robot.commands.external_camera" title="robot.commands.external_camera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.external_camera</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="robot.commands.hello.html#module-robot.commands.hello" title="robot.commands.hello"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.hello</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="robot.commands.image.html#module-robot.commands.image" title="robot.commands.image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.image</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="robot.commands.image_names.html#module-robot.commands.image_names" title="robot.commands.image_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.image_names</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="robot.commands.imu.html#module-robot.commands.imu" title="robot.commands.imu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.imu</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="robot.commands.internal_camera.html#module-robot.commands.internal_camera" title="robot.commands.internal_camera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.internal_camera</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="robot.commands.realsense.html#module-robot.commands.realsense" title="robot.commands.realsense"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.realsense</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="robot.commands.set_speed.html#module-robot.commands.set_speed" title="robot.commands.set_speed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.set_speed</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="robot.commands.sleep.html#module-robot.commands.sleep" title="robot.commands.sleep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.sleep</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="robot.commands.tof.html#module-robot.commands.tof" title="robot.commands.tof"><code class="xref py py-obj docutils literal notranslate"><span class="pre">robot.commands.tof</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="robot.calibrate_cam.html"
+                          title="previous chapter">calibrate_cam</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="robot.commands.CommandExecuter.html"
+                          title="next chapter">CommandExecuter</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.CommandExecuter.html" title="CommandExecuter"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="robot.calibrate_cam.html" title="calibrate_cam"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">commands</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

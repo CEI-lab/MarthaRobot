@@ -1,0 +1,6 @@
+robot.commands.imu.get\_imu.read\_FIFO\_frame
+=============================================
+
+.. currentmodule:: robot.commands.imu.get_imu
+
+.. autofunction:: read_FIFO_frame

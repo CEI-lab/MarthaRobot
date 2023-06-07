@@ -1,0 +1,6 @@
+robot.commands.imu.get\_imu.configure\_pmu
+==========================================
+
+.. currentmodule:: robot.commands.imu.get_imu
+
+.. autofunction:: configure_pmu

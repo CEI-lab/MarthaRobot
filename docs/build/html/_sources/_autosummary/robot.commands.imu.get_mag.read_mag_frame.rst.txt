@@ -1,0 +1,6 @@
+robot.commands.imu.get\_mag.read\_mag\_frame
+============================================
+
+.. currentmodule:: robot.commands.imu.get_mag
+
+.. autofunction:: read_mag_frame

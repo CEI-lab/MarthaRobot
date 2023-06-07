@@ -1,0 +1,38 @@
+thread\_manager
+===============
+
+robot.thread_manager
+
+
+
+
+.. automodule:: robot.thread_manager
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   robot.thread_manager.ThreadManager
+

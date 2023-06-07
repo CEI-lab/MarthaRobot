@@ -1,0 +1,42 @@
+SetSpeedCommand
+===============
+
+robot.commands.set_speed.SetSpeedCommand
+
+
+
+
+.. automodule:: robot.commands.set_speed.SetSpeedCommand
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+
+    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      SetSpeedCommand
+   
+   
+
+   
+   
+   
+
+
+

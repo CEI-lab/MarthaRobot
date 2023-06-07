@@ -1,0 +1,39 @@
+set\_speed
+==========
+
+robot.commands.set_speed
+
+
+
+
+.. automodule:: robot.commands.set_speed
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   robot.commands.set_speed.SetSpeedCommand
+   robot.commands.set_speed.SpeedController
+

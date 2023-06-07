@@ -1,0 +1,28 @@
+SleepTwentySecsCommand
+======================
+
+robot.commands.sleep.SleepTwentySecsCommand.SleepTwentySecsCommand
+
+.. currentmodule:: robot.commands.sleep.SleepTwentySecsCommand
+
+.. autoclass:: SleepTwentySecsCommand
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~SleepTwentySecsCommand.execute
+      ~SleepTwentySecsCommand.sleepTwenty
+   
+   
+
+   
+   
+   

@@ -1,0 +1,38 @@
+sleep
+=====
+
+robot.commands.sleep
+
+
+
+
+.. automodule:: robot.commands.sleep
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   robot.commands.sleep.SleepTwentySecsCommand
+

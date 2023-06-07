@@ -1,0 +1,6 @@
+client.streaming\_client.main
+=============================
+
+.. currentmodule:: client.streaming_client
+
+.. autofunction:: main
