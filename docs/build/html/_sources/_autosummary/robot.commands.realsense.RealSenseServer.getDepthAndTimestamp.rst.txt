@@ -1,6 +1,0 @@
-robot.commands.realsense.RealSenseServer.getDepthAndTimestamp
-=============================================================
-
-.. currentmodule:: robot.commands.realsense.RealSenseServer
-
-.. autofunction:: getDepthAndTimestamp

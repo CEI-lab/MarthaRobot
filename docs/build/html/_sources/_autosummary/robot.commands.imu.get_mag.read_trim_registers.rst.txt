@@ -1,6 +1,0 @@
-robot.commands.imu.get\_mag.read\_trim\_registers
-=================================================
-
-.. currentmodule:: robot.commands.imu.get_mag
-
-.. autofunction:: read_trim_registers

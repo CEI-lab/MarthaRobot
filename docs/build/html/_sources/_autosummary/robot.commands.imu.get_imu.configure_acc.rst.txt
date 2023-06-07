@@ -1,6 +1,0 @@
-robot.commands.imu.get\_imu.configure\_acc
-==========================================
-
-.. currentmodule:: robot.commands.imu.get_imu
-
-.. autofunction:: configure_acc

@@ -1,6 +1,0 @@
-robot.commands.imu.get\_imu.fifo\_flush
-=======================================
-
-.. currentmodule:: robot.commands.imu.get_imu
-
-.. autofunction:: fifo_flush

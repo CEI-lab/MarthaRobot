@@ -1,6 +1,0 @@
-robot.commands.imu.get\_imu.configure\_bmi160
-=============================================
-
-.. currentmodule:: robot.commands.imu.get_imu
-
-.. autofunction:: configure_bmi160

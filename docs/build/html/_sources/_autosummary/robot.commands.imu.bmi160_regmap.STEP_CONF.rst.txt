@@ -1,6 +1,0 @@
-robot.commands.imu.bmi160\_regmap.STEP\_CONF
-============================================
-
-.. currentmodule:: robot.commands.imu.bmi160_regmap
-
-.. autodata:: STEP_CONF

@@ -1,6 +1,0 @@
-client.configurations.update
-============================
-
-.. currentmodule:: client.configurations
-
-.. autofunction:: update

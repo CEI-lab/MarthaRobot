@@ -1,6 +1,0 @@
-robot.commands.imu.get\_imu.read\_raw\_sensors
-==============================================
-
-.. currentmodule:: robot.commands.imu.get_imu
-
-.. autofunction:: read_raw_sensors

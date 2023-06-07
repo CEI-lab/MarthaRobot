@@ -1,6 +1,0 @@
-client.client.parse\_command
-============================
-
-.. currentmodule:: client.client
-
-.. autofunction:: parse_command

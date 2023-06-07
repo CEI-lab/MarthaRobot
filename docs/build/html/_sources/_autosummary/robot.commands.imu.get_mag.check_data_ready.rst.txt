@@ -1,6 +1,0 @@
-robot.commands.imu.get\_mag.check\_data\_ready
-==============================================
-
-.. currentmodule:: robot.commands.imu.get_mag
-
-.. autofunction:: check_data_ready

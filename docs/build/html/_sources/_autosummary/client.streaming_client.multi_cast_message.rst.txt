@@ -1,6 +1,0 @@
-client.streaming\_client.multi\_cast\_message
-=============================================
-
-.. currentmodule:: client.streaming_client
-
-.. autofunction:: multi_cast_message
