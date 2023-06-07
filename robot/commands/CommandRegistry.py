@@ -1,17 +1,17 @@
-import sys
-from pathlib import Path
-
-home = str(Path.home())
-sys.path.append(home + "/HSI/commands/")
-import logging
-from robot.commands.CommandInterface import CommandInterface
-
 """
 Implementation of a command registry that will store Command objects
 along their respective command names as used in the JSON protocol.
 
 CEI-LAB, Cornell University 2019
 """
+import sys
+
+from pathlib import Path
+
+home = str(Path.home())
+sys.path.append(home + "/HSI/commands/")
+import logging
+from robot.commands.CommandInterface import CommandInterface
 
 
 class CommandRegistry:

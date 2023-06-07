@@ -1,3 +1,8 @@
+"""
+
+
+CEI-LAB, Cornell University 2019
+"""
 import sys
 import threading
 import subprocess
@@ -10,29 +15,21 @@ from robot.commands.CommandInterface import CommandInterface
 
 import logging
 
-"""
-Implementation of SetSpeedCommand that will set speed for right and left wheels.
-
-CEI-LAB, Cornell University 2019
-"""
-
 
 class SleepTwentySecsCommand(CommandInterface):
     _lock = Lock()
 
     def sleepTwenty(self, responseStatusCallback, jsonObject):
-        """
-        This method will be called to set speed for wheels.
+        """This method will wait for 20 seconds before sending a response.
 
-        Inputs:
-            responseStatusCallback : A callback function has to be passed, that will
-                send status of command execution. This callback will be passed by the
+        :param responseStatusCallback: A callback function has to be passed, that will
+                send status of command execution back to the controller. This callback will be passed by the
                 caller of execute().
-            jsonObject : A JSON object containing text.
-
-        Outputs:
-            None
+        :type responseStatusCallback: func
+        :param jsonObject: A JSON object initially containing the command json, modified to include response information.
+        :type jsonObject: dictionary
         """
+
         try:
             self._lock.acquire()
             begin_time = time.time()
@@ -48,12 +45,25 @@ class SleepTwentySecsCommand(CommandInterface):
                 print(jsonObject)
             # print("4:{}".format(time.time()-begin_time))
         except:
-            logging.error(
-                'Error')
+            logging.error("Error")
         finally:
             self._lock.release()
 
     def execute(self, responseStatusCallback, jsonObject):
-        t1 = threading.Thread(target=self.sleepTwenty, args=(
-            responseStatusCallback, jsonObject,))
+        """Start a thread to sleep twenty seconds before responding.
+
+        :param responseStatusCallback: A callback function has to be passed, that will
+                send status of command execution back to the controller. This callback will be passed by the
+                caller of execute().
+        :type responseStatusCallback: func
+        :param jsonObject: A JSON object initially containing the command json, modified to include response information.
+        :type jsonObject: dictionary
+        """
+        t1 = threading.Thread(
+            target=self.sleepTwenty,
+            args=(
+                responseStatusCallback,
+                jsonObject,
+            ),
+        )
         t1.start()

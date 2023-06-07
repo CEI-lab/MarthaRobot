@@ -6,11 +6,28 @@
 Welcome to MarthaRobot's documentation!
 =======================================
 
+
+.. note::
+
+   This documentation is actively under construction.  Some secitons may be missing, innacurate, or out of place.
+
+Documentation
+=============
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
 
+   Home page <self>
+   client
+   robot
+   configurations
 
+Inheritance
+===========
+
+.. inheritance-diagram:: robot.HSIMaster
+
+   :parts: 2
 
 Indices and tables
 ==================

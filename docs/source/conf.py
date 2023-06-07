@@ -26,12 +26,18 @@ sys.path.insert(
 extensions = [
     "sphinx.ext.duration",
     "sphinx.ext.doctest",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
+    "sphinx_autopackagesummary",
+    "sphinx.ext.autodoc",  # Core Sphinx library for auto html doc generation from docstrings
+    "sphinx.ext.autosummary",  # Create neat summary tables for modules/classes/methods etc
+    "sphinx.ext.intersphinx",  # Link to other project's documentation (see mapping below)
+    "sphinx.ext.viewcode",  # Add a link to the Python source code for classes, functions etc.
+    "sphinx_autodoc_typehints",  # Automatically document param types (less noise in class signature)
+    "sphinx.ext.graphviz",
+    "sphinx.ext.inheritance_diagram",
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = []
+exclude_patterns = ["robot/__main__.py", "calibrate_cam"]
 autodoc_mock_imports = [
     "RPi",
     "cv2",
@@ -42,14 +48,30 @@ autodoc_mock_imports = [
     "smbus",
     "pyttsx3",
     "pyrealsense2",
-    "vl53l0x_python",
-    "tof",
     "spidev",
-    "gpiozero",
+    "vl53l0x_python",
     "qwiic_scmd",
     "serial",
+    "robot.commands.tof.VL53L0X",
+    "TCPManagerTests",
 ]
-
+autosummary_mock_imports = [
+    "RPi",
+    "cv2",
+    "PIL",
+    "picamera",
+    "adafruit_vl53l0x",
+    "numpy",
+    "smbus",
+    "pyttsx3",
+    "pyrealsense2",
+    "spidev",
+    "vl53l0x_python",
+    "qwiic_scmd",
+    "serial",
+    "robot.commands.tof.VL53L0X",
+    "TCPManagerTests",
+]
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
@@ -58,9 +80,14 @@ html_show_sourcelink = (
 )
 autodoc_inherit_docstrings = True  # If no docstring, inherit from base class
 
+# autodoc_typehints = "description" # Sphinx-native method. Not as good as sphinx_autodoc_typehints
+add_module_names = False  # Remove namespaces from class/method signatures
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+html_theme = "groundwork"
 html_static_path = ["_static"]
+
+html_theme_options = {}

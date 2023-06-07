@@ -1,4 +1,3 @@
-
 """
   A text based interface to send commands to and recieve responses from a marthabot.
 """
@@ -9,7 +8,7 @@ import pickle
 import cv2
 import numpy as np
 import time
-import Configurations as config
+import configurations as config
 import logging as log
 import atexit
 
@@ -32,9 +31,8 @@ def sendObject(message):
 
 
 def sendAgainAndAgain():
-    """Helper function to repeatedly send a command
-    """    
-    while (True):
+    """Helper function to repeatedly send a command"""
+    while True:
         myCommand = "ext single"
         sendObject(parse_command(myCommand))
         print("\n")
@@ -49,7 +47,7 @@ def receiveResponse(command, port):
     :type command: string
     :param port: Port to listen for a response on
     :type port: int
-    """    
+    """
     command = command.split()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -66,35 +64,45 @@ def receiveResponse(command, port):
     s.close()
     data_arr = pickle.loads(b"".join(data))
     log.debug(data_arr)
-    if command[0] == "image" and command[1] == "get" or command[0] == "int" and command[1] == "single" or command[0] == "ext" and command[1] == "single" or command[0] == "rs" and command[1] == "single":
+    if (
+        command[0] == "image"
+        and command[1] == "get"
+        or command[0] == "int"
+        and command[1] == "single"
+        or command[0] == "ext"
+        and command[1] == "single"
+        or command[0] == "rs"
+        and command[1] == "single"
+    ):
         try:
-            if (command[0] == "int" or command[0] == "ext"):
+            if command[0] == "int" or command[0] == "ext":
                 cv2.imshow("image", data_arr["data"][:, :, ::-1])
-            if (command[0] == "image" or command[0] == "rs"):
-                cv2.imshow(
-                    "image", data_arr["data"] / np.amax(data_arr["data"]))
+            if command[0] == "image" or command[0] == "rs":
+                cv2.imshow("image", data_arr["data"] / np.amax(data_arr["data"]))
             cv2.waitKey(1)
         except:
             log.warning("Problem recieving response")
             pass
-#    elif command[0] == "ext" and command[1] == "streaming":
-#        sendAgainAndAgain()
+    #    elif command[0] == "ext" and command[1] == "streaming":
+    #        sendAgainAndAgain()
     else:
         try:
             log.info("response was: \n")
             log.info(data_arr["data"])
         except:
             pass
+
+
 # image = cv2.imread('137.png')
 
 
 def parse_command(command):
     """
-    Parse and respond to text commands from the user.  
+    Parse and respond to text commands from the user.
 
     Commands
         motor [int left] [int right]
-        hello 
+        hello
         sleep
         front [int speed]
         right [int speed]
@@ -121,40 +129,40 @@ def parse_command(command):
             "priority": 1,  # , Priority, type int
             "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
             "rightSpeed": int(command[2]),  # Right speed value, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "hello":
         return {
             "id": int(time.time()),
             "cmd": "PrintHelloCommand",  # Command name
-            "type": 'hello',
+            "type": "hello",
             "height": 480,
             "width": 640,
             "count_period": 10,
             "colorize": 1,
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "sleep":
         return {
             "id": int(time.time()),
             "cmd": "SleepTwentySecsCommand",  # Command name
-            "type": 'hello',
+            "type": "hello",
             "height": 480,
             "width": 640,
             "count_period": 10,
             "colorize": 1,
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
-    elif command[0] == "front" :
+    elif command[0] == "front":
         return {
             "id": int(time.time()),
             "cmd": "SetSpeedCommand",
             "priority": 1,  # , Priority, type int
             "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
             "rightSpeed": int(command[1]),  # Right speed value, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "back":
         return {
@@ -163,7 +171,7 @@ def parse_command(command):
             "priority": 1,  # , Priority, type int
             "leftSpeed": int(command[1]),  # Left speed value, type int
             "rightSpeed": -1 * int(command[1]),  # Right speed value, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "left":
         return {
@@ -172,7 +180,7 @@ def parse_command(command):
             "priority": 1,  # , Priority, type int
             "leftSpeed": int(command[1]),  # Left speed value, type int
             "rightSpeed": int(command[1]),  # Right speed value, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "right":
         return {
@@ -181,7 +189,7 @@ def parse_command(command):
             "priority": 1,  # , Priority, type int
             "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
             "rightSpeed": -1 * int(command[1]),  # Right speed value, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "stop":
         return {
@@ -190,7 +198,7 @@ def parse_command(command):
             "priority": 1,  # , Priority, type int
             "leftSpeed": 0,  # Left speed value, type int
             "rightSpeed": 0,  # Right speed value, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "tts":
         return {
@@ -210,7 +218,7 @@ def parse_command(command):
             "type": command[1],  # list, get, upload, display
             "name": name,
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "internal":
         return {
@@ -219,7 +227,7 @@ def parse_command(command):
             "type": command[1],  # single, continuous-start, continuous-stop
             "fps": 15,
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "external":
         return {
@@ -230,15 +238,15 @@ def parse_command(command):
             "priority": 1,  # , Priority, type int
             "receivingPort": config.response_port,
             "height": 64,
-            "width": 48
+            "width": 48,
         }
-    elif command[0] == "rs": 
+    elif command[0] == "rs":
         return {
             "id": int(time.time()),
             "cmd": "RealSenseCommand",  # Command name
             "type": command[1],  # single, continuous-start, continuous-stop
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "tof":
         return {
@@ -246,7 +254,7 @@ def parse_command(command):
             "cmd": "TimeofFlightCommand",  # Command name
             "type": command[1],  # single, stream
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port
+            "receivingPort": config.response_port,
         }
     elif command[0] == "bladder":
         if len(command) == 5:
@@ -258,16 +266,16 @@ def parse_command(command):
                 "direction": command[3],
                 "dist": command[4],
                 "priority": 1,  # , Priority, type int
-                "receivingPort": 28200
+                "receivingPort": 28200,
             }
-        elif len(command) == 3:             
+        elif len(command) == 3:
             return {
                 "id": int(time.time()),
                 "cmd": "BladderCommand",  # Command name
                 "action": command[1],  # single, stream
                 "dist": command[2],
                 "priority": 1,  # , Priority, type int
-                "receivingPort": 28200
+                "receivingPort": 28200,
             }
         else:
             return {
@@ -275,22 +283,25 @@ def parse_command(command):
                 "cmd": "UnknownCommand",  # Command name
                 "action": command[1],  # single, stream
                 "priority": 1,  # , Priority, type int
-                "receivingPort": 28200
+                "receivingPort": 28200,
             }
     else:
         print("Invalid command")
         return
 
+
 # emergency stop
 def exit_handler():
-    sendObject(parse_command('stop'))
+    sendObject(parse_command("stop"))
+
 
 # log.basicConfig(level=logging.DEBUG)
 
-while True:
-    print("\n")
-    command = input("Enter command:\n")
-    parsed = parse_command(command)
-    log.info(f"Sending {parsed['cmd']} at {time.time()}")
-    sendObject(parsed)
-    receiveResponse(command, config.response_port)
+if __name__ == "__main__":
+    while True:
+        print("\n")
+        command = input("Enter command:\n")
+        parsed = parse_command(command)
+        log.info(f"Sending {parsed['cmd']} at {time.time()}")
+        sendObject(parsed)
+        receiveResponse(command, config.response_port)
