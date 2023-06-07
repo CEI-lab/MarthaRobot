@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>client.client &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/groundwork.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">client.client</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for client.client</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  A text based interface to send commands to and recieve responses from a marthabot.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">configurations</span> <span class="k">as</span> <span class="nn">config</span>
+<span class="kn">import</span> <span class="nn">logging</span> <span class="k">as</span> <span class="nn">log</span>
+<span class="kn">import</span> <span class="nn">atexit</span>
+
+
+<div class="viewcode-block" id="sendObject"><a class="viewcode-back" href="../../_autosummary/client.client.sendObject.html#client.client.sendObject">[docs]</a><span class="k">def</span> <span class="nf">sendObject</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    sendObject Send a command dictionary to the robot</span>
+
+<span class="sd">    :param message: Dictionary defining a command</span>
+<span class="sd">    :type message: dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="c1"># connect to robot</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">config</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">command_port</span><span class="p">))</span>
+
+    <span class="c1"># send pickled command</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="sendAgainAndAgain"><a class="viewcode-back" href="../../_autosummary/client.client.sendAgainAndAgain.html#client.client.sendAgainAndAgain">[docs]</a><span class="k">def</span> <span class="nf">sendAgainAndAgain</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to repeatedly send a command&quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">myCommand</span> <span class="o">=</span> <span class="s2">&quot;ext single&quot;</span>
+        <span class="n">sendObject</span><span class="p">(</span><span class="n">parse_command</span><span class="p">(</span><span class="n">myCommand</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="n">receiveResponse</span><span class="p">(</span><span class="n">myCommand</span><span class="p">,</span> <span class="mi">28200</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="receiveResponse"><a class="viewcode-back" href="../../_autosummary/client.client.receiveResponse.html#client.client.receiveResponse">[docs]</a><span class="k">def</span> <span class="nf">receiveResponse</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recieve response from the robot</span>
+
+<span class="sd">    :param command: Command that was sent to the robot</span>
+<span class="sd">    :type command: string</span>
+<span class="sd">    :param port: Port to listen for a response on</span>
+<span class="sd">    :type port: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">connection</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># collect all packets</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">packet</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">bytes_per_packet</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">packet</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">data_arr</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">data_arr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;image&quot;</span>
+        <span class="ow">and</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;get&quot;</span>
+        <span class="ow">or</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;int&quot;</span>
+        <span class="ow">and</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span>
+        <span class="ow">or</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ext&quot;</span>
+        <span class="ow">and</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span>
+        <span class="ow">or</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rs&quot;</span>
+        <span class="ow">and</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span>
+    <span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;int&quot;</span> <span class="ow">or</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ext&quot;</span><span class="p">:</span>
+                <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="n">data_arr</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;image&quot;</span> <span class="ow">or</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rs&quot;</span><span class="p">:</span>
+                <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="n">data_arr</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">data_arr</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]))</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Problem recieving response&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
+    <span class="c1">#    elif command[0] == &quot;ext&quot; and command[1] == &quot;streaming&quot;:</span>
+    <span class="c1">#        sendAgainAndAgain()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;response was: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data_arr</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+<span class="c1"># image = cv2.imread(&#39;137.png&#39;)</span>
+
+
+<div class="viewcode-block" id="parse_command"><a class="viewcode-back" href="../../_autosummary/client.client.parse_command.html#client.client.parse_command">[docs]</a><span class="k">def</span> <span class="nf">parse_command</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse and respond to text commands from the user.</span>
+
+<span class="sd">    Commands</span>
+<span class="sd">        motor [int left] [int right]</span>
+<span class="sd">        hello</span>
+<span class="sd">        sleep</span>
+<span class="sd">        front [int speed]</span>
+<span class="sd">        right [int speed]</span>
+<span class="sd">        left [int speed]</span>
+<span class="sd">        back [int speed]</span>
+<span class="sd">        stop</span>
+<span class="sd">        tts [string message]</span>
+<span class="sd">        image [&quot;list&quot;,&quot;get&quot;,&quot;upload&quot;,&quot;display&quot;] [string filename ()]</span>
+<span class="sd">        internal [&quot;single&quot;, &quot;continuous-start&quot;, &quot;continuous-stop&quot;]</span>
+<span class="sd">        external [&quot;single&quot;, &quot;continuous-start&quot;, &quot;continuous-stop&quot;]</span>
+<span class="sd">        bladder [&quot;inflate&quot;,&quot;deflate&quot;,&quot;&quot;] [int motor] [direction] [int distance]</span>
+
+<span class="sd">    :param command: A human readable command</span>
+<span class="sd">    :type command: str</span>
+<span class="sd">    :return: A dictionary with the needed metadata to send to a marthabot</span>
+<span class="sd">    :rtype: dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">command</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;motor&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;SetSpeedCommand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;leftSpeed&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># Left speed value, type int</span>
+            <span class="s2">&quot;rightSpeed&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>  <span class="c1"># Right speed value, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;hello&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;PrintHelloCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;hello&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mi">480</span><span class="p">,</span>
+            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">640</span><span class="p">,</span>
+            <span class="s2">&quot;count_period&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;colorize&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;sleep&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;SleepTwentySecsCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;hello&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mi">480</span><span class="p">,</span>
+            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">640</span><span class="p">,</span>
+            <span class="s2">&quot;count_period&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;colorize&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;front&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;SetSpeedCommand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;leftSpeed&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># Left speed value, type int</span>
+            <span class="s2">&quot;rightSpeed&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># Right speed value, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;SetSpeedCommand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;leftSpeed&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># Left speed value, type int</span>
+            <span class="s2">&quot;rightSpeed&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># Right speed value, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;left&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;SetSpeedCommand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;leftSpeed&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># Left speed value, type int</span>
+            <span class="s2">&quot;rightSpeed&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># Right speed value, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;SetSpeedCommand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;leftSpeed&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># Left speed value, type int</span>
+            <span class="s2">&quot;rightSpeed&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># Right speed value, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;stop&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;SetSpeedCommand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;leftSpeed&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># Left speed value, type int</span>
+            <span class="s2">&quot;rightSpeed&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># Right speed value, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;tts&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;TextToSpeechCommand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;image&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">command</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;ImageCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># list, get, upload, display</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;internal&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;InternalCameraCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># single, continuous-start, continuous-stop</span>
+            <span class="s2">&quot;fps&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;external&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;ExternalCameraCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># single, continuous-start, continuous-stop</span>
+            <span class="s2">&quot;fps&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+            <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">48</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rs&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;RealSenseCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># single, continuous-start, continuous-stop</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;tof&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;TimeofFlightCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># single, stream</span>
+            <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+            <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">command</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bladder&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+                <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;BladderCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s2">&quot;motor&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="s2">&quot;direction&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                <span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+                <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="mi">28200</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+                <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;BladderCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># single, stream</span>
+                <span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+                <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="mi">28200</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+                <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;UnknownCommand&quot;</span><span class="p">,</span>  <span class="c1"># Command name</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># single, stream</span>
+                <span class="s2">&quot;priority&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># , Priority, type int</span>
+                <span class="s2">&quot;receivingPort&quot;</span><span class="p">:</span> <span class="mi">28200</span><span class="p">,</span>
+            <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid command&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<span class="c1"># emergency stop</span>
+<div class="viewcode-block" id="exit_handler"><a class="viewcode-back" href="../../_autosummary/client.client.exit_handler.html#client.client.exit_handler">[docs]</a><span class="k">def</span> <span class="nf">exit_handler</span><span class="p">():</span>
+    <span class="n">sendObject</span><span class="p">(</span><span class="n">parse_command</span><span class="p">(</span><span class="s2">&quot;stop&quot;</span><span class="p">))</span></div>
+
+
+<span class="c1"># log.basicConfig(level=logging.DEBUG)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter command:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">parse_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sending </span><span class="si">{</span><span class="n">parsed</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sendObject</span><span class="p">(</span><span class="n">parsed</span><span class="p">)</span>
+        <span class="n">receiveResponse</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">response_port</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">client.client</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

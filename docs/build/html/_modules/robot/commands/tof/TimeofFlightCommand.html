@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>robot.commands.tof.TimeofFlightCommand &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/groundwork.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.tof.TimeofFlightCommand</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for robot.commands.tof.TimeofFlightCommand</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">robot.commands.CommandInterface</span> <span class="kn">import</span> <span class="n">CommandInterface</span>
+<span class="kn">import</span> <span class="nn">robot.configurations</span> <span class="k">as</span> <span class="nn">config</span>
+
+<span class="c1"># import VL53L0X</span>
+<span class="kn">import</span> <span class="nn">adafruit_vl53l0x</span> <span class="k">as</span> <span class="nn">VL53L0X</span>
+<span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+<span class="kn">from</span> <span class="nn">robot.commands.tof</span> <span class="kn">import</span> <span class="n">TimeofFlightServer</span>
+<span class="kn">import</span> <span class="nn">asyncore</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of TimeofFlightCommand that will produce sound from text in json object.</span>
+
+<span class="sd">CEI-LAB, Cornell University 2019</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="TimeofFlightCommand"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.html#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand">[docs]</a><span class="k">class</span> <span class="nc">TimeofFlightCommand</span><span class="p">(</span><span class="n">CommandInterface</span><span class="p">):</span>
+    <span class="n">streaming</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="TimeofFlightCommand.execute_helper"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.html#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute_helper">[docs]</a>    <span class="k">def</span> <span class="nf">execute_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">responseStatusCallback</span><span class="p">,</span> <span class="n">jsonObject</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper for :func:`execute()&lt;robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute&gt;`.</span>
+
+
+<span class="sd">        :param responseStatusCallback: A callback function has to be passed, that will</span>
+<span class="sd">                send status of command execution back to the controller. This callback will be passed by the</span>
+<span class="sd">                caller of execute().</span>
+<span class="sd">        :type responseStatusCallback: func</span>
+<span class="sd">        :param jsonObject: A JSON object initially containing the command json, modified to include response information.</span>
+<span class="sd">        :type jsonObject: dictionary</span>
+
+<span class="sd">        :mod:`TimeofFlightCommand&lt;robot.commands.tof</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span><span class="p">:</span>
+                <span class="n">shutdown_pins</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">TOF_PINS</span>
+                <span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">shutdown_pins</span><span class="p">:</span>
+                    <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+                    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+                <span class="c1"># TODO change to use config.TOF_ADDR[0-2]</span>
+
+                <span class="n">tof_objects</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">tof_objects</span><span class="p">[</span><span class="n">shutdown_pins</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">VL53L0X</span><span class="o">.</span><span class="n">VL53L0X</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="mh">0x2A</span><span class="p">)</span>
+                <span class="n">tof_objects</span><span class="p">[</span><span class="n">shutdown_pins</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">VL53L0X</span><span class="o">.</span><span class="n">VL53L0X</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="mh">0x2C</span><span class="p">)</span>
+                <span class="n">tof_objects</span><span class="p">[</span><span class="n">shutdown_pins</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">VL53L0X</span><span class="o">.</span><span class="n">VL53L0X</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="mh">0x2E</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">shutdown_pins</span><span class="p">:</span>
+                    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.50</span><span class="p">)</span>
+                    <span class="n">tof_objects</span><span class="p">[</span><span class="n">pin</span><span class="p">]</span><span class="o">.</span><span class="n">start_ranging</span><span class="p">(</span><span class="n">VL53L0X</span><span class="o">.</span><span class="n">VL53L0X_BETTER_ACCURACY_MODE</span><span class="p">)</span>
+
+                <span class="n">_ToF</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                    <span class="n">distance</span> <span class="o">=</span> <span class="n">tof_objects</span><span class="p">[</span><span class="n">shutdown_pins</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">get_distance</span><span class="p">()</span>
+                    <span class="k">while</span> <span class="n">distance</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">shutdown_pins</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+                        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">shutdown_pins</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+                        <span class="n">tof_objects</span><span class="p">[</span><span class="n">shutdown_pins</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">start_ranging</span><span class="p">(</span>
+                            <span class="n">VL53L0X</span><span class="o">.</span><span class="n">VL53L0X_BETTER_ACCURACY_MODE</span>
+                        <span class="p">)</span>
+                    <span class="n">_ToF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance</span>
+
+                <span class="n">GPIO</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+
+                <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_ToF</span>
+            <span class="k">if</span> <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;stream&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;count_period&quot;</span> <span class="ow">in</span> <span class="n">jsonObject</span><span class="p">:</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">TIMEOFFLIGHT_COUNT_PERIOD</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;count_period&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">streaming</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">TimeofFlightServer</span><span class="o">.</span><span class="n">TOFMulticastServer</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">streaming</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">if</span> <span class="n">responseStatusCallback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">responseStatusCallback</span><span class="p">(</span><span class="n">jsonObject</span><span class="p">)</span>
+                    <span class="n">asyncore</span><span class="o">.</span><span class="n">loop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">jsonObject</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;stop&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">streaming</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">streaming</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">closeServer</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ToFCommand : error in jsonObject&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">responseStatusCallback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">responseStatusCallback</span><span class="p">(</span><span class="n">jsonObject</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TimeofFlightCommand.execute"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.html#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">responseStatusCallback</span><span class="p">,</span> <span class="n">jsonObject</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will create a thread to execute the input command.</span>
+
+<span class="sd">        :param responseStatusCallback: A callback function has to be passed, that will</span>
+<span class="sd">                        send status of command execution back to the controller. This callback will be passed by the</span>
+<span class="sd">                        caller of execute().</span>
+<span class="sd">        :type responseStatusCallback: func(jsonObject) -&gt;</span>
+<span class="sd">        :param jsonObject: A JSON object initially containing the command json, modified to include response information.</span>
+<span class="sd">        :type jsonObject: dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">execute_helper</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">responseStatusCallback</span><span class="p">,</span>
+                <span class="n">jsonObject</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;[Time: </span><span class="si">%(relativeCreated)6d</span><span class="s2">] &quot;</span>
+        <span class="s2">&quot;[Thread: &lt;</span><span class="si">%(threadName)s</span><span class="s2">&gt;] &quot;</span>  <span class="c1"># Uncomment the following line to include the function name in the log</span>
+        <span class="c1"># &#39;%(funcName)s in &#39;</span>
+        <span class="s2">&quot;[File: {</span><span class="si">%(filename)s</span><span class="s2">:</span><span class="si">%(lineno)d</span><span class="s2">}] &quot;</span> <span class="s2">&quot;</span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">obj1</span> <span class="o">=</span> <span class="n">TimeofFlightCommand</span><span class="p">()</span>
+    <span class="n">obj1</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;startSendingToF&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;countPeriod&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">obj1</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;startSendingToF&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;countPeriodXX&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="n">obj2</span> <span class="o">=</span> <span class="n">TimeofFlightCommand</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; stop reading with new singelton class &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;</span><span class="p">)</span>
+    <span class="n">obj2</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;startSendingToF&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+    <span class="n">obj2</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;startSendingToF&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.tof.TimeofFlightCommand</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

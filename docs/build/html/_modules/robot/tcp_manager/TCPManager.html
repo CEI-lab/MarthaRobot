@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>robot.tcp_manager.TCPManager &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/groundwork.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.tcp_manager.TCPManager</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for robot.tcp_manager.TCPManager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">robot.configurations</span> <span class="k">as</span> <span class="nn">config</span>
+<span class="kn">from</span> <span class="nn">robot.resources.classes.ComparableDict</span> <span class="kn">import</span> <span class="n">ComparableDict</span>
+
+<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">TCPManager that creates the tcp connection. </span>
+
+<span class="sd">CEI-LAB, Cornell University 2019</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="TCPManager"><a class="viewcode-back" href="../../../_autosummary/robot.tcp_manager.TCPManager.TCPManager.html#robot.tcp_manager.TCPManager.TCPManager">[docs]</a><span class="k">class</span> <span class="nc">TCPManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">command_queue</span><span class="p">,</span> <span class="n">status_queue</span><span class="p">,</span> <span class="n">command_event</span><span class="p">,</span> <span class="n">status_event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will make sure the TCPManager is singelton. </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                None.</span>
+
+<span class="sd">            Outputs:        </span>
+<span class="sd">                None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command_queue</span><span class="p">,</span> <span class="n">status_queue</span><span class="p">,</span> <span class="n">command_event</span><span class="p">,</span> <span class="n">status_event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will create the module TCPManager. </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                None.</span>
+
+<span class="sd">            Outputs:        </span>
+<span class="sd">                None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># establish the tcp socket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_received_command_queue</span> <span class="o">=</span> <span class="n">command_queue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_queue</span> <span class="o">=</span> <span class="n">status_queue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_ip</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">LOOP_BACK_IP_ADDRESS</span>
+        <span class="c1"># The address stays the same forever</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_raspi_ip</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">RASPI_IP_ADDRESS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_tcp_port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">TCP_PORT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_last_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_ip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_event</span> <span class="o">=</span> <span class="n">command_event</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_event</span> <span class="o">=</span> <span class="n">status_event</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will delete the TCPManager class after it closes. </span>
+<span class="sd">            Inputs:</span>
+<span class="sd">                None. </span>
+<span class="sd">            Outputs:        </span>
+<span class="sd">                None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">del</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_listenTCPHelper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># while True:</span>
+        <span class="c1"># Using the _test_json_object in TCPManagerTest.py, the json_object has &quot;133&quot; bytes after encode(&#39;utf-8&#39;)</span>
+        <span class="c1"># data = connection.recv(CONFIGURATIONS.get(&quot;MAX_BYTES_OVER_TCP&quot;))  # unit in bytes.</span>
+        <span class="c1"># data = str(data.decode(CONFIGURATIONS.get(&quot;TCP_ENCODING&quot;)))</span>
+        <span class="c1"># logging.info(&#39;TCPManager: TCP server received &#39; + data)</span>
+
+        <span class="c1"># if data:</span>
+        <span class="c1">#     jsonObject = self._parseJSONObject(data)</span>
+        <span class="c1">#     jsonObject[&quot;clientIPAddress&quot;] = client_address</span>
+        <span class="c1">#     self._my_received_command_queue.enqueue(jsonObject)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">packet</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">packet</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">data</span> <span class="o">!=</span> <span class="p">[]:</span>
+                <span class="c1"># TODO figure out why this was implemented incorrectly</span>
+                <span class="n">data_arr</span> <span class="o">=</span> <span class="n">ComparableDict</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+                <span class="c1"># data_arr = ComparableDict(eval(data[0].decode()))</span>
+                <span class="n">data_arr</span><span class="p">[</span><span class="s2">&quot;clientIPAddress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">client_address</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_my_received_command_queue</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">data_arr</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;_listenTCPHelper: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
+        <span class="c1"># finally:</span>
+        <span class="c1"># try:</span>
+        <span class="c1">#     connection.close()</span>
+        <span class="c1"># except OSError:</span>
+        <span class="c1">#     logging.error(&quot;TCPManager: The connection couldn&#39;t close in listenTCP. &quot;)</span>
+
+<div class="viewcode-block" id="TCPManager.listenTCP"><a class="viewcode-back" href="../../../_autosummary/robot.tcp_manager.TCPManager.TCPManager.html#robot.tcp_manager.TCPManager.TCPManager.listenTCP">[docs]</a>    <span class="k">def</span> <span class="nf">listenTCP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will be keep listening to the input data, parse it and enqueue to the command queue. </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                None. </span>
+
+<span class="sd">            Outputs:        </span>
+<span class="sd">                None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setServer</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;TCPManager: waiting for a connection&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+                <span class="n">connection</span><span class="p">,</span> <span class="n">client_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;TCPManager: client connected: &#39;</span> <span class="o">+</span>
+                             <span class="nb">str</span><span class="p">(</span><span class="n">client_address</span><span class="p">))</span>
+                <span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_listenTCPHelper</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">connection</span><span class="p">,</span> <span class="n">client_address</span><span class="p">[</span><span class="mi">0</span><span class="p">],))</span>
+                <span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;TCPManager: Exception. &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+                <span class="c1"># try:</span>
+                <span class="c1">#     connection.close()</span>
+                <span class="c1"># except OSError:</span>
+                <span class="c1">#     logging.error(&quot;TCPManager: The connection couldn&#39;t close in listenTCP. &quot;)</span>
+
+    <span class="k">def</span> <span class="nf">_setServer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will set the a server. </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                None. </span>
+
+<span class="sd">            Outputs:</span>
+<span class="sd">                None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">del</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;TCPManager: starting up on port </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_my_tcp_port</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_tcp_port</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;TCPManager: after bind&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;TCPManager: after listen&#39;</span><span class="p">)</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;TCPManager: set server can&#39;t create socket. &quot;</span><span class="p">)</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+    <span class="c1"># the parameter is backlog parameter. It specifies the number of unaccepted connectins</span>
+    <span class="c1"># that the system will allow before refusing new connections. Starting in Python 3.5, it&#39;s optional.</span>
+    <span class="c1"># If not specified, a default backlog value is chosen.</span>
+
+    <span class="k">def</span> <span class="nf">_parseJSONObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">received_json_string</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will parse the input string (eg. JSON object) into different key pairs. </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                String that contain the command input from the sender. </span>
+
+<span class="sd">            Outputs:</span>
+<span class="sd">                ValueObjects (eg. Command dictionaries) that is parsed from the string. </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># json.loads would parse the received json string into the json object</span>
+            <span class="n">_received_JSON_object</span> <span class="o">=</span> <span class="n">ComparableDict</span><span class="p">(</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">received_json_string</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">_received_JSON_object</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;TCPManager: The json object in parseJSONObject is empty!&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_sendIPToRasPi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whenever there is a new IP address, this method will send it to the raspberry pi. </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                None. </span>
+
+<span class="sd">            Outputs:</span>
+<span class="sd">                None. </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;TCPManager: my ip changed from </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_my_last_ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_ip</span><span class="p">))</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">RASPI_TXT_FILE_FULL_PATH_NAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">home</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
+                <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;hsiip </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_my_ip</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">SENDING_IP_ADDRESS_TO_PI_COMMAND</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">fname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_raspi_ip</span><span class="p">))</span>
+
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;TCPManager: Can&#39;t send IP to Rasberry Pi&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TCPManager.checkForNewIP"><a class="viewcode-back" href="../../../_autosummary/robot.tcp_manager.TCPManager.TCPManager.html#robot.tcp_manager.TCPManager.TCPManager.checkForNewIP">[docs]</a>    <span class="k">def</span> <span class="nf">checkForNewIP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will check if the host has changed the IP address or not. </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                None. </span>
+
+<span class="sd">            Outputs:</span>
+<span class="sd">                None. </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;TCPManager: check new IP&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_my_ip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s1">&#39;ip addr show wlan0&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;inet &quot;</span><span class="p">)[</span>
+                <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_my_last_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_ip</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;TCPManager: Please update myself IP address&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_my_ip</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">ip_changed</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_last_ip</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_ip</span> <span class="k">else</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">ip_changed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sendIPToRasPi</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_last_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_ip</span></div>
+
+<div class="viewcode-block" id="TCPManager.sendOverTCP"><a class="viewcode-back" href="../../../_autosummary/robot.tcp_manager.TCPManager.TCPManager.html#robot.tcp_manager.TCPManager.TCPManager.sendOverTCP">[docs]</a>    <span class="k">def</span> <span class="nf">sendOverTCP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valueObject</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will send the execute status to the sender side.  </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                ValueObject that indicate whether the execute status is successful or not. </span>
+
+<span class="sd">            Outputs:        </span>
+<span class="sd">                None. </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start sending over tcp&quot;</span><span class="p">)</span>
+
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;TCPManager: sending &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">valueObject</span><span class="p">)</span> <span class="o">+</span>
+                         <span class="s2">&quot; to &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">valueObject</span><span class="p">[</span><span class="s2">&quot;clientIPAddress&quot;</span><span class="p">]))</span>
+
+            <span class="n">client_address</span> <span class="o">=</span> <span class="n">valueObject</span><span class="p">[</span><span class="s2">&quot;clientIPAddress&quot;</span><span class="p">]</span>
+
+            <span class="n">port</span> <span class="o">=</span> <span class="n">valueObject</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;receivingPort&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">port</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">DEFAULT_RECEIVING_PORT</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;TCPManager: Got the port </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">port</span><span class="p">)))</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;TCPManager: Socket ready to send&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="c1"># connect to server on local computer</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">client_address</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+            <span class="c1"># message you send to server</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">valueObject</span><span class="p">)</span>
+            <span class="c1"># message = str(valueObject).encode()</span>
+            <span class="c1"># message sent to server</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;TCPManager: sent data to the client </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client_address</span><span class="p">))</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;TCPManager: coudn&#39;t send data to the client =&gt; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TCPManager.checkForStatus"><a class="viewcode-back" href="../../../_autosummary/robot.tcp_manager.TCPManager.TCPManager.html#robot.tcp_manager.TCPManager.TCPManager.checkForStatus">[docs]</a>    <span class="k">def</span> <span class="nf">checkForStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will check if the status queue is empty or not and send status over. </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                None. </span>
+
+<span class="sd">            Outputs:        </span>
+<span class="sd">                None. </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_queue</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">status_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_queue</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">status_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sendOverTCP</span><span class="p">(</span><span class="n">status_obj</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;TCPManager: The statue queue has output a None object&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">TCPManager</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">parseJSONObject</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;SetSpeed&quot;</span><span class="p">})))</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.tcp_manager.TCPManager</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+client.client.exit\_handler
+===========================
+
+.. currentmodule:: client.client
+
+.. autofunction:: exit_handler

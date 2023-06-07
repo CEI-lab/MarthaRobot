@@ -1,0 +1,39 @@
+﻿configurations
+==============
+
+configurations
+
+
+
+
+.. automodule:: configurations
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   configurations.configurations
+   configurations.tempTODO
+

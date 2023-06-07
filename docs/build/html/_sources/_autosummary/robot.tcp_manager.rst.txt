@@ -1,0 +1,38 @@
+tcp\_manager
+============
+
+robot.tcp_manager
+
+
+
+
+.. automodule:: robot.tcp_manager
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   robot.tcp_manager.TCPManager
+

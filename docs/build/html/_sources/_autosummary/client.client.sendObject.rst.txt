@@ -1,0 +1,6 @@
+client.client.sendObject
+========================
+
+.. currentmodule:: client.client
+
+.. autofunction:: sendObject

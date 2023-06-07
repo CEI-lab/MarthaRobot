@@ -1,0 +1,67 @@
+DevNullHandler
+==============
+
+robot.commands.realsense.RealSenseServer.DevNullHandler
+
+.. currentmodule:: robot.commands.realsense.RealSenseServer
+
+.. autoclass:: DevNullHandler
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DevNullHandler.accept
+      ~DevNullHandler.add_channel
+      ~DevNullHandler.bind
+      ~DevNullHandler.close
+      ~DevNullHandler.connect
+      ~DevNullHandler.create_socket
+      ~DevNullHandler.del_channel
+      ~DevNullHandler.handle_accept
+      ~DevNullHandler.handle_accepted
+      ~DevNullHandler.handle_close
+      ~DevNullHandler.handle_connect
+      ~DevNullHandler.handle_connect_event
+      ~DevNullHandler.handle_error
+      ~DevNullHandler.handle_expt
+      ~DevNullHandler.handle_expt_event
+      ~DevNullHandler.handle_read
+      ~DevNullHandler.handle_read_event
+      ~DevNullHandler.handle_write
+      ~DevNullHandler.handle_write_event
+      ~DevNullHandler.initiate_send
+      ~DevNullHandler.listen
+      ~DevNullHandler.log
+      ~DevNullHandler.log_info
+      ~DevNullHandler.readable
+      ~DevNullHandler.recv
+      ~DevNullHandler.send
+      ~DevNullHandler.set_reuse_addr
+      ~DevNullHandler.set_socket
+      ~DevNullHandler.writable
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DevNullHandler.accepting
+      ~DevNullHandler.addr
+      ~DevNullHandler.closing
+      ~DevNullHandler.connected
+      ~DevNullHandler.connecting
+      ~DevNullHandler.debug
+      ~DevNullHandler.ignore_log_types
+   
+   

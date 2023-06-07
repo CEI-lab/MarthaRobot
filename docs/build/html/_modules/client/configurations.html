@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>client.configurations &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">client.configurations</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for client.configurations</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">(c)Constants and variables for use throughout the project.  Includes GPIO pin numbers, IP addresses, hardware addresses, and more. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="kn">import</span> <span class="nn">tokenize</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">black</span>
+
+
+<span class="n">home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~pi&quot;</span><span class="p">)</span>
+
+<span class="c1"># CONFIGURATIONS = {</span>
+<span class="c1"># IMPORTANT : Image folder will always be in home directory with name &#39;Images&#39;</span>
+<span class="n">IMAGES_DIRECTORY</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/Images/&quot;</span>
+<span class="n">SHOW_DEFAULT_IMAGE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">DEFAULT_IMAGE_ON_STARTUP</span> <span class="o">=</span> <span class="s2">&quot;__0__.jpg&quot;</span>
+<span class="n">DEFAULT_IMAGE_DEFAULT_LOCATION</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/HSI/resources/defaults/&quot;</span>
+<span class="n">DEFAULT_IMAGE_OTHER_LOCATION</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/Images/&quot;</span>
+<span class="n">RASPI_IP_ADDRESS</span> <span class="o">=</span> <span class="s2">&quot;199.168.1.212&quot;</span>
+<span class="n">LOOP_BACK_IP_ADDRESS</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+<span class="n">TCP_PORT</span> <span class="o">=</span> <span class="mi">65432</span>
+<span class="n">TCP_ENCODING</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+<span class="n">DEFAULT_RECEIVING_PORT</span> <span class="o">=</span> <span class="mi">28200</span>
+<span class="n">NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">MAX_BYTES_OVER_TCP</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="n">CHECK_NEW_IP_FROM_PI_FREQUENCY</span> <span class="o">=</span> <span class="mf">0.333</span>
+<span class="n">RASPI_TXT_FILE_FULL_PATH_NAME</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/HSI/ip.txt&quot;</span>
+<span class="n">SENDING_IP_ADDRESS_TO_PI_COMMAND</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;sudo -u pi scp -rp </span><span class="si">{}</span><span class="s2"> pi@</span><span class="si">{}</span><span class="s2">:/home/pi/MEng/meng-hsi-group/tcp&quot;</span>
+<span class="p">)</span>
+<span class="n">SPEED_CONTROLLER_COMMAND</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/HSI/HSI/resources/SmcCmd/./SmcCmd&quot;</span>
+<span class="n">LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID</span> <span class="o">=</span> <span class="s2">&quot;33FF-6D06-4D4B-3731-1919-1543&quot;</span>
+<span class="n">RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID</span> <span class="o">=</span> <span class="s2">&quot;52FF-7606-7283-5255-1917-2267&quot;</span>
+<span class="c1"># Keep reading=time-of-flight measurements and only send periodically on reading count.</span>
+<span class="n">TIMEOFFLIGHT_COUNT_PERIOD</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">ENABLE_FILE_LOGGING</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">LOG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/hsi.log&quot;</span>  <span class="c1"># Always in home directory</span>
+<span class="n">LOGGING_LEVEL</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>  <span class="c1"># For detailed logs change this to &#39;logging.DEBUG&#39;</span>
+<span class="n">NUMBER_OF_AIRCHANNEL_PAIRS</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Number of air-channel pairs or systems.</span>
+<span class="n">TOF_PINS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">27</span><span class="p">]</span>  <span class="c1"># BCM [left middle right]</span>
+
+<span class="c1"># Streaming Ports</span>
+<span class="n">REALSENSE_PORT</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="n">TOF_PORT</span> <span class="o">=</span> <span class="mi">1025</span>
+<span class="n">EXT_CAM_PORT</span> <span class="o">=</span> <span class="mi">1028</span>
+<span class="n">DEFAULT_EXCAM_PORT</span> <span class="o">=</span> <span class="mi">1026</span>
+<span class="n">DEFAULT_INCAM_PORT</span> <span class="o">=</span> <span class="mi">1027</span>
+
+<span class="n">USB_CAM_ID</span> <span class="o">=</span> <span class="s2">&quot;/dev/v4l/by-id/usb-HD_Camera_Manufacturer_VGA_USB_Camera_VGA_USB_Camera-video-index0&quot;</span>
+<span class="n">RTSP_COMMAND</span> <span class="o">=</span> <span class="s2">&quot;resources/v4l2rtspserver/v4l2rtspserver&quot;</span>
+<span class="n">DISPLAY_IMAGE</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># bladder motor 1</span>
+<span class="n">DIR1_1_PIN</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">DIR2_1_PIN</span> <span class="o">=</span> <span class="mi">18</span>
+<span class="n">M1_ADDRESS</span> <span class="o">=</span> <span class="mh">0x5E</span>
+<span class="n">M1_SELECT</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">ENC1_1_PIN</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">ENC2_1_PIN</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="c1"># bladder motor 2</span>
+<span class="n">DIR1_2_PIN</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="n">DIR2_2_PIN</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">M2_ADDRESS</span> <span class="o">=</span> <span class="mh">0x5E</span>
+<span class="n">M1_SELECT</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">ENC1_2_PIN</span> <span class="o">=</span> <span class="mi">17</span>
+<span class="n">ENC2_2_PIN</span> <span class="o">=</span> <span class="mi">18</span>
+<span class="c1"># bladder motor 3</span>
+<span class="n">DIR1_3_PIN</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">DIR2_3_PIN</span> <span class="o">=</span> <span class="mi">22</span>
+<span class="n">M3_ADDRESS</span> <span class="o">=</span> <span class="mh">0xDE</span>
+<span class="n">M1_SELECT</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">ENC1_3_PIN</span> <span class="o">=</span> <span class="mi">19</span>
+<span class="n">ENC2_3_PIN</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="c1"># bladder fan</span>
+<span class="n">FAN_PIN</span> <span class="o">=</span> <span class="mi">21</span>
+<span class="n">BLADDER_SIZE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">160</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">160</span><span class="p">]</span>
+<span class="n">BLADDER_SPEED</span> <span class="o">=</span> <span class="mi">250</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># client.py</span>
+<span class="n">HOST</span> <span class="o">=</span> <span class="s2">&quot;192.168.0.191&quot;</span>
+<span class="n">COMMAND_PORT</span> <span class="o">=</span> <span class="mi">65432</span>
+<span class="n">BYTES_PER_PACKET</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">RESPONSE_PORT</span> <span class="o">=</span> <span class="mi">28200</span>
+
+
+<span class="c1"># streaming_client.py</span>
+<span class="n">STREAM_PORTS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;rs&quot;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">,</span> <span class="s2">&quot;tof&quot;</span><span class="p">:</span> <span class="mi">1025</span><span class="p">,</span> <span class="s2">&quot;ext&quot;</span><span class="p">:</span> <span class="mi">1028</span><span class="p">}</span>
+<span class="n">MC_IP_ADDRESS</span> <span class="o">=</span> <span class="s2">&quot;224.0.0.1&quot;</span>
+<span class="n">STREAM_CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">4096</span>
+
+<span class="c1"># RPI server to get IPs</span>
+<span class="n">RPI_SERVER</span> <span class="o">=</span> <span class="mi">10</span>
+
+
+<div class="viewcode-block" id="update"><a class="viewcode-back" href="../../_autosummary/client.configurations.update.html#client.configurations.update">[docs]</a><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">collected</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">generate_tokens</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">)</span>
+        <span class="n">notfound</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+            <span class="c1"># print(token)</span>
+            <span class="nb">type</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">token</span>
+            <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">type</span><span class="p">,</span> <span class="n">string</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">NAME</span> <span class="ow">and</span> <span class="n">string</span> <span class="o">==</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">op</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+                <span class="n">optype</span><span class="p">,</span> <span class="n">opstring</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">op</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+                <span class="n">valtype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">val</span>
+
+                <span class="k">if</span> <span class="n">notfound</span> <span class="ow">and</span> <span class="n">optype</span> <span class="o">==</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">OP</span> <span class="ow">and</span> <span class="n">opstring</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Configuration </span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2"> updated from </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">tokenize</span><span class="o">.</span><span class="n">OP</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">))</span>
+                    <span class="n">notfound</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">if</span> <span class="n">valtype</span> <span class="o">==</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">str</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                            <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">tokenize</span><span class="o">.</span><span class="n">NUMBER</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">valtype</span> <span class="o">==</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span>
+                        <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">tokenize</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">optype</span><span class="p">,</span> <span class="n">opstring</span><span class="p">))</span>
+                    <span class="n">collected</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">valtype</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+    <span class="n">newSource</span> <span class="o">=</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">untokenize</span><span class="p">(</span><span class="n">collected</span><span class="p">)</span>
+    <span class="n">formated</span> <span class="o">=</span> <span class="n">black</span><span class="o">.</span><span class="n">format_str</span><span class="p">(</span><span class="n">newSource</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">black</span><span class="o">.</span><span class="n">Mode</span><span class="p">())</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">formated</span><span class="p">)</span></div>
+
+
+<span class="n">fileruns</span> <span class="o">=</span> <span class="mi">120</span>
+
+<span class="n">update</span><span class="p">(</span><span class="s2">&quot;fileruns&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">fileruns</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">client.configurations</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

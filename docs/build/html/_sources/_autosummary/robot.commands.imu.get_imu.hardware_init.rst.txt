@@ -1,0 +1,6 @@
+robot.commands.imu.get\_imu.hardware\_init
+==========================================
+
+.. currentmodule:: robot.commands.imu.get_imu
+
+.. autofunction:: hardware_init

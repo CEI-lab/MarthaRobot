@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>TimeofFlightCommand &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/groundwork.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="TimeofFlightServer" href="robot.commands.tof.TimeofFlightServer.html" />
+    <link rel="prev" title="TimeofFlightCommand" href="robot.commands.tof.TimeofFlightCommand.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.tof.TimeofFlightServer.html" title="TimeofFlightServer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.tof.TimeofFlightCommand.html" title="TimeofFlightCommand"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.commands.html" >commands</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.commands.tof.html" >tof</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="robot.commands.tof.TimeofFlightCommand.html" accesskey="U">TimeofFlightCommand</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">TimeofFlightCommand</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="timeofflightcommand">
+<h1>TimeofFlightCommand<a class="headerlink" href="#timeofflightcommand" title="Permalink to this heading">¶</a></h1>
+<p>robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TimeofFlightCommand</span></span><a class="reference internal" href="../_modules/robot/commands/tof/TimeofFlightCommand.html#TimeofFlightCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="robot.commands.CommandInterface.CommandInterface.html#robot.commands.CommandInterface.CommandInterface" title="robot.commands.CommandInterface.CommandInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandInterface</span></code></a></p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute" title="robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute</span></code></a></p></td>
+<td><p>This method will create a thread to execute the input command.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute_helper" title="robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute_helper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute_helper</span></code></a></p></td>
+<td><p>Helper for <a class="reference internal" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute" title="robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute"><code class="xref py py-func docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">streaming</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">responseStatusCallback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jsonObject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/commands/tof/TimeofFlightCommand.html#TimeofFlightCommand.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will create a thread to execute the input command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>responseStatusCallback</strong> (<em>func</em><em>(</em><em>jsonObject</em><em>) </em><em>-&gt;</em>) – A callback function has to be passed, that will
+send status of command execution back to the controller. This callback will be passed by the
+caller of execute().</p></li>
+<li><p><strong>jsonObject</strong> (<em>dictionary</em>) – A JSON object initially containing the command json, modified to include response information.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute_helper">
+<span class="sig-name descname"><span class="pre">execute_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">responseStatusCallback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jsonObject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robot/commands/tof/TimeofFlightCommand.html#TimeofFlightCommand.execute_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute_helper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper for <a class="reference internal" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute" title="robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute"><code class="xref py py-func docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>responseStatusCallback</strong> (<em>func</em>) – A callback function has to be passed, that will
+send status of command execution back to the controller. This callback will be passed by the
+caller of execute().</p></li>
+<li><p><strong>jsonObject</strong> (<em>dictionary</em>) – A JSON object initially containing the command json, modified to include response information.</p></li>
+</ul>
+</dd>
+</dl>
+<p>:mod:<a href="#id1"><span class="problematic" id="id2">`</span></a>TimeofFlightCommand&lt;robot.commands.tof</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">TimeofFlightCommand</a><ul>
+<li><a class="reference internal" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand"><code class="docutils literal notranslate"><span class="pre">TimeofFlightCommand</span></code></a><ul>
+<li><a class="reference internal" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute"><code class="docutils literal notranslate"><span class="pre">TimeofFlightCommand.execute()</span></code></a></li>
+<li><a class="reference internal" href="#robot.commands.tof.TimeofFlightCommand.TimeofFlightCommand.execute_helper"><code class="docutils literal notranslate"><span class="pre">TimeofFlightCommand.execute_helper()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="robot.commands.tof.TimeofFlightCommand.html"
+                          title="previous chapter">TimeofFlightCommand</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="robot.commands.tof.TimeofFlightServer.html"
+                          title="next chapter">TimeofFlightServer</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.tof.TimeofFlightServer.html" title="TimeofFlightServer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="robot.commands.tof.TimeofFlightCommand.html" title="TimeofFlightCommand"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../robot.html" >&lt;no title&gt;</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="robot.html" >robot</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="robot.commands.html" >commands</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="robot.commands.tof.html" >tof</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="robot.commands.tof.TimeofFlightCommand.html" >TimeofFlightCommand</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">TimeofFlightCommand</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

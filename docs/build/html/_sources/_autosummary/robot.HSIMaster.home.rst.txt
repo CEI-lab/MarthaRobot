@@ -1,0 +1,6 @@
+robot.HSIMaster.home
+====================
+
+.. currentmodule:: robot.HSIMaster
+
+.. autodata:: home

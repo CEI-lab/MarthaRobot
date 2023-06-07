@@ -1,0 +1,42 @@
+HSIMaster
+=========
+
+robot.HSIMaster
+
+
+
+
+.. automodule:: robot.HSIMaster
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+
+    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      HSIMaster
+   
+   
+
+   
+   
+   
+
+
+

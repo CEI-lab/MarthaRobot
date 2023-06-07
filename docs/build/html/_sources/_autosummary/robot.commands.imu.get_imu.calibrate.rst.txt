@@ -1,0 +1,6 @@
+robot.commands.imu.get\_imu.calibrate
+=====================================
+
+.. currentmodule:: robot.commands.imu.get_imu
+
+.. autofunction:: calibrate

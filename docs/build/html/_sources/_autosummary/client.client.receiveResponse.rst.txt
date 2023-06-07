@@ -1,0 +1,6 @@
+client.client.receiveResponse
+=============================
+
+.. currentmodule:: client.client
+
+.. autofunction:: receiveResponse

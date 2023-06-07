@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>robot.commands.imu.get_mag &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/groundwork.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.imu.get_mag</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for robot.commands.imu.get_mag</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">smbus</span>
+<span class="kn">from</span> <span class="nn">robot.commands.imu.bmi150_regmap</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="twos_complement"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_mag.twos_complement.html#robot.commands.imu.get_mag.twos_complement">[docs]</a><span class="k">def</span> <span class="nf">twos_complement</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bits</span><span class="p">):</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="k">if</span> <span class="n">data</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="mi">2</span><span class="o">**</span><span class="n">bits</span>
+    <span class="k">return</span> <span class="n">val</span></div>
+
+
+<div class="viewcode-block" id="fuse_bits"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_mag.fuse_bits.html#robot.commands.imu.get_mag.fuse_bits">[docs]</a><span class="k">def</span> <span class="nf">fuse_bits</span><span class="p">(</span><span class="n">lsb</span><span class="p">,</span> <span class="n">msb</span><span class="p">):</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">lsb</span> <span class="o">+</span> <span class="mi">256</span> <span class="o">*</span> <span class="n">msb</span>
+    <span class="k">return</span> <span class="n">val</span></div>
+
+
+<div class="viewcode-block" id="read_trim_registers"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_mag.read_trim_registers.html#robot.commands.imu.get_mag.read_trim_registers">[docs]</a><span class="k">def</span> <span class="nf">read_trim_registers</span><span class="p">(</span><span class="n">bus</span><span class="p">):</span>
+    <span class="n">trim</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Reading BMM150 trim registers&#39;</span><span class="p">)</span>
+    <span class="n">trim_x1y1</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">read_i2c_block_data</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">BMM150_DIG_X1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># print trim_x1y1</span>
+
+    <span class="n">trim_xyz</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">read_i2c_block_data</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">BMM150_DIG_Z4_LSB</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="c1"># print trim_xyz</span>
+
+    <span class="n">trim_xy1xy2</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">read_i2c_block_data</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">BMM150_DIG_Z2_LSB</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="c1"># print trim_xy1xy2</span>
+
+    <span class="c1"># 8-bit signed values</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">(</span><span class="n">trim_x1y1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">8</span><span class="p">)</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;y1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">(</span><span class="n">trim_x1y1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">8</span><span class="p">)</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">(</span><span class="n">trim_xyz</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">8</span><span class="p">)</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;y2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">(</span><span class="n">trim_xyz</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="mi">8</span><span class="p">)</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;xy2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">(</span><span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="mi">8</span><span class="p">)</span>
+    <span class="c1"># 8-bit unsigned values</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;xy1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>
+    <span class="c1"># 16-bit signed values</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;z2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">(</span><span class="n">fuse_bits</span><span class="p">(</span><span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;z3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">(</span><span class="n">fuse_bits</span><span class="p">(</span><span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">7</span><span class="p">]),</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;z4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">(</span><span class="n">fuse_bits</span><span class="p">(</span><span class="n">trim_xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trim_xyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="c1"># 16-bit unsigned value</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;z1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">trim</span><span class="p">[</span><span class="s1">&#39;xyz1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fuse_bits</span><span class="p">(</span><span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">trim_xy1xy2</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+
+    <span class="c1"># print &#39;X1: &#39;, trim[&#39;x1&#39;]</span>
+    <span class="c1"># print &#39;X2: &#39;, trim[&#39;x2&#39;]</span>
+    <span class="c1"># print &#39;Y1: &#39;, trim[&#39;y1&#39;]</span>
+    <span class="c1"># print &#39;Y2: &#39;, trim[&#39;y2&#39;]</span>
+    <span class="c1"># print &#39;XY1: &#39;, trim[&#39;xy1&#39;]</span>
+    <span class="c1"># print &#39;XY2: &#39;, trim[&#39;xy2&#39;]</span>
+    <span class="c1"># print &#39;Z1: &#39;, trim[&#39;z1&#39;]</span>
+    <span class="c1"># print &#39;Z2: &#39;, trim[&#39;z2&#39;]</span>
+    <span class="c1"># print &#39;Z3: &#39;, trim[&#39;z3&#39;]</span>
+    <span class="c1"># print &#39;Z4: &#39;, trim[&#39;z4&#39;]</span>
+    <span class="c1"># print &#39;XYZ1: &#39;, trim[&#39;xyz1&#39;]</span>
+
+    <span class="k">return</span> <span class="n">trim</span></div>
+
+
+<div class="viewcode-block" id="compensate_x"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_mag.compensate_x.html#robot.commands.imu.get_mag.compensate_x">[docs]</a><span class="k">def</span> <span class="nf">compensate_x</span><span class="p">(</span><span class="n">mag_data_x</span><span class="p">,</span> <span class="n">data_rhall</span><span class="p">,</span> <span class="n">trim_data</span><span class="p">):</span>
+    <span class="c1"># Overflow condition check</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">mag_data_x</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">4096</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">data_rhall</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xyz1&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)):</span>
+        <span class="c1"># /*Processing compensation equations*/</span>
+        <span class="n">process_comp_x0</span> <span class="o">=</span> <span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xyz1&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">16384.0</span> <span class="o">/</span> <span class="n">data_rhall</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="n">process_comp_x0</span> <span class="o">-</span> <span class="mf">16384.0</span>
+        <span class="n">process_comp_x1</span> <span class="o">=</span> <span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xy2&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">retval</span> <span class="o">*</span> <span class="n">retval</span> <span class="o">/</span> <span class="mf">268435456.0</span><span class="p">)</span>
+        <span class="n">process_comp_x2</span> <span class="o">=</span> <span class="n">process_comp_x1</span> <span class="o">+</span> \
+            <span class="n">retval</span> <span class="o">*</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xy1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mf">16384.0</span>
+        <span class="n">process_comp_x3</span> <span class="o">=</span> <span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">160.0</span>
+        <span class="n">process_comp_x4</span> <span class="o">=</span> <span class="n">mag_data_x</span> <span class="o">*</span> \
+            <span class="p">((</span><span class="n">process_comp_x2</span> <span class="o">+</span> <span class="mf">256.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">process_comp_x3</span><span class="p">)</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="p">((</span><span class="n">process_comp_x4</span> <span class="o">/</span> <span class="mf">8192.0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">8.0</span><span class="p">))</span> <span class="o">/</span> <span class="mf">16.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># /* overflow, set output to 0.0f */</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">retval</span></div>
+
+
+<div class="viewcode-block" id="compensate_y"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_mag.compensate_y.html#robot.commands.imu.get_mag.compensate_y">[docs]</a><span class="k">def</span> <span class="nf">compensate_y</span><span class="p">(</span><span class="n">mag_data_y</span><span class="p">,</span> <span class="n">data_rhall</span><span class="p">,</span> <span class="n">trim_data</span><span class="p">):</span>
+    <span class="c1"># Overflow condition check</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">mag_data_y</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">4096</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">data_rhall</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xyz1&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)):</span>
+        <span class="c1"># /*Processing compensation equations*/</span>
+        <span class="n">process_comp_y0</span> <span class="o">=</span> <span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xyz1&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">16384.0</span> <span class="o">/</span> <span class="n">data_rhall</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="n">process_comp_y0</span> <span class="o">-</span> <span class="mf">16384.0</span>
+        <span class="n">process_comp_y1</span> <span class="o">=</span> <span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xy2&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">retval</span> <span class="o">*</span> <span class="n">retval</span> <span class="o">/</span> <span class="mf">268435456.0</span><span class="p">)</span>
+        <span class="n">process_comp_y2</span> <span class="o">=</span> <span class="n">process_comp_y1</span> <span class="o">+</span> \
+            <span class="n">retval</span> <span class="o">*</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xy1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mf">16384.0</span>
+        <span class="n">process_comp_y3</span> <span class="o">=</span> <span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;y2&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">160.0</span>
+        <span class="n">process_comp_y4</span> <span class="o">=</span> <span class="n">mag_data_y</span> <span class="o">*</span> \
+            <span class="p">((</span><span class="n">process_comp_y2</span> <span class="o">+</span> <span class="mf">256.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">process_comp_y3</span><span class="p">)</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="p">((</span><span class="n">process_comp_y4</span> <span class="o">/</span> <span class="mf">8192.0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;y1&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">8.0</span><span class="p">))</span> <span class="o">/</span> <span class="mf">16.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># /* overflow, set output to 0.0f */</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">retval</span></div>
+
+
+<div class="viewcode-block" id="compensate_z"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_mag.compensate_z.html#robot.commands.imu.get_mag.compensate_z">[docs]</a><span class="k">def</span> <span class="nf">compensate_z</span><span class="p">(</span><span class="n">mag_data_z</span><span class="p">,</span> <span class="n">data_rhall</span><span class="p">,</span> <span class="n">trim_data</span><span class="p">):</span>
+    <span class="c1"># Overflow condition check</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">mag_data_z</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">16384</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;z2&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;z1&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">data_rhall</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xyz1&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)):</span>
+        <span class="c1"># /*Processing compensation equations*/</span>
+        <span class="n">process_comp_z0</span> <span class="o">=</span> <span class="p">(</span><span class="n">mag_data_z</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;z4&#39;</span><span class="p">])</span>
+        <span class="n">process_comp_z1</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_rhall</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;xyz1&#39;</span><span class="p">])</span>
+        <span class="n">process_comp_z2</span> <span class="o">=</span> <span class="p">((</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;z3&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">process_comp_z1</span><span class="p">)</span>
+        <span class="n">process_comp_z3</span> <span class="o">=</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;z1&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">data_rhall</span><span class="p">)</span> <span class="o">/</span> <span class="mf">32768.0</span>
+        <span class="n">process_comp_z4</span> <span class="o">=</span> <span class="p">(</span><span class="n">trim_data</span><span class="p">[</span><span class="s1">&#39;z2&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">process_comp_z3</span>
+        <span class="n">process_comp_z5</span> <span class="o">=</span> <span class="p">(</span><span class="n">process_comp_z0</span> <span class="o">*</span> <span class="mf">131072.0</span><span class="p">)</span> <span class="o">-</span> <span class="n">process_comp_z2</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="p">(</span><span class="n">process_comp_z5</span> <span class="o">/</span> <span class="p">((</span><span class="n">process_comp_z4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">4.0</span><span class="p">))</span> <span class="o">/</span> <span class="mf">16.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># /* overflow, set output to 0.0f */</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">retval</span></div>
+
+
+<div class="viewcode-block" id="configure_bmi150"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_mag.configure_bmi150.html#robot.commands.imu.get_mag.configure_bmi150">[docs]</a><span class="k">def</span> <span class="nf">configure_bmi150</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Configuring BMM150&#39;</span><span class="p">)</span>
+    <span class="n">bus</span> <span class="o">=</span> <span class="n">smbus</span><span class="o">.</span><span class="n">SMBus</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># Set Power Control bit to en</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">write_byte_data</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">Aux_Control</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="c1"># Set Operation mode to Normal</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">write_byte_data</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">Aux_Op_Mode</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bus</span></div>
+
+
+<div class="viewcode-block" id="check_data_ready"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_mag.check_data_ready.html#robot.commands.imu.get_mag.check_data_ready">[docs]</a><span class="k">def</span> <span class="nf">check_data_ready</span><span class="p">(</span><span class="n">bus</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">read_byte_data</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">Aux_HR_lsb</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span> <span class="o">&amp;</span> <span class="mh">0x01</span> <span class="o">==</span> <span class="mh">0x01</span></div>
+
+
+<div class="viewcode-block" id="read_mag_frame"><a class="viewcode-back" href="../../../../_autosummary/robot.commands.imu.get_mag.read_mag_frame.html#robot.commands.imu.get_mag.read_mag_frame">[docs]</a><span class="k">def</span> <span class="nf">read_mag_frame</span><span class="p">(</span><span class="n">bus</span><span class="p">,</span> <span class="n">trim</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">check_data_ready</span><span class="p">(</span><span class="n">bus</span><span class="p">)):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">read_i2c_block_data</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">Aux_x_lsb</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="c1"># print &#39;Raw: &#39;, ret</span>
+        <span class="n">raw_x</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">((</span><span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">32</span> <span class="o">+</span> <span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">3</span><span class="p">)),</span> <span class="mi">13</span><span class="p">)</span>
+        <span class="n">raw_y</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">((</span><span class="n">ret</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="mi">32</span> <span class="o">+</span> <span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">3</span><span class="p">)),</span> <span class="mi">13</span><span class="p">)</span>
+        <span class="n">raw_z</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">((</span><span class="n">ret</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">*</span> <span class="mi">128</span> <span class="o">+</span> <span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)),</span> <span class="mi">15</span><span class="p">)</span>
+        <span class="n">Rhall</span> <span class="o">=</span> <span class="n">twos_complement</span><span class="p">((</span><span class="n">ret</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">*</span> <span class="mi">64</span> <span class="o">+</span> <span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">2</span><span class="p">)),</span> <span class="mi">14</span><span class="p">)</span>
+        <span class="c1"># print &#39;Raw: &#39;, raw_x, raw_y, raw_z, Rhall</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">compensate_x</span><span class="p">(</span><span class="n">raw_x</span><span class="p">,</span> <span class="n">Rhall</span><span class="p">,</span> <span class="n">trim</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">compensate_y</span><span class="p">(</span><span class="n">raw_y</span><span class="p">,</span> <span class="n">Rhall</span><span class="p">,</span> <span class="n">trim</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">compensate_y</span><span class="p">(</span><span class="n">raw_z</span><span class="p">,</span> <span class="n">Rhall</span><span class="p">,</span> <span class="n">trim</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">bus</span> <span class="o">=</span> <span class="n">configure_bmi150</span><span class="p">()</span>
+    <span class="n">trim</span> <span class="o">=</span> <span class="n">read_trim_registers</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;STARTING LOOP&#39;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="n">check</span> <span class="o">=</span> <span class="n">read_mag_frame</span><span class="p">(</span><span class="n">bus</span><span class="p">,</span> <span class="n">trim</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">check</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">check</span><span class="p">)</span>
+            <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">check</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Read Error&#39;</span><span class="p">)</span>
+
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">check</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.imu.get_mag</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

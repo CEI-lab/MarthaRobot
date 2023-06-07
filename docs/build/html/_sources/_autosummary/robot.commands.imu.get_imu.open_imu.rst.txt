@@ -1,0 +1,6 @@
+robot.commands.imu.get\_imu.open\_imu
+=====================================
+
+.. currentmodule:: robot.commands.imu.get_imu
+
+.. autofunction:: open_imu

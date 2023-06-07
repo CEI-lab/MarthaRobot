@@ -1,0 +1,6 @@
+robot.commands.imu.get\_mag.configure\_bmi150
+=============================================
+
+.. currentmodule:: robot.commands.imu.get_mag
+
+.. autofunction:: configure_bmi150

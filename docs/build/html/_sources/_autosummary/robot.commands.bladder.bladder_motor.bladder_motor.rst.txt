@@ -1,0 +1,31 @@
+bladder\_motor
+==============
+
+robot.commands.bladder.bladder_motor.bladder_motor
+
+.. currentmodule:: robot.commands.bladder.bladder_motor
+
+.. autoclass:: bladder_motor
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~bladder_motor.enc_read
+      ~bladder_motor.move
+      ~bladder_motor.move_distance
+      ~bladder_motor.set_direction
+      ~bladder_motor.stop
+   
+   
+
+   
+   
+   

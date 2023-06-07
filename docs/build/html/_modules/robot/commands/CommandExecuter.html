@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>robot.commands.CommandExecuter &#8212; MarthaRobot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/groundwork.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.CommandExecuter</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for robot.commands.CommandExecuter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of a command executer that will execute a command extracted from</span>
+<span class="sd">command queue.</span>
+
+<span class="sd">CEI-LAB, Cornell University 2019</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">home</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">())</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">home</span> <span class="o">+</span> <span class="s2">&quot;/HSI/resources/registries&quot;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">home</span> <span class="o">+</span> <span class="s2">&quot;/HSI/resources/queues&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+
+<div class="viewcode-block" id="CommandExecuter"><a class="viewcode-back" href="../../../_autosummary/robot.commands.CommandExecuter.CommandExecuter.html#robot.commands.CommandExecuter.CommandExecuter">[docs]</a><span class="k">class</span> <span class="nc">CommandExecuter</span><span class="p">:</span>
+    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">comque</span><span class="p">,</span> <span class="n">statque</span><span class="p">,</span> <span class="n">comreg</span><span class="p">,</span> <span class="n">comevent</span><span class="p">,</span> <span class="n">statevent</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enforces singleton object by creating an instance of this class.</span>
+<span class="sd">        Only changes _instance once, that is, this class can only be instantiated once.</span>
+<span class="sd">        Smaller number means higher priority.</span>
+
+<span class="sd">        TODO remove extra arguments</span>
+<span class="sd">        :param comque: These seem to no longer be in use....</span>
+<span class="sd">        :type comque: _type_</span>
+<span class="sd">        :param statque: These seem to no longer be in use....</span>
+<span class="sd">        :type statque: _type_</span>
+<span class="sd">        :param comreg: These seem to no longer be in use....</span>
+<span class="sd">        :type comreg: _type_</span>
+<span class="sd">        :param comevent: These seem to no longer be in use....</span>
+<span class="sd">        :type comevent: _type_</span>
+<span class="sd">        :param statevent: These seem to no longer be in use....</span>
+<span class="sd">        :type statevent: _type_</span>
+<span class="sd">        :return: These seem to no longer be in use....</span>
+<span class="sd">        :rtype: _type_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comque</span><span class="p">,</span> <span class="n">statque</span><span class="p">,</span> <span class="n">comreg</span><span class="p">,</span> <span class="n">comevent</span><span class="p">,</span> <span class="n">statevent</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_queue</span> <span class="o">=</span> <span class="n">comque</span>  <span class="c1"># Command queue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_registry</span> <span class="o">=</span> <span class="n">comreg</span>  <span class="c1"># Command registry</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_queue</span> <span class="o">=</span> <span class="n">statque</span>  <span class="c1"># Status queue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_event</span> <span class="o">=</span> <span class="n">comevent</span>  <span class="c1"># Command event</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_event</span> <span class="o">=</span> <span class="n">statevent</span>  <span class="c1"># Status event</span>
+
+<div class="viewcode-block" id="CommandExecuter.statusResponseCallback"><a class="viewcode-back" href="../../../_autosummary/robot.commands.CommandExecuter.CommandExecuter.html#robot.commands.CommandExecuter.CommandExecuter.statusResponseCallback">[docs]</a>    <span class="k">def</span> <span class="nf">statusResponseCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enqueue a command to the status queue.</span>
+
+<span class="sd">        :param json: The json object to be enqueued.</span>
+<span class="sd">        :type json: dictionary</span>
+
+<span class="sd">        :raises ValueError: If the priority contained in json is not a number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="n">pri</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;priority&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;PRIORITY_FIELD_MISSING&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_queue</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">json</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;CommandExecuter : No priority field in the status JSON object&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">json</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">json</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ID_FIELD_MISSING&quot;</span>
+            <span class="c1"># Will raise error if priority is not an int</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_queue</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pri</span><span class="p">),</span> <span class="n">json</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_my_status_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_parse_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the command name from json object.</span>
+<span class="sd">        Imputs:</span>
+<span class="sd">            json: The json object to be parsed.</span>
+<span class="sd">        Outputs:</span>
+<span class="sd">            The command name contained in json. If json doesn&#39;t contain the</span>
+<span class="sd">            command name, then returns None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cmd&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CommandExecuter.processCommand"><a class="viewcode-back" href="../../../_autosummary/robot.commands.CommandExecuter.CommandExecuter.html#robot.commands.CommandExecuter.CommandExecuter.processCommand">[docs]</a>    <span class="k">def</span> <span class="nf">processCommand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute the command contained in the json object.</span>
+
+
+<span class="sd">        :param json: The json object contains an command.</span>
+<span class="sd">        :type json: json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;CommandExecuter : Received JSON object&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">json</span><span class="p">))</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_key</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_registry</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cmd</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">statusResponseCallback</span><span class="p">,</span> <span class="n">json</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;CommandExecuter : No entry in CommandRegistry for &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;CommandExecuter : No command name in the JSON object&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CommandExecuter.checkForCommand"><a class="viewcode-back" href="../../../_autosummary/robot.commands.CommandExecuter.CommandExecuter.html#robot.commands.CommandExecuter.CommandExecuter.checkForCommand">[docs]</a>    <span class="k">def</span> <span class="nf">checkForCommand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Watch for (and handle) new commands on the command queue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_queue</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nextCommand</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_queue</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span>
+                <span class="p">)</span>  <span class="c1"># remove from the command queue</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">processCommand</span><span class="p">(</span><span class="n">nextCommand</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_my_command_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">MarthaRobot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">robot.commands.CommandExecuter</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, CEI-Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    </div>
+  </body>
+</html>

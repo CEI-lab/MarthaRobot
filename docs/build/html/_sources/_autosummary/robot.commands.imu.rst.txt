@@ -1,0 +1,42 @@
+imu
+===
+
+robot.commands.imu
+
+
+
+
+.. automodule:: robot.commands.imu
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   robot.commands.imu.ReadIMUCommand
+   robot.commands.imu.bmi150_regmap
+   robot.commands.imu.bmi160_regmap
+   robot.commands.imu.get_imu
+   robot.commands.imu.get_mag
+

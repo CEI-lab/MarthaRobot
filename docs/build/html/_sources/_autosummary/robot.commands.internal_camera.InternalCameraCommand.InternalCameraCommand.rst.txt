@@ -1,0 +1,34 @@
+InternalCameraCommand
+=====================
+
+robot.commands.internal_camera.InternalCameraCommand.InternalCameraCommand
+
+.. currentmodule:: robot.commands.internal_camera.InternalCameraCommand
+
+.. autoclass:: InternalCameraCommand
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~InternalCameraCommand.execute
+      ~InternalCameraCommand.execute_helper
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~InternalCameraCommand.streaming
+   
+   

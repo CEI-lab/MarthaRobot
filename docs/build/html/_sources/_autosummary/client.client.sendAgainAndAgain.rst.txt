@@ -1,0 +1,6 @@
+client.client.sendAgainAndAgain
+===============================
+
+.. currentmodule:: client.client
+
+.. autofunction:: sendAgainAndAgain

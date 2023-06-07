@@ -1,0 +1,39 @@
+configurations
+==============
+
+robot.configurations
+
+
+
+
+.. automodule:: robot.configurations
+
+
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      update
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+

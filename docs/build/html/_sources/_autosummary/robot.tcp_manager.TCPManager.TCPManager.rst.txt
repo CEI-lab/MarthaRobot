@@ -1,0 +1,30 @@
+TCPManager
+==========
+
+robot.tcp_manager.TCPManager.TCPManager
+
+.. currentmodule:: robot.tcp_manager.TCPManager
+
+.. autoclass:: TCPManager
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~TCPManager.checkForNewIP
+      ~TCPManager.checkForStatus
+      ~TCPManager.listenTCP
+      ~TCPManager.sendOverTCP
+   
+   
+
+   
+   
+   

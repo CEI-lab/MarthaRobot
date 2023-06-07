@@ -1,0 +1,42 @@
+CommandRegistry
+===============
+
+robot.commands.CommandRegistry
+
+
+
+
+.. automodule:: robot.commands.CommandRegistry
+
+
+
+   
+   
+   
+
+   
+   
+   
+
+   
+    
+   
+
+    
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      CommandRegistry
+   
+   
+
+   
+   
+   
+
+
+

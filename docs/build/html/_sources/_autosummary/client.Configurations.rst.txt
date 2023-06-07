@@ -1,0 +1,39 @@
+configurations
+==============
+
+client.configurations
+
+
+
+
+.. automodule:: client.configurations
+
+
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      update
+   
+   
+
+   
+    
+   
+   
+
+   
+   
+   
+
+
+

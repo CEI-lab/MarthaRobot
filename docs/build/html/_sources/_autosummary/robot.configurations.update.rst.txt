@@ -1,0 +1,6 @@
+robot.configurations.update
+===========================
+
+.. currentmodule:: robot.configurations
+
+.. autofunction:: update

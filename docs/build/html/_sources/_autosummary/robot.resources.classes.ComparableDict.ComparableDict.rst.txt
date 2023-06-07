@@ -1,0 +1,37 @@
+ComparableDict
+==============
+
+robot.resources.classes.ComparableDict.ComparableDict
+
+.. currentmodule:: robot.resources.classes.ComparableDict
+
+.. autoclass:: ComparableDict
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ComparableDict.clear
+      ~ComparableDict.copy
+      ~ComparableDict.fromkeys
+      ~ComparableDict.get
+      ~ComparableDict.items
+      ~ComparableDict.keys
+      ~ComparableDict.pop
+      ~ComparableDict.popitem
+      ~ComparableDict.setdefault
+      ~ComparableDict.update
+      ~ComparableDict.values
+   
+   
+
+   
+   
+   
