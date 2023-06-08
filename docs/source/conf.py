@@ -73,6 +73,9 @@ autosummary_mock_imports = [
     "TCPManagerTests",
 ]
 
+nitpicky = True  # If true, Sphinx will warn about all references where the target cannot be found. Default is False. You can activate this mode temporarily using the -n command-line switch.
+
+
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
 html_show_sourcelink = (

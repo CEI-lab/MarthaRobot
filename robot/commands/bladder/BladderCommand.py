@@ -32,29 +32,29 @@ class BladderCommand(CommandInterface):
 
     def __init__(self):
         """
-        __init__ Create a Bladder Command object.  Takes in commands and performs the appropriate actions.
+        Create a Bladder Command object.  Takes in commands and performs the appropriate actions.
         """
         GPIO.setmode(GPIO.BCM)
 
-        self.m1Event = threading.Event()
-        self.m2Event = threading.Event()
-        self.m3Event = threading.Event()
+        self.m1Event: threading.Event = threading.Event()
+        self.m2Event: threading.Event = threading.Event()
+        self.m3Event: threading.Event = threading.Event()
 
-        self.m1 = motor_controller(
+        self.m1: motor_controller = motor_controller(
             config.M1_ADDRESS,
             config.M1_SELECT,
             self.m1Event,
             config.ENC1_1_PIN,
             config.ENC2_1_PIN,
         )
-        self.m2 = motor_controller(
+        self.m2: motor_controller = motor_controller(
             config.M2_ADDRESS,
             config.M1_SELECT,
             self.m2Event,
             config.ENC1_2_PIN,
             config.ENC2_2_PIN,
         )
-        self.m3 = motor_controller(
+        self.m3: motor_controller = motor_controller(
             config.M3_ADDRESS,
             config.M1_SELECT,
             self.m3Event,
@@ -62,13 +62,14 @@ class BladderCommand(CommandInterface):
             config.ENC2_3_PIN,
         )
 
+        # Setup and start PWM on the fan pin, with 0 duty cycle
         GPIO.setup(config.FAN_PIN, GPIO.OUT)
-        self.fan = GPIO.PWM(config.FAN_PIN, 1000)
+        self.fan: GPIO.PWM = GPIO.PWM(config.FAN_PIN, 1000)
         self.fan.start(0)
 
     def __del__(self):
         """
-        __del__ Override built in to disable/stop motors before deleting this object.
+        Override built in to disable/stop motors before deleting this object.
         """
         self.m1.motor.disable()
         self.m2.motor.disable()
@@ -77,7 +78,7 @@ class BladderCommand(CommandInterface):
 
     def stop(self):
         """
-        stop Stop all of the motors.
+        Stop all of the bladder motors.  Leaves fan running to keep bladder inflated.
         """
         self.m1.stop()
         self.m2.stop()
@@ -87,8 +88,10 @@ class BladderCommand(CommandInterface):
         """
         move_all Move all bladder motors at a specified speed.
 
+        Valid options for direction are ["out",1,"in",0]
+
         :param direction: Direction to move motors
-        :type direction: _type_
+        :type direction: str, int
         :param speed: Speed to move at.
         :type speed: int
         """
@@ -98,10 +101,12 @@ class BladderCommand(CommandInterface):
 
     def move_all_dist(self, dist1, dist2, dist3, direction, speed):
         """
-        move_all Move all bladder motors a distance in a specified direction
+        Move all bladder motors a distance in a specified direction, using :func:`.bladder.bladder_motor.bladder_motor.move_distance`
+
+        Valid options for direction are ["out",1,"in",0]
 
         :param direction: Direction to move motors
-        :type direction: _type_
+        :type direction: str, int
         :param dist1: Distance to move motor 1
         :type dist1: int
         :param dist2: Distance to move motor 2
@@ -109,14 +114,17 @@ class BladderCommand(CommandInterface):
         :param dist2: Distance to move motor 3
         :type dist3: int
         """
+        # TODO distinct speed per motor, or scale all based on longest dist
         self.m1.move_distance(direction, speed, dist1)
         self.m2.move_distance(direction, speed, dist2)
         self.m3.move_distance(direction, speed, dist3)
 
     def inflate(self):
         """
-        inflate Inflate the robot's bladder
+        Inflate the robot's bladder completely.  Delays after turning on the fan
+        to allow the bladder to inflate before starting to release the pulleys.
         """
+        # TODO make sure the encoder based endswitch code is carried over to this file
         self.fan.ChangeDutyCycle(100)
         time.sleep(10)
         self.m1Event.clear()
@@ -135,7 +143,7 @@ class BladderCommand(CommandInterface):
 
     def deflate(self):
         """
-        deflate Deflate the robots bladder
+        Deflate the robots bladder completely
         """
         self.fan.ChangeDutyCycle(100)
         self.m1Event.clear()
@@ -157,12 +165,10 @@ class BladderCommand(CommandInterface):
         """
         This method will be called to inflate and deflate the air bladder.
 
-
-        :param responseStatusCallback:  A callback function that will send status of command execution. This callback will be passed by the caller of execute().
-        :type direction: function
+        :param responseStatusCallback:  A callback function that will send status of command execution. This callback will be passed by the caller of :meth:`execute`.
 
         :param jsonObject: Command to execute, which will also be used to pass back information as a response.  A dictionary created from a json object.
-        :type jsonObject: dictionary
+        :type jsonObject: dict
 
         """
         try:
@@ -199,6 +205,13 @@ class BladderCommand(CommandInterface):
             )
 
     def execute(self, responseStatusCallback, jsonObject):
+        """Interface entry point to execute a bladder command.  Calls the appropriate helper depending on the command type.
+
+        :param responseStatusCallback: Function to call after execution to send response to computer.
+
+        :param jsonObject: json object representing the command to execute
+        :type jsonObject: dict
+        """
         try:
             jsonObject["response"] = "ACTION_OR_SELECT_FIELD_NOT_IN_JSON"
             if "action" in jsonObject:

@@ -1,5 +1,6 @@
 """
-  A text based interface to send commands to and recieve responses from a marthabot.
+  A REPL implementation to send commands to and recieve responses from a marthabot 
+  (ip specified in :data:`configurations.configurations.HOST`
 """
 
 import time
@@ -8,22 +9,24 @@ import pickle
 import cv2
 import numpy as np
 import time
-import configurations as config
+
+# import configurations as config
+from configurations import configurations as config
 import logging as log
 import atexit
 
 
-def sendObject(message):
+def sendObject(message: dict):
     """
     sendObject Send a command dictionary to the robot
 
     :param message: Dictionary defining a command
-    :type message: dictionary
+    :type message: dict
     """
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # connect to robot
-    s.connect((config.host, config.command_port))
+    s.connect((config.HOST, config.COMMAND_PORT))
 
     # send pickled command
     s.send(pickle.dumps(message))
@@ -40,11 +43,11 @@ def sendAgainAndAgain():
         receiveResponse(myCommand, 28200)
 
 
-def receiveResponse(command, port):
-    """Recieve response from the robot
+def receiveResponse(command: str, port: int):
+    """Wait for and handle response from the robot.
 
-    :param command: Command that was sent to the robot
-    :type command: string
+    :param command: Raw command that was input
+    :type command: str
     :param port: Port to listen for a response on
     :type port: int
     """
@@ -96,29 +99,31 @@ def receiveResponse(command, port):
 # image = cv2.imread('137.png')
 
 
-def parse_command(command):
+def parse_command(command: str) -> dict:
     """
     Parse and respond to text commands from the user.
 
     Commands
-        motor [int left] [int right]
-        hello
-        sleep
-        front [int speed]
-        right [int speed]
-        left [int speed]
-        back [int speed]
-        stop
-        tts [string message]
-        image ["list","get","upload","display"] [string filename ()]
-        internal ["single", "continuous-start", "continuous-stop"]
-        external ["single", "continuous-start", "continuous-stop"]
-        bladder ["inflate","deflate",""] [int motor] [direction] [int distance]
 
-    :param command: A human readable command
+    -    motor [int left] [int right]
+    -    hello
+    -    sleep
+    -    front [int speed]
+    -    right [int speed]
+    -    left [int speed]
+    -    back [int speed]
+    -    stop
+    -    tts [string message]
+    -    image ["list","get","upload","display"] [string filename ()]
+    -    internal ["single", "continuous-start", "continuous-stop"]
+    -    external ["single", "continuous-start", "continuous-stop"]
+    -    bladder ["inflate","deflate",""] [int motor] [direction] [int distance]
+
+    :param command: A human readable/input command
     :type command: str
+
     :return: A dictionary with the needed metadata to send to a marthabot
-    :rtype: dictionary
+    :rtype: dict
     """
 
     command = command.split()
@@ -292,6 +297,12 @@ def parse_command(command):
 
 # emergency stop
 def exit_handler():
+    """Function to handle unexpected failures.
+    Should
+        - Send a stop command to the robot to stop movement
+        - Possibly stop bladder motors
+
+    """
     sendObject(parse_command("stop"))
 
 
