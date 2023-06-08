@@ -3,5 +3,5 @@
    :template: custom-module-template.rst
    :recursive:
 
-   configurations
+   configurations.configurations
 

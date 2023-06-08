@@ -134,10 +134,18 @@ BLADDER_SPEED = 250
 
 # client.py
 # TODO combine TCP_PORT with COMMAND_PORT
-HOST = "192.168.0.191"
-"""IP of the MarthaBot to connect to."""
+HOST: str = "192.168.0.191"
+"""
+IP of the MarthaBot to connect to. For example.
 
-COMMANDPORT = 65432
+.. highlight:: python
+.. code-block:: python
+
+    HOST = "192.168.0.000"
+
+"""
+
+COMMAND_PORT = 65432
 """ Port to send commands from computer -> rover
 
     Should match :data:`~configurations.configurations.TCP_PORT`
@@ -150,7 +158,7 @@ Might currently be incorrectly configured to be different from :data:`~configura
 RESPONSE_PORT = 28200
 """ 
 Port to send commands from rover -> computer
-Should match :data:`~configurations.configurations.DEFAULT_RECIEVING_PORT`
+Should match :data:`~configurations.configurations.DEFAULT_RECEIVING_PORT`
 """
 
 

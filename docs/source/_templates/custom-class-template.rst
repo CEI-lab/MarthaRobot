@@ -1,6 +1,5 @@
 {{ name | escape | underline}}
 
-{{fullname}}
 
 .. currentmodule:: {{ module }}
 

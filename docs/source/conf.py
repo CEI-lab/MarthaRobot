@@ -34,6 +34,7 @@ extensions = [
     "sphinx_autodoc_typehints",  # Automatically document param types (less noise in class signature)
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
+    "sphinx_rtd_theme",
 ]
 
 templates_path = ["_templates"]
@@ -79,7 +80,7 @@ nitpicky = True  # If true, Sphinx will warn about all references where the targ
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
 html_show_sourcelink = (
-    False  # Remove 'view source code' from top of page (for html, not python)
+    True  # Remove 'view source code' from top of page (for html, not python)
 )
 autodoc_inherit_docstrings = True  # If no docstring, inherit from base class
 
@@ -90,7 +91,21 @@ add_module_names = False  # Remove namespaces from class/method signatures
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "groundwork"
+html_logo = ""
+html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
-html_theme_options = {}
+html_theme_options = {
+    "collapse_navigation": False,
+    "includehidden": True,
+}
+
+strip_signature_backslash = False
+autodoc_strip_signature_backslash = True
+
+html_sidebars = {"**": ["globaltoc.html", "searchbox.html", "localtoc.html"]}
+
+
+html_css_files = [
+    "css/wrap_auto_summary.css",
+]

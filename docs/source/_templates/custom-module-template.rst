@@ -1,9 +1,5 @@
 {{ name | escape | underline}}
 
-{{fullname}}
-
-
-
 
 .. automodule:: {{ fullname }}
 
@@ -11,10 +7,16 @@
 
    {% block attributes %}
    {% if attributes %}
+   Module Attributes
+   =================
    .. rubric:: Module attributes
+   
+   
+ 
 
    .. autosummary::
       :toctree:
+      :template: custom-attribute-template.rst
    {% for item in attributes %}
       {{ item }}
    {%- endfor %}
