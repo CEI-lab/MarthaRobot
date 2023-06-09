@@ -2,3 +2,4 @@
 docs/build/*
 .vscode/*
 docs/source/_autosummary/*
+apriltag/_images/*

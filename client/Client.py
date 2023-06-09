@@ -10,8 +10,14 @@ import cv2
 import numpy as np
 import time
 
-# import configurations as config
-from configurations import configurations as config
+import Configurations as config
+import sys
+
+sys.path.append("C:\\Users\\63nem\\Documents\\MarthaRobot\\")
+print(sys.path)
+
+
+# from configurations import configurations as config
 import logging as log
 import atexit
 
@@ -60,7 +66,7 @@ def receiveResponse(command: str, port: int):
     data = []
     # collect all packets
     while True:
-        packet = connection.recv(config.bytes_per_packet)
+        packet = connection.recv(config.BYTES_PER_PACKET)
         if not packet:
             break
         data.append(packet)
@@ -127,6 +133,8 @@ def parse_command(command: str) -> dict:
     """
 
     command = command.split()
+    if not command:
+        command = ["empty"]
     if command[0] == "motor":
         return {
             "id": int(time.time()),
@@ -134,7 +142,7 @@ def parse_command(command: str) -> dict:
             "priority": 1,  # , Priority, type int
             "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
             "rightSpeed": int(command[2]),  # Right speed value, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "hello":
         return {
@@ -146,7 +154,7 @@ def parse_command(command: str) -> dict:
             "count_period": 10,
             "colorize": 1,
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "sleep":
         return {
@@ -158,7 +166,7 @@ def parse_command(command: str) -> dict:
             "count_period": 10,
             "colorize": 1,
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "front":
         return {
@@ -167,7 +175,7 @@ def parse_command(command: str) -> dict:
             "priority": 1,  # , Priority, type int
             "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
             "rightSpeed": int(command[1]),  # Right speed value, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "back":
         return {
@@ -176,7 +184,7 @@ def parse_command(command: str) -> dict:
             "priority": 1,  # , Priority, type int
             "leftSpeed": int(command[1]),  # Left speed value, type int
             "rightSpeed": -1 * int(command[1]),  # Right speed value, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "left":
         return {
@@ -185,7 +193,7 @@ def parse_command(command: str) -> dict:
             "priority": 1,  # , Priority, type int
             "leftSpeed": int(command[1]),  # Left speed value, type int
             "rightSpeed": int(command[1]),  # Right speed value, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "right":
         return {
@@ -194,7 +202,7 @@ def parse_command(command: str) -> dict:
             "priority": 1,  # , Priority, type int
             "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
             "rightSpeed": -1 * int(command[1]),  # Right speed value, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "stop":
         return {
@@ -203,7 +211,7 @@ def parse_command(command: str) -> dict:
             "priority": 1,  # , Priority, type int
             "leftSpeed": 0,  # Left speed value, type int
             "rightSpeed": 0,  # Right speed value, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "tts":
         return {
@@ -223,7 +231,7 @@ def parse_command(command: str) -> dict:
             "type": command[1],  # list, get, upload, display
             "name": name,
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "internal":
         return {
@@ -232,7 +240,7 @@ def parse_command(command: str) -> dict:
             "type": command[1],  # single, continuous-start, continuous-stop
             "fps": 15,
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "external":
         return {
@@ -241,7 +249,7 @@ def parse_command(command: str) -> dict:
             "type": command[1],  # single, continuous-start, continuous-stop
             "fps": 10,
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
             "height": 64,
             "width": 48,
         }
@@ -251,7 +259,7 @@ def parse_command(command: str) -> dict:
             "cmd": "RealSenseCommand",  # Command name
             "type": command[1],  # single, continuous-start, continuous-stop
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "tof":
         return {
@@ -259,7 +267,7 @@ def parse_command(command: str) -> dict:
             "cmd": "TimeofFlightCommand",  # Command name
             "type": command[1],  # single, stream
             "priority": 1,  # , Priority, type int
-            "receivingPort": config.response_port,
+            "receivingPort": config.RESPONSE_PORT,
         }
     elif command[0] == "bladder":
         if len(command) == 5:
@@ -315,4 +323,4 @@ if __name__ == "__main__":
         parsed = parse_command(command)
         log.info(f"Sending {parsed['cmd']} at {time.time()}")
         sendObject(parsed)
-        receiveResponse(command, config.response_port)
+        receiveResponse(command, config.RESPONSE_PORT)
