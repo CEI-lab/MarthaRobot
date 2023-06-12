@@ -2,6 +2,10 @@
   A REPL implementation to send commands to and recieve responses from a marthabot 
   (ip specified in :data:`configurations.configurations.HOST`
 """
+import pprint
+import sys
+
+sys.path.append("C:\\Users\\63nem\\Documents\\MarthaRobot\\")
 
 import time
 import socket
@@ -9,16 +13,18 @@ import pickle
 import cv2
 import numpy as np
 import time
+import traceback
 
-import Configurations as config
-import sys
+# import logging
+from utils.setup_logging import setup_logging
+from utils.printers import pp
 
-sys.path.append("C:\\Users\\63nem\\Documents\\MarthaRobot\\")
-print(sys.path)
+LOG = setup_logging("ble.log")
 
 
-# from configurations import configurations as config
-import logging as log
+import client.Configurations as config
+
+
 import atexit
 
 
@@ -72,7 +78,7 @@ def receiveResponse(command: str, port: int):
         data.append(packet)
     s.close()
     data_arr = pickle.loads(b"".join(data))
-    log.debug(data_arr)
+    LOG.debug(data_arr)
     if (
         command[0] == "image"
         and command[1] == "get"
@@ -89,16 +95,25 @@ def receiveResponse(command: str, port: int):
             if command[0] == "image" or command[0] == "rs":
                 cv2.imshow("image", data_arr["data"] / np.amax(data_arr["data"]))
             cv2.waitKey(1)
-        except:
-            log.warning("Problem recieving response")
+        except Exception as e:
+            LOG.warning("Problem recieving/displaying image response")
+            LOG.exception(e)
             pass
     #    elif command[0] == "ext" and command[1] == "streaming":
     #        sendAgainAndAgain()
     else:
         try:
-            log.info("response was: \n")
-            log.info(data_arr["data"])
-        except:
+            if "data" in data_arr:
+                LOG.info("response was: \n")
+                LOG.info(data_arr["data"])
+            elif command[0] in ["hello"]:
+                LOG.info(f"Recieved {pp.pformat(data_arr)}")
+            else:
+                LOG.warning("No 'data' field in response.")
+                LOG.warning(f"Raw response: \n{pp.pformat(data_arr)}")
+        except Exception as e:
+            LOG.warning("Problem receiving response")
+            LOG.exception(e)
             pass
 
 
@@ -130,11 +145,15 @@ def parse_command(command: str) -> dict:
 
     :return: A dictionary with the needed metadata to send to a marthabot
     :rtype: dict
-    """
 
-    command = command.split()
+    """
     if not command:
-        command = ["empty"]
+        return {}
+    split = command.split()
+    if not split:
+        command = [command, ""]
+    else:
+        command = split
     if command[0] == "motor":
         return {
             "id": int(time.time()),
@@ -298,6 +317,8 @@ def parse_command(command: str) -> dict:
                 "priority": 1,  # , Priority, type int
                 "receivingPort": 28200,
             }
+    elif command[0] in ["quit", "q"]:
+        exit(0)
     else:
         print("Invalid command")
         return
@@ -306,21 +327,32 @@ def parse_command(command: str) -> dict:
 # emergency stop
 def exit_handler():
     """Function to handle unexpected failures.
-    Should
-        - Send a stop command to the robot to stop movement
-        - Possibly stop bladder motors
 
+    Should
+    - Send a stop command to the robot to stop movement
+    - Possibly stop bladder motors
     """
     sendObject(parse_command("stop"))
 
 
-# log.basicConfig(level=logging.DEBUG)
-
 if __name__ == "__main__":
+    # If the program crashses or otherwise closes try to sent a stop command
+    atexit.register(exit_handler)
+
+    hostname = socket.gethostname()
+    IPAddr = socket.gethostbyname(hostname)
+    LOG.info("Your Computer Name is:" + hostname)
+    LOG.info("Your Computer IP Address is:" + IPAddr)
+    LOG.info("Target Rover IP Address is:" + config.HOST)
+
     while True:
         print("\n")
         command = input("Enter command:\n")
         parsed = parse_command(command)
-        log.info(f"Sending {parsed['cmd']} at {time.time()}")
-        sendObject(parsed)
+        LOG.info(f"Sending {parsed['cmd']} at {time.time()}")
+        try:
+            sendObject(parsed)
+        except Exception as e:
+            LOG.warning("Error while sending command")
+            LOG.exception(e)
         receiveResponse(command, config.RESPONSE_PORT)
