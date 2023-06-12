@@ -15,10 +15,19 @@ port = ""
 
 
 def main(argv):
+    """Entry point for the streaming client, connects and displays output to/from the RPi.
+    prompts user for which camera to stream from.
+
+    :param argv: not currently used
+    :type argv: _type_
+    """
     while mode not in config.ports.keys["tof", "rs", "ext"]:
         mode = input("Select mode (tof, rs, ext)")
     port = config.ports[mode]
-    multi_cast_message(config.mc_ip_address, port, 'boop')
+
+    # Send a message to get things started
+    multi_cast_message(config.MC_IP_ADDRESS, port, "boop")
+
 
 # UDP client for each camera server
 
@@ -47,7 +56,7 @@ class ImageClient(asyncore.dispatcher):
         if self.remainingBytes == 0:
             # get the expected frame size
             recieved = self.recv(4)
-            self.frame_length = struct.unpack('<I', recieved)[0]
+            self.frame_length = struct.unpack("<I", recieved)[0]
             self.remainingBytes = self.frame_length
 
         # request the frame data until the frame is completely in buffer
@@ -69,20 +78,25 @@ class ImageClient(asyncore.dispatcher):
             imdata = pickle.loads(self.buffer)
             if mode == "rs":
                 depth = imdata[:, 0:320]
-                color = np.clip(imdata[:, 320:640], 0, 256).astype('uint8')
+                color = np.clip(imdata[:, 320:640], 0, 256).astype("uint8")
                 bigDepth = cv2.resize(
-                    depth, (0, 0), fx=2, fy=2, interpolation=cv2.INTER_NEAREST)
+                    depth, (0, 0), fx=2, fy=2, interpolation=cv2.INTER_NEAREST
+                )
                 bigDepth = np.clip(bigDepth, 0, 5000)
                 bigDepth = cv2.applyColorMap(
-                    (bigDepth / (5000 / 256)).astype(np.uint8), cv2.COLORMAP_RAINBOW)
-                cv2.imshow("depth" + str(self.windowName),
-                           cv2.resize(bigDepth, (544, 408)))
-                cv2.imshow("color" + str(self.windowName),
-                           cv2.resize(color, (544, 408)))
+                    (bigDepth / (5000 / 256)).astype(np.uint8), cv2.COLORMAP_RAINBOW
+                )
+                cv2.imshow(
+                    "depth" + str(self.windowName), cv2.resize(bigDepth, (544, 408))
+                )
+                cv2.imshow(
+                    "color" + str(self.windowName), cv2.resize(color, (544, 408))
+                )
                 cv2.waitKey(1)
             elif mode == "ext":
-                cv2.imshow("ExtCam" + str(self.windowName),
-                           cv2.resize(imdata, (640, 480)))
+                cv2.imshow(
+                    "ExtCam" + str(self.windowName), cv2.resize(imdata, (640, 480))
+                )
                 cv2.waitKey(1)
             if mode == "tof":
                 log.info("Printing imdata")
@@ -99,7 +113,7 @@ class ImageClient(asyncore.dispatcher):
 class ExtStreamingClient(asyncore.dispatcher):
     def __init__(self):
         asyncore.dispatcher.__init__(self)
-        self.server_address = ('', port)
+        self.server_address = ("", port)
         # create a socket for TCP connection between the client and server
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         log.debug("extStreamingClient created socket")
@@ -123,8 +137,7 @@ class ExtStreamingClient(asyncore.dispatcher):
         # print(self.recv(10))
         if pair is not None:
             sock, addr = pair
-            log.info(
-                'Incoming external camera connection from %s' % repr(addr))
+            log.info("Incoming external camera connection from %s" % repr(addr))
             # when a connection is attempted, delegate image receival to the ImageClient
             handler = ImageClient(sock, addr)
 
@@ -132,7 +145,7 @@ class ExtStreamingClient(asyncore.dispatcher):
 class RSStreamingClient(asyncore.dispatcher):
     def __init__(self):
         asyncore.dispatcher.__init__(self)
-        self.server_address = ('', port)
+        self.server_address = ("", port)
         # create a socket for TCP connection between the client and server
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.settimeout(5)
@@ -154,7 +167,7 @@ class RSStreamingClient(asyncore.dispatcher):
         # print(self.recv(10))
         if pair is not None:
             sock, addr = pair
-            log.info('Incoming rss connection from %s' % repr(addr))
+            log.info("Incoming rss connection from %s" % repr(addr))
             # when a connection is attempted, delegate image receival to the ImageClient
             handler = ImageClient(sock, addr)
 
@@ -162,7 +175,7 @@ class RSStreamingClient(asyncore.dispatcher):
 class TOFStreamingClient(asyncore.dispatcher):
     def __init__(self):
         asyncore.dispatcher.__init__(self)
-        self.server_address = ('', port)
+        self.server_address = ("", port)
         # create a socket for TCP connection between the client and server
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.settimeout(5)
@@ -184,12 +197,21 @@ class TOFStreamingClient(asyncore.dispatcher):
         # print(self.recv(10))
         if pair is not None:
             sock, addr = pair
-            log.info('Incoming tof connection from %s' % repr(addr))
+            log.info("Incoming tof connection from %s" % repr(addr))
             # when a connection is attempted, delegate image receival to the ImageClient
             handler = ImageClient(sock, addr)
 
 
 def multi_cast_message(ip_address, port, message):
+    """Send multicast mesage to the RPi and start the appropriate streaming client
+
+    :param ip_address: RPI IP address
+    :type ip_address: str
+    :param port: Port to send message on
+    :type port: int
+    :param message: message
+    :type message: str
+    """
     # send the multicast message
     multicast_group = (ip_address, port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -198,7 +220,7 @@ def multi_cast_message(ip_address, port, message):
         # Send data to the multicast group
         log.info('sending "%s"' % message + str(multicast_group))
         sent = sock.sendto(message.encode(), multicast_group)
-        log.debug('message sent')
+        log.debug("message sent")
         # defer waiting for a response using Asyncore
         if mode == "rs":
             log.info("Preparing rss streaming client")
@@ -215,13 +237,13 @@ def multi_cast_message(ip_address, port, message):
         # Look for responses from all recipients
 
     except socket.timeout:
-        log.warning('timed out, no more responses')
+        log.warning("timed out, no more responses")
     finally:
-        log.info(sys.stderr, 'closing socket')
+        log.info(sys.stderr, "closing socket")
         sock.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     log.basicConfig(level=log.DEBUG)
 
     main(sys.argv[1:])

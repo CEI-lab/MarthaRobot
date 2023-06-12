@@ -34,18 +34,16 @@ class SetSpeedCommand(CommandInterface):
             logging.warning(repr(e))
 
     def _setSpeed(self, responseStatusCallback, jsonObject):
-        """
-        This method will be called to set speed for wheels.
+        """This method will be called to set speed for wheels.
 
-        Inputs:
-            responseStatusCallback : A callback function has to be passed, that will
-                send status of command execution. This callback will be passed by the
+        :param responseStatusCallback: A callback function has to be passed, that will
+                send status of command execution back to the controller. This callback will be passed by the
                 caller of execute().
-            jsonObject : A JSON object containing text.
-
-        Outputs:
-            None
+        :type responseStatusCallback: func
+        :param jsonObject: A JSON object initially containing the command json, modified to include response information.
+        :type jsonObject: dictionary
         """
+
         try:
             self._lock.acquire()
             begin_time = time.time()
@@ -55,28 +53,41 @@ class SetSpeedCommand(CommandInterface):
             right_speed = jsonObject.get("rightSpeed")
             # print("1:{}".format(time.time()-begin_time))
             if left_speed is not None and right_speed is not None:
-                logging.info(
-                    "Running script to set speed commands simultaneously.")
+                logging.info("Running script to set speed commands simultaneously.")
                 jsonObject["response"] = "SUCCESS"
                 # print("current_time is {}".format(time.time()))
+<<<<<<< HEAD
                 subprocess.Popen(['sudo', config.SETSPEED_SCRIPT, config.
                                   LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID, str(left_speed), config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID, str(right_speed)])
+=======
+                subprocess.Popen(
+                    [
+                        "sudo",
+                        "/home/pi/HSI/commands/set-speed-command/./SetSpeed.sh",
+                        CONFIGURATIONS.get("LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"),
+                        str(left_speed),
+                        CONFIGURATIONS.get("RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"),
+                        str(right_speed),
+                    ]
+                )
+>>>>>>> bee893202051751da2c2febc0070f1c4689d9ffa
                 # print("2:{}".format(time.time()-begin_time))
             else:
                 if left_speed is not None:
                     logging.info(
-                        "SetSpeedCommand : Set left speed: " + str(left_speed) + ".")
+                        "SetSpeedCommand : Set left speed: " + str(left_speed) + "."
+                    )
                     jsonObject["response"] = "SUCCESS"
                     self._motor_left.set_speed(left_speed)
                 if right_speed is not None:
                     logging.info(
-                        "SetSpeedCommand : Set right speed: " + str(right_speed) + ".")
+                        "SetSpeedCommand : Set right speed: " + str(right_speed) + "."
+                    )
                     jsonObject["response"] = "SUCCESS"
                     self._motor_right.set_speed(right_speed)
                 if left_speed is None and right_speed is None:
                     jsonObject["response"] = "SPEED_VALUES_NOT_PROVIDED"
-                    logging.info(
-                        "SetSpeedCommand : There are no speed values.")
+                    logging.info("SetSpeedCommand : There are no speed values.")
 
             # print("3:{}".format(time.time()-begin_time))
             if responseStatusCallback is not None:
@@ -85,12 +96,16 @@ class SetSpeedCommand(CommandInterface):
                 print(jsonObject)
             # print("4:{}".format(time.time()-begin_time))
         except:
-            logging.error(
-                'SetSpeedCommand : speed controller probably does not exit')
+            logging.error("SetSpeedCommand : speed controller probably does not exit")
         finally:
             self._lock.release()
 
     def execute(self, responseStatusCallback, jsonObject):
-        t1 = threading.Thread(target=self._setSpeed, args=(
-            responseStatusCallback, jsonObject,))
+        t1 = threading.Thread(
+            target=self._setSpeed,
+            args=(
+                responseStatusCallback,
+                jsonObject,
+            ),
+        )
         t1.start()

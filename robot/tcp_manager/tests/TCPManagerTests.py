@@ -19,47 +19,45 @@ Test cases for TCPManager class
 
 _test_json_object = {
     "Id": "<timestamp>",
-    "Commands":[
+    "Commands": [
         {
-            "cmd" : "SetSpeed",
-            "priority" : 1,
-            "replaceOldCommands" : False,    # Remove similar commands
-            "leftSpeed" : 1,                # 1 m/sec
-            "rightSpeed" : 1,                # 1 m/sec
+            "cmd": "SetSpeed",
+            "priority": 1,
+            "replaceOldCommands": False,  # Remove similar commands
+            "leftSpeed": 1,  # 1 m/sec
+            "rightSpeed": 1,  # 1 m/sec
         }
-    ]
+    ],
 }
 
-class TCPManagerTests (unittest.TestCase):
 
-    def setUp(self):        
+class TCPManagerTests(unittest.TestCase):
+    def setUp(self):
         """
-        Set up the test object for each unittests. 
+        Set up the test object for each unittests.
         """
         self.cmdQueObj = CommandQueue()
         self.sttQueObj = StatusQueue()
         self.tcpManagerObj = TCPManager(self.cmdQueObj, self.sttQueObj)
 
-
     def tearDown(self):
         """
-        Reset the object to none after the unittests. 
+        Reset the object to none after the unittests.
         """
         self.tcpmanagerObj = None
 
-    
     def test_SingletonClassCheck(self):
         """
         Test whether the TCPManager is a singleton class.
         """
         # Creating another CommandQueue class since the class is expected to be singleton
-        # The new CommandQueue object should be the same. 
-        
+        # The new CommandQueue object should be the same.
+
         # Create a new tcpmanager for singleton test
         tmpCmdQueObj = CommandQueue
         tmpSttQueObj = StatusQueue
         tmpTcpMangerObj = TCPManager(tmpCmdQueObj, tmpSttQueObj)
-        
+
         self.assertEqual(self.tcpManagerObj, tmpTcpMangerObj)
 
 

@@ -1,3 +1,10 @@
+"""
+Implementation of FetchInternalCameraCaptureCommand that will continously capture and send
+image from the internal camera, over SCP (ssh copy) to provided destination.
+
+CEI-LAB, Cornell University 2019
+"""
+
 from pathlib import Path
 from multiprocessing import Lock
 import sys
@@ -13,18 +20,21 @@ from robot.commands.CommandInterface import CommandInterface
 
 from robot.commands.realsense import RealSenseServer
 import asyncore
-"""
-Implementation of FetchInternalCameraCaptureCommand that will continously capture and send
-image from the internal camera, over SCP (ssh copy) to provided destination.
-
-CEI-LAB, Cornell University 2019
-"""
 
 
 class RealSenseCommand(CommandInterface):
     streaming = False
 
     def execute_helper(self, responseStatusCallback, jsonObject):
+        """Handle a realsense command
+
+        :param responseStatusCallback: A callback function has to be passed, that will
+                send status of command execution back to the controller. This callback will be passed by the
+                caller of execute().
+        :type responseStatusCallback: func
+        :param jsonObject: A JSON object initially containing the command json, modified to include response information.
+        :type jsonObject: dictionary
+        """
         try:
             if jsonObject["type"] == "single":
                 pipeline = rs.pipeline()
@@ -35,8 +45,9 @@ class RealSenseCommand(CommandInterface):
                 depth_data = depth.as_frame().get_data()
                 np_image = np.asanyarray(depth_data)
                 if "colorize" in jsonObject and jsonObject["colorize"] == 1:
-                    np_image = cv2.applyColorMap(cv2.convertScaleAbs(
-                        np_image, alpha=0.05), cv2.COLORMAP_JET)
+                    np_image = cv2.applyColorMap(
+                        cv2.convertScaleAbs(np_image, alpha=0.05), cv2.COLORMAP_JET
+                    )
                 jsonObject["data"] = np_image
             if jsonObject["type"] == "stream":
                 self.server = RealSenseServer.RSMulticastServer()
@@ -50,13 +61,31 @@ class RealSenseCommand(CommandInterface):
                 # asyncore.close()
                 self.server.closeServer()
         except:
-            logging.error('RealSenseCommand : error in jsonObject')
+            logging.error("RealSenseCommand : error in jsonObject")
         finally:
             if responseStatusCallback is not None:
                 responseStatusCallback(jsonObject)
 
     def execute(self, responseStatusCallback, jsonObject):
-        if (jsonObject["type"] == "stream" and self.streaming == False) or jsonObject["type"] == "single" or (jsonObject["type"] == "stop" and self.streaming == True):
-            t1 = threading.Thread(target=self.execute_helper, args=(
-                responseStatusCallback, jsonObject,))
+        """Entrypoint for realsense command handling
+
+        :param responseStatusCallback: A callback function has to be passed, that will
+                send status of command execution back to the controller. This callback will be passed by the
+                caller of execute().
+        :type responseStatusCallback: func
+        :param jsonObject: A JSON object initially containing the command json, modified to include response information.
+        :type jsonObject: dictionary
+        """
+        if (
+            (jsonObject["type"] == "stream" and self.streaming == False)
+            or jsonObject["type"] == "single"
+            or (jsonObject["type"] == "stop" and self.streaming == True)
+        ):
+            t1 = threading.Thread(
+                target=self.execute_helper,
+                args=(
+                    responseStatusCallback,
+                    jsonObject,
+                ),
+            )
             t1.start()
