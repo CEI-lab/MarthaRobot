@@ -42,12 +42,12 @@ class BladderCommand(CommandInterface):
                                    config.ENC1_1_PIN,
                                    config.ENC2_1_PIN)
         self.m2 = motor_controller(config.M2_ADDRESS,
-                                   config.M1_SELECT,
+                                   config.M2_SELECT,
                                    self.m2Event,
                                    config.ENC1_2_PIN,
                                    config.ENC2_2_PIN)
         self.m3 = motor_controller(config.M3_ADDRESS,
-                                   config.M1_SELECT,
+                                   config.M3_SELECT,
                                    self.m3Event,
                                    config.ENC1_3_PIN,
                                    config.ENC2_3_PIN)

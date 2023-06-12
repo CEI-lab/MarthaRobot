@@ -7,7 +7,7 @@ from pathlib import Path
 import time
 
 import robot.configurations as config
-from robot.commands.set_speed import SpeedController
+from robot.commands.set_speed.SpeedController import SpeedController
 from robot.commands.CommandInterface import CommandInterface
 
 import logging
@@ -28,9 +28,10 @@ class SetSpeedCommand(CommandInterface):
                 config.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID)
             self._motor_right = SpeedController(
                 config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID)
-        except:
-            logging.info(
+        except Exception as e:
+            logging.warning(
                 "SetSpeedCommand : SpeedController objects not created")
+            logging.warning(repr(e))
 
     def _setSpeed(self, responseStatusCallback, jsonObject):
         """
@@ -58,7 +59,7 @@ class SetSpeedCommand(CommandInterface):
                     "Running script to set speed commands simultaneously.")
                 jsonObject["response"] = "SUCCESS"
                 # print("current_time is {}".format(time.time()))
-                subprocess.Popen(['sudo', '/home/pi/HSI/commands/set-speed-command/./SetSpeed.sh', config.
+                subprocess.Popen(['sudo', config.SETSPEED_SCRIPT, config.
                                   LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID, str(left_speed), config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID, str(right_speed)])
                 # print("2:{}".format(time.time()-begin_time))
             else:

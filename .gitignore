@@ -1,2 +1,7 @@
 *.pyc
 docs/build/*
+apriltag/_images/*
+.vscode/
+docs/source/_autosummary/
+
+.venv/
