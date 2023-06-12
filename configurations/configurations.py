@@ -47,7 +47,7 @@ RASPI_IP_ADDRESS = "199.168.1.212"
 """ The IP address of the rover's RPi """
 LOOP_BACK_IP_ADDRESS = "127.0.0.1"
 """ Loopback address for the RPi """
-CHECK_NEW_IP_FROM_PI_FREQUENCY = 0.333
+CHECK_NEW_IP_FROM_PI_FREQUENCY = 0.05
 """ Frequency to check whether the rover's IP address has changed """
 RASPI_TXT_FILE_FULL_PATH_NAME = "{}/HSI/ip.txt"
 """

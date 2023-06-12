@@ -88,7 +88,7 @@ class HSIMaster(object):
         )
         # To create threads
         self._my_singleton_thread_manager = ThreadManager()
-        self._my_singleton_thread_manager.monitor_threads = True
+        # self._my_singleton_thread_manager.monitor_threads = True
 
     def displayHelper(self):
         # To add a blank image on startup

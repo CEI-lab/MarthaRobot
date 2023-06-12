@@ -1,5 +1,6 @@
 *.pyc
 docs/build/*
-.vscode/*
-docs/source/_autosummary/*
+apriltag/_images/*
+.vscode/
+docs/source/_autosummary/
 .venv

@@ -25,12 +25,13 @@ class SetSpeedCommand(CommandInterface):
     def __init__(self):
         try:
             self._motor_left = SpeedController(
-                config.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID)
+                config.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID
+            )
             self._motor_right = SpeedController(
-                config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID)
+                config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID
+            )
         except Exception as e:
-            logging.warning(
-                "SetSpeedCommand : SpeedController objects not created")
+            logging.warning("SetSpeedCommand : SpeedController objects not created")
             logging.warning(repr(e))
 
     def _setSpeed(self, responseStatusCallback, jsonObject):
@@ -56,21 +57,16 @@ class SetSpeedCommand(CommandInterface):
                 logging.info("Running script to set speed commands simultaneously.")
                 jsonObject["response"] = "SUCCESS"
                 # print("current_time is {}".format(time.time()))
-<<<<<<< HEAD
-                subprocess.Popen(['sudo', config.SETSPEED_SCRIPT, config.
-                                  LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID, str(left_speed), config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID, str(right_speed)])
-=======
                 subprocess.Popen(
                     [
                         "sudo",
-                        "/home/pi/HSI/commands/set-speed-command/./SetSpeed.sh",
-                        CONFIGURATIONS.get("LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"),
+                        config.SETSPEED_SCRIPT,
+                        config.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID,
                         str(left_speed),
-                        CONFIGURATIONS.get("RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"),
+                        config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID,
                         str(right_speed),
                     ]
                 )
->>>>>>> bee893202051751da2c2febc0070f1c4689d9ffa
                 # print("2:{}".format(time.time()-begin_time))
             else:
                 if left_speed is not None:
