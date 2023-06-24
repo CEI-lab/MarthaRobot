@@ -1,3 +1,5 @@
-docs/build/**
 *.pyc
-docs/build/doctrees/calibrate_cam.doctree
+docs/build/*
+.vscode/*
+docs/source/_autosummary/*
+.venv

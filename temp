@@ -1,0 +1,10 @@
+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
+
+
+
+
+
+https://www.lieuzhenghong.com/how_to_install_librealsense_on_the_jetson_nx/
+sudo apt-get install -y git libssl-dev libusb-1.0-0-dev pkg-config libgtk-3-dev
+
+sudo apt-get install -y libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
