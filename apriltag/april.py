@@ -8,13 +8,7 @@ import numpy as np
 detector = atag.Detector(families="tagStandard41h12")
 
 
-# tag details - main
-tagsize = 8
 
-# tag details - calibration sheet
-tagsize = 0.5
-
-# camera parameters
 
 
 # read in image
@@ -22,7 +16,7 @@ image = cv2.imread("testimages/tag1.jpg")
 
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-
+# test images
 fx, fy, cx, cy = (867.1714530943214, 7.2700778250832485, 518.2694115721059, 910.7793844438535)
 
 
