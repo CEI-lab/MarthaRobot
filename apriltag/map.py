@@ -29,6 +29,20 @@ exterior = np.array([
     [1045,0],
     [0,0],
 ])
+display_cabinet = np.array([
+    [-64,159],
+    [5,159],
+    [5,359],
+    [-64,359],
+    [-64,159],
+])
+filled_space = np.array([
+    [-44,359],
+    [5,359],
+    [5,405],
+    [-44,405],
+    [-44,359],
+])
 bottom_desk = np.array([
     [ 112,0],
     [112,76],
@@ -41,7 +55,6 @@ cage = np.array([
     [925,295],
     [1045,295],
     [1045,0],
-    [925,0],
 ])
 topright_desk = np.array([
     [1045,479],
@@ -73,6 +86,27 @@ middleisland_desk = np.array([
     [696,260],
     [443,260],
 ])
+topleft_cabinet1 = np.array([
+    [-44,405],
+    [5,405],
+    [5,491],
+    [-44,491],
+    [-44,405],
+])
+topleft_cabinet2 = np.array([
+    [-44,491],
+    [5,491],
+    [5,577],
+    [-44,577],
+    [-44,491],
+])
+topleft_cabinet3 = np.array([
+    [-44,577],
+    [16,577],
+    [16,653],
+    [-44,653],
+    [-44,577],
+])
 
 
 bodies = [
@@ -82,10 +116,16 @@ bodies = [
     topright_desk,
     topmiddle_desk,
     middlemiddle_desk,
-    middleisland_desk
+    middleisland_desk,
+    display_cabinet,
+    filled_space,
+    topleft_cabinet1,
+    topleft_cabinet2,
+    topleft_cabinet3,
 ]
+#only non solid body is the cage
 
-
+clear = [exterior,cage]
 
 pi = np.pi
 cent = 10.795
@@ -104,18 +144,36 @@ tags = {
 
 }
 
-for body in bodies:
-    x = body[:,0]
-    y = body[:,1]
-    plt.plot(x,y)
+def plot_map():
+    for body in bodies:
+        x = body[:,0]
+        y = body[:,1]
+        plt.plot(x,y)
 
-for tagid in tags:
-    x = tags[tagid][0]
-    y = tags[tagid][1]
-    t = tags[tagid][3]
-    plt.quiver(x,y,np.cos(t),np.sin(t))
-    plt.annotate(str(tagid),(x,y))
+    for tagid in tags:
+        x = tags[tagid][0]
+        y = tags[tagid][1]
+        t = tags[tagid][3]
+        plt.quiver(x,y,np.cos(t),np.sin(t))
+        plt.annotate(str(tagid),(x,y))
 
-plt.savefig("map.png")
+    plt.savefig("map.png")
+
+
+xrange = range(
+    min([min(body[:,0]) for body in bodies]),
+    max([max(body[:,0]) for body in bodies]),
+    50
+)
+
+yrange = range(
+    min([min(body[:,1]) for body in bodies]),
+    max([max(body[:,1]) for body in bodies]),
+    50
+)
+
+
+
+
 
 
