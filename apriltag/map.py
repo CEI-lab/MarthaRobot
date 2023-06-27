@@ -132,7 +132,6 @@ cent = 10.795
 centz = 14
 sh = 10 + centz
 
-6.5
 
 tags = {
     6: [1045, 381.5-cent, sh, pi],

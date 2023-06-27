@@ -185,8 +185,8 @@ class Mapper():
     def getTag(self,point):
 
         for tagid in map.tags:
-            print(point)
-            print(map.tags[tagid][0:2])
+            # print(point)
+            # print(map.tags[tagid][0:2])
             if (point[0:2] == map.tags[tagid][0:2]).all() or (point[2:] == map.tags[tagid][0:2]).all():
                 return tagid
         return None
@@ -201,21 +201,29 @@ class Mapper():
         res[:,0:2] = point
         res[:,2:] = self.tags[:,0:2]
         angles = np.arctan2((res[:,3]-res[:,1]),(res[:,2]-res[:,0]))
-        print(angles)
         minangle = center+fov[0]
-        print(minangle)
         maxangle = center+fov[1]
-        print(maxangle)
         center = np.angle(center)
         todelete = []
         for i in range(len(angles)):
             a = angles[i]
             if a < (minangle) or a > (maxangle):
                 todelete.append(i)
-        print(todelete)
         res = np.delete(res,todelete,axis=0)
         
         return res
+    
+    def getVisibleTags(self,pose,fov):
+        pos = pose[0:2]
+        t = pose[2]
+        rays = self.getTagRays(pos,t,fov)
+        clear = self.checkRaysClear(rays)
+        # print(clear)
+        dists = dist(rays[:,:2],rays[:,2:])
+        ids = np.array([m.getTag(ray) for ray in rays])
+        return np.array([ids[clear],dists[clear]])
+        
+
     def _check_intersect(self,lines1,lines2):
         """Find all intersections between two sets of lines.  Intersections between two lines in the same set will not be reported.
 
@@ -262,6 +270,8 @@ class Mapper():
         # assert intersects.shape == (n,m), str(intersects.shape) + " is not equal to " + str((n,m))
         return intersects.T
 
+def dist(p1,p2):
+    return np.sqrt(np.sum(np.square(p1 - p2),axis=1))
 
 if __name__=="__main__":
 
@@ -293,13 +303,21 @@ if __name__=="__main__":
     # rays = np.array(m.getTagRays([800,300]))
     rays = np.array(m.getTagRays([800,300],0,(-np.pi/8,np.pi/8)))
     
-    print(rays)
+    # print(rays)
 
-    print([m.getTag(ray) for ray in rays])    
+    # print([m.getTag(ray) for ray in rays])    
 
-    print(m.checkRaysClear(rays))
+    # print(m.checkRaysClear(rays))
+    # print(rays[:,:2])
+    # print(rays[:,2:])
+    # print(dist(rays[:,:2],rays[:,2:]))
+
+
+    print(m.getVisibleTags([800,300,0],[-np.pi,np.pi]))
 
     cage = map.cage
     lines = m.path2lines(cage)
+
+    
     # print(cage)
     # print(lines)
