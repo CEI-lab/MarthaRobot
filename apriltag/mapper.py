@@ -28,7 +28,7 @@ class Mapper():
         for ob in obstacles:
             lines = self.path2lines(ob)
             self.obstacles.append(lines)
-        print(self.obstacles)
+        # print(self.obstacles)
         self.obstacles = np.concatenate(self.obstacles).reshape(-1,4)
         self.tags = np.array([np.array(map.tags[tag]) for tag in map.tags])
 
@@ -49,7 +49,7 @@ class Mapper():
         self.cell_contents = []
 
     def checkRaysClear(self,rays):
-        print(self.obstacles)
+        # print(self.obstacles)
         intersections = self._check_intersect(rays,self.obstacles)
         return np.logical_not(intersections.any(axis=1))
 
@@ -182,12 +182,40 @@ class Mapper():
         # assert res.shape == (psize,rsize), str(res.shape) + " is not equal to " + str((psize,rsize))
         return  res.astype(int)
         
+    def getTag(self,point):
+
+        for tagid in map.tags:
+            print(point)
+            print(map.tags[tagid][0:2])
+            if (point[0:2] == map.tags[tagid][0:2]).all() or (point[2:] == map.tags[tagid][0:2]).all():
+                return tagid
+        return None
+    
     def getTagRays(self,point):
         res = np.empty((self.tags.shape[0],4))
         res[:,0:2] = point
         res[:,2:] = self.tags[:,0:2]
         return res
-
+    def getTagRays(self,point,center:float,fov):
+        res = np.empty((self.tags.shape[0],4))
+        res[:,0:2] = point
+        res[:,2:] = self.tags[:,0:2]
+        angles = np.arctan2((res[:,3]-res[:,1]),(res[:,2]-res[:,0]))
+        print(angles)
+        minangle = center+fov[0]
+        print(minangle)
+        maxangle = center+fov[1]
+        print(maxangle)
+        center = np.angle(center)
+        todelete = []
+        for i in range(len(angles)):
+            a = angles[i]
+            if a < (minangle) or a > (maxangle):
+                todelete.append(i)
+        print(todelete)
+        res = np.delete(res,todelete,axis=0)
+        
+        return res
     def _check_intersect(self,lines1,lines2):
         """Find all intersections between two sets of lines.  Intersections between two lines in the same set will not be reported.
 
@@ -262,9 +290,12 @@ if __name__=="__main__":
 
     poi = np.array([300,300])
 
-    rays = np.array(m.getTagRays([800,300]))
-
+    # rays = np.array(m.getTagRays([800,300]))
+    rays = np.array(m.getTagRays([800,300],0,(-np.pi/8,np.pi/8)))
+    
     print(rays)
+
+    print([m.getTag(ray) for ray in rays])    
 
     print(m.checkRaysClear(rays))
 
