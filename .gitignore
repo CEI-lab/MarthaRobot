@@ -4,3 +4,4 @@ docs/build/*
 docs/source/_autosummary/*
 apriltag/_images/*
 .venv
+robot/resources/rs/librealsense2.so

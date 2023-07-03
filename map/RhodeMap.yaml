@@ -108,6 +108,7 @@ TRANSPARENT_BODIES:
 
 
 APRIL_TAGS:
+  # next to the door
   - id: 3
     x: 358
     y: 284.795

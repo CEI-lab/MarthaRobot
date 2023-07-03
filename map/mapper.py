@@ -287,17 +287,16 @@ class Mapper:
                 todelete.append(i)
         res = np.delete(res, todelete, axis=0)
 
-        return res
+        return res, angles
 
     def getVisibleTags(self, pose, fov):
         pos = pose[0:2]
         t = pose[2]
-        rays = self.getTagRays(pos, t, fov)
+        rays, angles = self.getTagRays(pos, t, fov)
         clear = self.checkLinesClear(rays)
-        # print(clear)
-        dists = dist(rays[:, :2], rays[:, 2:])
+        dists = dist(rays[:, :2], rays[:, 2:4])
         ids = np.array([m.getTag(ray) for ray in rays])
-        return np.array([ids[clear], dists[clear]]).T
+        return np.array([ids[clear],angles[clear],dists[clear]]).T
         
     def _check_intersect(self, lines1, lines2):
         """Find all intersections between two sets of lines.  Intersections between two lines in the same set will not be reported.
@@ -420,8 +419,10 @@ if __name__ == "__main__":
     # print(rays[:,:2])
     # print(rays[:,2:])
     # print(dist(rays[:,:2],rays[:,2:]))
-
-    print(m.getVisibleTags([800, 300, 0], [-np.pi, np.pi]))
+    res = m.getVisibleTags([800, 300, 0], [-np.pi, np.pi])
+    np.set_printoptions(precision=3, suppress=True)
+    res.dtype.names = ("tagid","angle","dist")
+    print()
 
     # cage = map.cage
     # lines = path2lines(cage)
