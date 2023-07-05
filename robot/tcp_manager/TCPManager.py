@@ -9,8 +9,13 @@ from pathlib import Path
 from multiprocessing import Lock
 import time
 
+<<<<<<<< HEAD:HSI/tcp_manager/TCPManager.py
+from Configurations import *
+from resources.classes.ComparableDict import ComparableDict
+========
 import robot.configurations as config
 from robot.resources.classes.ComparableDict import ComparableDict
+>>>>>>>> 0ab7c98359c7390ea12f126ca4891e15b6e78a56:robot/tcp_manager/TCPManager.py
 
 """ 
 TCPManager that creates the tcp connection. 

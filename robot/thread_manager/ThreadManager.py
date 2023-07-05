@@ -5,6 +5,14 @@ from threading import Thread
 import time
 
 
+<<<<<<<< HEAD:HSI/thread_manager/ThreadManager.py
+class ThreadManager(Thread):
+    """
+    ThreadManager This class can be used to start new threads and log messages messages. It is important to note that in any code that 
+    leverages this thread manager should use the method "logging.debug()" instead of print. This allows messages to be 
+    displayed with thread and time info. (Legacy Code - Only manually tested and reviewed)
+    """
+========
 class ThreadManager(threading.Thread):
     """
     ThreadManager This class can be used to start new threads and log messages messages. It is important to note that in any code that
@@ -12,6 +20,7 @@ class ThreadManager(threading.Thread):
     displayed with thread and time info. (Legacy Code - Only manually tested and reviewed)
     """
 
+>>>>>>>> 0ab7c98359c7390ea12f126ca4891e15b6e78a56:robot/thread_manager/ThreadManager.py
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -58,8 +67,12 @@ class ThreadManager(threading.Thread):
 
             if self.monitor_threads:
                 logging.debug(
+<<<<<<<< HEAD:HSI/thread_manager/ThreadManager.py
+                    'Number of active child threads: ' + str(self.alive_count))
+========
                     "Number of active child threads: " + str(self.alive_count)
                 )
+>>>>>>>> 0ab7c98359c7390ea12f126ca4891e15b6e78a56:robot/thread_manager/ThreadManager.py
                 for t in threading.enumerate():
                     logging.debug(t)
 
@@ -76,11 +89,16 @@ class ThreadManager(threading.Thread):
                 found = True
 
         if not found:
+<<<<<<<< HEAD:HSI/thread_manager/ThreadManager.py
+            logging.error('No periodic child thread with name "' +
+                          thread_name + '" found. Unable to stop thread')
+========
             logging.error(
                 'No periodic child thread with name "'
                 + thread_name
                 + '" found. Unable to stop thread'
             )
+>>>>>>>> 0ab7c98359c7390ea12f126ca4891e15b6e78a56:robot/thread_manager/ThreadManager.py
 
     def resume_periodic_thread(self, thread_name):
         # This method resumes a periodic thread with a given name
@@ -93,18 +111,27 @@ class ThreadManager(threading.Thread):
                 found = True
 
         if not found:
+<<<<<<<< HEAD:HSI/thread_manager/ThreadManager.py
+            logging.error('No periodic child thread with name "' +
+                          thread_name + '" found. Unable to resume thread')
+========
             logging.error(
                 'No periodic child thread with name "'
                 + thread_name
                 + '" found. Unable to resume thread'
             )
+>>>>>>>> 0ab7c98359c7390ea12f126ca4891e15b6e78a56:robot/thread_manager/ThreadManager.py
 
     def run_while_active(self):
         # This method should only be called from the main thread in order
         # to avoid the program becoming unresponsive
 
         while self.isAlive():
+<<<<<<<< HEAD:HSI/thread_manager/ThreadManager.py
+            time.sleep(.1)
+========
             time.sleep(0.1)
+>>>>>>>> 0ab7c98359c7390ea12f126ca4891e15b6e78a56:robot/thread_manager/ThreadManager.py
 
     def set_monitor_debug_frequency(self, frequency):
         # Update monitor period
@@ -231,7 +258,11 @@ class PeriodicThread(Thread):
             try:
                 self.function(*self.args)
             except:
+<<<<<<<< HEAD:HSI/thread_manager/ThreadManager.py
+                logging.error('PeriodicThread Error: ')
+========
                 logging.error("PeriodicThread Error: ")
+>>>>>>>> 0ab7c98359c7390ea12f126ca4891e15b6e78a56:robot/thread_manager/ThreadManager.py
                 logging.error(traceback.format_exc())
 
             # If execution time is greater than wait time, don't wait.

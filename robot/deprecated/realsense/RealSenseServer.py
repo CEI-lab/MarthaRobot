@@ -5,44 +5,72 @@ import numpy as np
 import pickle
 import socket
 import struct
-<<<<<<<< HEAD:robot/deprecated/external_camera/ExtCamServer.py
-import Configurations as config
-========
 import robot.configurations as config
->>>>>>>> 0ab7c98359c7390ea12f126ca4891e15b6e78a56:robot/commands/external_camera/ExtCamServer.py
 import time
 import logging
 import cv2
 
 # mc_ip_address = '224.0.0.1'
 mc_ip_address = '10.49.33.92'
-<<<<<<<< HEAD:robot/deprecated/external_camera/ExtCamServer.py
-#mc_ip_address = '192.168.0.176'
-========
 # mc_ip_address = '192.168.0.176'
->>>>>>>> 0ab7c98359c7390ea12f126ca4891e15b6e78a56:robot/commands/external_camera/ExtCamServer.py
-port = config.EXT_CAM_PORT
-chunk_size = config.STREAM_CHUNK_SIZE
+port = config.REALSENSE_PORT
+chunk_size = 4096
 
 
-class ExtStreamingServer(asyncore.dispatcher):
-    def __init__(self, address, jsonObject):
+def getDepthAndTimestamp(pipeline, depth_filter):
+    frames = pipeline.wait_for_frames()
+    # take owner ship of the frame for further processing
+    frames.keep()
+    depth = frames.get_depth_frame()
+    rgb = frames.get_color_frame()
+    if depth:
+        depth2 = depth_filter.process(depth)
+        # take owner ship of the frame for further processing
+        depth2.keep()
+        # represent the frame as a numpy array
+        depthData = depth2.as_frame().get_data()
+        depthMat = np.asanyarray(depthData)
+        color_image = cv2.resize(cv2.cvtColor(np.asanyarray(
+            rgb.get_data()), cv2.COLOR_BGR2GRAY), (320, 240))
+        ts = frames.get_timestamp()
+        return np.hstack((depthMat, color_image)), ts
+    else:
+        return None, None
+
+
+def openPipeline():
+    cfg = rs.config()
+    cfg.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+    cfg.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+    pipeline = rs.pipeline()
+    pipeline_profile = pipeline.start(cfg)
+    sensor = pipeline_profile.get_device().first_depth_sensor()
+    return pipeline
+
+
+class DevNullHandler(asyncore.dispatcher_with_send):
+
+    def handle_read(self):
+        logging.info(self.recv(1024))
+
+    def handle_close(self):
+        self.close()
+
+
+class RSStreamingServer(asyncore.dispatcher):
+    def __init__(self, address):
         asyncore.dispatcher.__init__(self)
-
+        logging.info("Launching Realsense Camera Server")
         try:
-            logging.info("Launching Ext Camera Server")
-            if "width" in jsonObject and "height" in jsonObject:
-                self.width = jsonObject["width"]
-                self.height = jsonObject["height"]
-            else:
-                self.width = 480
-                self.height = 640
+            self.pipeline = openPipeline()
         except:
-            logging.error("Unexpected error: External Camera Streaming Server")
+            logging.error("Unexpected error: Real Sense Streaming Server")
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         logging.info('sending acknowledgement to {}'.format(address))
 
     # reduce the resolution of the depth image using post processing
+        self.decimate_filter = rs.decimation_filter()
+        self.decimate_filter.set_option(rs.option.filter_magnitude, 2)
         self.frame_data = ''
         self.connect((address[0], port))
         self.packet_id = 0
@@ -54,15 +82,11 @@ class ExtStreamingServer(asyncore.dispatcher):
         return True
 
     def update_frame(self):
-        self.camera = cv2.VideoCapture(config.USB_CAM_ID)
-        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
-        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-        ret, frame = self.camera.read()
-        self.camera.release()
-        if frame is not None:
+        depth, timestamp = getDepthAndTimestamp(
+            self.pipeline, self.decimate_filter)
+        if depth is not None:
             # convert the depth image to a string for broadcast
-            frame = frame[:, :, ::-1]
-            data = pickle.dumps(frame)
+            data = pickle.dumps(depth)
         # capture the lenght of the data portion of the message
             length = struct.pack('<I', len(data))
         # for the message for transmission
@@ -84,9 +108,8 @@ class ExtStreamingServer(asyncore.dispatcher):
         self.close()
 
 
-class ExtCamMulticastServer(asyncore.dispatcher):
-    def __init__(self, jsonObject, host=mc_ip_address, port=port):
-        self.jsonObject = jsonObject
+class RSMulticastServer(asyncore.dispatcher):
+    def __init__(self, host=mc_ip_address, port=port):
         logging.info('MC Server init.')
         asyncore.dispatcher.__init__(self)
         server_address = ('', port)
@@ -100,7 +123,7 @@ class ExtCamMulticastServer(asyncore.dispatcher):
             logging.info(
                 'Recived Multicast message %s bytes from %s' % (data, addr))
            # Once the server recives the multicast signal, open the frame server
-            self.server = ExtStreamingServer(addr, self.jsonObject)
+            self.server = RSStreamingServer(addr)
         except:
             logging.error("?RS")
 
@@ -112,8 +135,10 @@ class ExtCamMulticastServer(asyncore.dispatcher):
 
     def handle_accept(self):
         channel, addr = self.accept()
+        logging.info('received %s bytes from %s' % (data, addr))
 
     def closeServer(self):
+        print("Trying to close...")
         asyncore.dispatcher.del_channel(self)
         self.server.close()
         self.close()

@@ -1,6 +1,65 @@
-*.pyc
-docs/build/*
-apriltag/_images/*
-.vscode/
-docs/source/_autosummary/
 .venv
+.vscode/
+.vscode/*
+*.pyc
+apriltag/_images/*
+apriltag/rs_cal_big/
+apriltag/rs_cal/
+docs/build/*
+docs/source/_autosummary/
+docs/source/_autosummary/*
+pi_log/client_key.json
+robot/resources/rs/librealsense2.so
+docs/build/*
+docs/source/_autosummary/
+
+.vscode/
+
+pi_log/client_key.json
+
+marthabot/apriltag/_images/*
+marthabot/apriltag/rs_cal_big/*
+marthabot/apriltag/rs_cal/*
+marthabot/apriltag/testimages/*
+
+# from https://github.com/github/gitignore/blob/main/Python.gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions (skipped since we want to include atleast 1 .so i think, but be careful)
+# *.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
