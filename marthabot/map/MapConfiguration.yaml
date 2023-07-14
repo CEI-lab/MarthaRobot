@@ -1,0 +1,21 @@
+
+# https://www.intel.com/content/www/us/en/support/articles/000030385/emerging-technologies/intel-realsense-technology.html
+rsFOV: [-69,69]
+
+sigmaRSTheta:     0.1
+sigmaRSDist:      100
+pFalsePositive:   0.05 
+pFalseNegative:   0.1  
+
+robotLength: 36
+robotWidth: 36
+robotHeight: 36
+
+# camera position/orientation relative to robot
+# robot frame has x -> forward y -> left
+CAMERA_X    : 18
+CAMERA_Y    : 0
+CAMERA_Z    : 12
+CAMERA_YAW  : -1.5707963267948966
+CAMERA_PITCH: 0
+CAMERA_ROLL : -1.5707963267948966
