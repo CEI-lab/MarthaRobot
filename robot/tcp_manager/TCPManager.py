@@ -25,12 +25,12 @@ class TCPManager(object):
 
     def __new__(cls, command_queue, status_queue, command_event, status_event):
         """
-        This method will make sure the TCPManager is singelton. 
+        This method will make sure the TCPManager is singelton.
 
             Inputs:
                 None.
 
-            Outputs:        
+            Outputs:
                 None
 
         """
@@ -40,12 +40,12 @@ class TCPManager(object):
 
     def __init__(self, command_queue, status_queue, command_event, status_event):
         """
-        This method will create the module TCPManager. 
+        This method will create the module TCPManager.
 
             Inputs:
                 None.
 
-            Outputs:        
+            Outputs:
                 None.
         """
         super().__init__()
@@ -64,21 +64,20 @@ class TCPManager(object):
 
     def __del__(self):
         """
-        This method will delete the TCPManager class after it closes. 
+        This method will delete the TCPManager class after it closes.
             Inputs:
-                None. 
-            Outputs:        
+                None.
+            Outputs:
                 None
         """
         self._lock.acquire()
         if self._sock is not None:
-            del (self._sock)
+            del self._sock
 
         self._lock.release()
 
     def _listenTCPHelper(self, connection, client_address):
-        """
-        """
+        """ """
         # while True:
         # Using the _test_json_object in TCPManagerTest.py, the json_object has "133" bytes after encode('utf-8')
         # data = connection.recv(CONFIGURATIONS.get("MAX_BYTES_OVER_TCP"))  # unit in bytes.
@@ -114,26 +113,30 @@ class TCPManager(object):
 
     def listenTCP(self):
         """
-        This method will be keep listening to the input data, parse it and enqueue to the command queue. 
+        This method will be keep listening to the input data, parse it and enqueue to the command queue.
 
             Inputs:
-                None. 
+                None.
 
-            Outputs:        
+            Outputs:
                 None
 
         """
         self._setServer()
         while True:
             try:
-                logging.info('TCPManager: waiting for a connection')
+                logging.info("TCPManager: waiting for a connection")
                 self._lock.acquire()
                 connection, client_address = self._sock.accept()
 
-                logging.info('TCPManager: client connected: ' +
-                             str(client_address))
-                t1 = threading.Thread(target=self._listenTCPHelper, args=(
-                    connection, client_address[0],))
+                logging.info("TCPManager: client connected: " + str(client_address))
+                t1 = threading.Thread(
+                    target=self._listenTCPHelper,
+                    args=(
+                        connection,
+                        client_address[0],
+                    ),
+                )
                 t1.start()
             except Exception as ex:
                 logging.info("TCPManager: Exception. " + str(ex))
@@ -146,10 +149,10 @@ class TCPManager(object):
 
     def _setServer(self):
         """
-        This method will set the a server. 
+        This method will set the a server.
 
             Inputs:
-                None. 
+                None.
 
             Outputs:
                 None
@@ -157,17 +160,16 @@ class TCPManager(object):
         """
         self._lock.acquire()
         if self._sock is not None:
-            del (self._sock)
+            del self._sock
 
         try:
             self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            logging.info(
-                'TCPManager: starting up on port {}'.format(self._my_tcp_port))
+            logging.info("TCPManager: starting up on port {}".format(self._my_tcp_port))
             self._sock.bind(("", self._my_tcp_port))
-            logging.info('TCPManager: after bind')
+            logging.info("TCPManager: after bind")
             self._sock.listen(config.NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS)
-            logging.info('TCPManager: after listen')
+            logging.info("TCPManager: after listen")
 
         except:
             logging.error("TCPManager: set server can't create socket. ")
@@ -181,69 +183,72 @@ class TCPManager(object):
 
     def _parseJSONObject(self, received_json_string):
         """
-        This method will parse the input string (eg. JSON object) into different key pairs. 
+        This method will parse the input string (eg. JSON object) into different key pairs.
 
             Inputs:
-                String that contain the command input from the sender. 
+                String that contain the command input from the sender.
 
             Outputs:
-                ValueObjects (eg. Command dictionaries) that is parsed from the string. 
+                ValueObjects (eg. Command dictionaries) that is parsed from the string.
 
         """
         try:
             # json.loads would parse the received json string into the json object
-            _received_JSON_object = ComparableDict(
-                json.loads(received_json_string))
+            _received_JSON_object = ComparableDict(json.loads(received_json_string))
             return _received_JSON_object
 
         except:
-            logging.error(
-                "TCPManager: The json object in parseJSONObject is empty!")
+            logging.error("TCPManager: The json object in parseJSONObject is empty!")
 
     def _sendIPToRasPi(self):
         """
-        Whenever there is a new IP address, this method will send it to the raspberry pi. 
+        Whenever there is a new IP address, this method will send it to the raspberry pi.
 
             Inputs:
-                None. 
+                None.
 
             Outputs:
-                None. 
+                None.
 
         """
 
         try:
-            logging.info("TCPManager: my ip changed from {} to {}".format(
-                self._my_last_ip, self._my_ip))
+            logging.info(
+                "TCPManager: my ip changed from {} to {}".format(
+                    self._my_last_ip, self._my_ip
+                )
+            )
             fname = config.RASPI_TXT_FILE_FULL_PATH_NAME.format(config.home)
             os.remove(fname)
-            with open(fname, 'a') as out_file:
+            with open(fname, "a") as out_file:
                 out_file.write("hsiip {}".format(self._my_ip) + "\n")
 
-            os.system(config.SENDING_IP_ADDRESS_TO_PI_COMMAND.format(
-                fname, self._my_raspi_ip))
+            os.system(
+                config.SENDING_IP_ADDRESS_TO_PI_COMMAND.format(fname, self._my_raspi_ip)
+            )
 
         except OSError:
             logging.error("TCPManager: Can't send IP to Rasberry Pi")
 
     def checkForNewIP(self):
         """
-        This method will check if the host has changed the IP address or not. 
+        This method will check if the host has changed the IP address or not.
 
             Inputs:
-                None. 
+                None.
 
             Outputs:
-                None. 
+                None.
 
         """
-        logging.info('TCPManager: check new IP')
+        # logging.info('TCPManager: check new IP')
         try:
-            self._my_ip = os.popen('ip addr show wlan0').read().split("inet ")[
-                1].split("/")[0]
+            self._my_ip = (
+                os.popen("ip addr show wlan0").read().split("inet ")[1].split("/")[0]
+            )
         except:
             self._my_last_ip = self._my_ip
-            logging.error('TCPManager: Please update myself IP address')
+            logging.error("TCPManager: Please update myself IP address")
             self._my_ip = None
 
         ip_changed = True if self._my_last_ip != self._my_ip else False
@@ -255,21 +260,25 @@ class TCPManager(object):
 
     def sendOverTCP(self, valueObject):
         """
-        This method will send the execute status to the sender side.  
+        This method will send the execute status to the sender side.
 
             Inputs:
-                ValueObject that indicate whether the execute status is successful or not. 
+                ValueObject that indicate whether the execute status is successful or not.
 
-            Outputs:        
-                None. 
+            Outputs:
+                None.
 
         """
 
         try:
             logging.info("Start sending over tcp")
 
-            logging.info("TCPManager: sending " + str(valueObject) +
-                         " to " + str(valueObject["clientIPAddress"]))
+            logging.info(
+                "TCPManager: sending "
+                + str(valueObject)
+                + " to "
+                + str(valueObject["clientIPAddress"])
+            )
 
             client_address = valueObject["clientIPAddress"]
 
@@ -288,21 +297,21 @@ class TCPManager(object):
             s.send(message)
             s.close()
             logging.info(
-                "TCPManager: sent data to the client {}. ".format(client_address))
+                "TCPManager: sent data to the client {}. ".format(client_address)
+            )
 
         except Exception as ex:
-            logging.error(
-                "TCPManager: coudn't send data to the client => " + str(ex))
+            logging.error("TCPManager: coudn't send data to the client => " + str(ex))
 
     def checkForStatus(self):
         """
-        This method will check if the status queue is empty or not and send status over. 
+        This method will check if the status queue is empty or not and send status over.
 
             Inputs:
-                None. 
+                None.
 
-            Outputs:        
-                None. 
+            Outputs:
+                None.
 
         """
         while True:
@@ -313,7 +322,8 @@ class TCPManager(object):
                     self.sendOverTCP(status_obj)
                 else:
                     logging.warning(
-                        "TCPManager: The statue queue has output a None object")
+                        "TCPManager: The statue queue has output a None object"
+                    )
             else:
                 self._my_status_event.clear()
 

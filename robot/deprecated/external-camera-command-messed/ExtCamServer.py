@@ -15,7 +15,7 @@ import v4l2capture
 # mc_ip_address = '224.0.0.1'
 mc_ip_address = '10.49.33.92'
 # mc_ip_address = '192.168.0.176'
-port = CONFIGURATIONS["EXT_CAM_PORT"]
+port = config.EXT_CAM_PORT
 chunk_size = 4096
 
 
@@ -25,7 +25,7 @@ class ExtStreamingServer(asyncore.dispatcher):
 
         try:
             logging.info("Launching Ext Camera Server")
-            self.video = v4l2capture.Video_device(CONFIGURATIONS["USB_CAM_ID"])
+            self.video = v4l2capture.Video_device(config.USB_CAM_ID)
 
             if "width" in jsonObject and "height" in jsonObject:
                 self.size_x, self.size_y = self.video.set_format(

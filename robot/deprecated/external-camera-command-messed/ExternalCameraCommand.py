@@ -25,7 +25,7 @@ class ExternalCameraCommand(CommandInterface):
     def execute_helper(self, responseStatusCallback, jsonObject):
         try:
             if jsonObject["type"] == "single":
-                camera = cv2.VideoCapture(CONFIGURATIONS["USB_CAM_ID"])
+                camera = cv2.VideoCapture(config.USB_CAM_ID)
                 if "width" in jsonObject and "height" in jsonObject:
                     camera.set(cv2.CAP_PROP_FRAME_WIDTH, jsonObject["width"])
                     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, jsonObject["height"])

@@ -3,3 +3,5 @@ docs/build/*
 apriltag/_images/*
 .vscode/
 docs/source/_autosummary/
+.venv
+pi_log/client_key.json

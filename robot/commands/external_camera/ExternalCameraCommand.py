@@ -9,9 +9,12 @@ import time
 import robot.configurations as config
 from robot.commands.CommandInterface import CommandInterface
 
+import logging as LOG
+
 import subprocess
 import asyncore
 from robot.commands.external_camera import ExtCamServer
+
 
 """
 Implementation of FetchExternalCameraCaptureCommand that will capture an image
@@ -27,14 +30,14 @@ class ExternalCameraCommand(CommandInterface):
     def execute_helper(self, responseStatusCallback, jsonObject):
         try:
             if jsonObject["type"] == "single":
-                camera = cv2.VideoCapture(CONFIGURATIONS["USB_CAM_ID"])
+                camera = cv2.VideoCapture(config.USB_CAM_ID)
                 if "width" in jsonObject and "height" in jsonObject:
                     camera.set(cv2.CAP_PROP_FRAME_WIDTH, jsonObject["width"])
                     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, jsonObject["height"])
                 time.sleep(0.1)
                 ret, frame = camera.read()
                 camera.release()
-                print('Took a picture!')
+                print("Took a picture!")
                 jsonObject["data"] = frame[:, :, ::-1]
             if jsonObject["type"] == "stream" and not self.streaming:
                 self.server = ExtCamServer.ExtCamMulticastServer(jsonObject)
@@ -51,7 +54,7 @@ class ExternalCameraCommand(CommandInterface):
                 if "port" in jsonObject:
                     port = jsonObject["port"]
                 else:
-                    port = CONFIGURATIONS["DEFAULT_EXCAM_PORT"]
+                    port = config.DEFAULT_EXCAM_PORT
                 if "width" in jsonObject and "height" in jsonObject:
                     width = jsonObject["width"]
                     height = jsonObject["height"]
@@ -62,20 +65,39 @@ class ExternalCameraCommand(CommandInterface):
                     fps = jsonObject["fps"]
                 else:
                     fps = 25
-                self.pid = subprocess.Popen([CONFIGURATIONS["RTSP_COMMAND"], "-Q 1", "-P", str(
-                    port), "-W", str(width), "-H", str(height), "-F", str(fps), CONFIGURATIONS["USB_CAM_ID"]]).pid
+                self.pid = subprocess.Popen(
+                    [
+                        config.RTSP_COMMAND,
+                        "-Q 1",
+                        "-P",
+                        str(port),
+                        "-W",
+                        str(width),
+                        "-H",
+                        str(height),
+                        "-F",
+                        str(fps),
+                        config.USB_CAM_ID,
+                    ]
+                ).pid
                 self.streaming = True
             if jsonObject["type"] == "rtsp-stop" and self.streaming:
                 os.kill(self.pid, signal.SIGTERM)
                 self.streaming = False
         except Exception as e:
-            logging.error('InternalCameraCommand : unknown error')
-            logging.error(e)
+            LOG.error("ExternalCameraCommand : unknown error")
+            LOG.error(e)
         finally:
             if responseStatusCallback is not None:
                 responseStatusCallback(jsonObject)
 
     def execute(self, responseStatusCallback, jsonObject):
-        t1 = threading.Thread(target=self.execute_helper, args=(
-            responseStatusCallback, jsonObject,), name="ExtCamThread")
+        t1 = threading.Thread(
+            target=self.execute_helper,
+            args=(
+                responseStatusCallback,
+                jsonObject,
+            ),
+            name="ExtCamThread",
+        )
         t1.start()

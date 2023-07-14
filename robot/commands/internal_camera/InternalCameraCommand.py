@@ -47,11 +47,10 @@ class InternalCameraCommand(CommandInterface):
             if jsonObject["type"] == "single":
                 camera = PiCamera()
                 if "width" in jsonObject and "height" in jsonObject:
-                    camera.resolution = (
-                        jsonObject["width"], jsonObject["height"])
+                    camera.resolution = (jsonObject["width"], jsonObject["height"])
                 rawCapture = PiRGBArray(camera)
                 time.sleep(0.1)
-                camera.capture(rawCapture, format='bgr')
+                camera.capture(rawCapture, format="bgr")
                 camera.close()
                 image = rawCapture.array
                 jsonObject["data"] = image
@@ -59,7 +58,7 @@ class InternalCameraCommand(CommandInterface):
                 if "port" in jsonObject:
                     port = jsonObject["port"]
                 else:
-                    port = CONFIGURATIONS["DEFAULT_INCAM_PORT"]
+                    port = config.DEFAULT_INCAM_PORT
                 if "width" in jsonObject and "height" in jsonObject:
                     width = jsonObject["width"]
                     height = jsonObject["height"]
@@ -71,12 +70,27 @@ class InternalCameraCommand(CommandInterface):
                 else:
                     fps = 25
                 result = subprocess.run(
-                    ["v4l2-ctl", "--list-devices"], capture_output=True)
+                    ["v4l2-ctl", "--list-devices"], capture_output=True
+                )
                 device_list = result.stdout.decode().replace("\t", "").split("\n")
-                dev = device_list[device_list.index(
-                    "mmal service 16.1 (platform:bcm2835-v4l2):") + 1]
-                self.pid = subprocess.Popen([CONFIGURATIONS["RTSP_COMMAND"], "-Q 1", "-P", str(
-                    port), "-W", str(width), "-H", str(height), "-F", str(fps), dev]).pid
+                dev = device_list[
+                    device_list.index("mmal service 16.1 (platform:bcm2835-v4l2):") + 1
+                ]
+                self.pid = subprocess.Popen(
+                    [
+                        config.RTSP_COMMAND,
+                        "-Q 1",
+                        "-P",
+                        str(port),
+                        "-W",
+                        str(width),
+                        "-H",
+                        str(height),
+                        "-F",
+                        str(fps),
+                        dev,
+                    ]
+                ).pid
                 self.streaming = True
             if jsonObject["type"] == "continuous-stop" and self.streaming:
                 os.kill(self.pid, signal.SIGTERM)
@@ -88,6 +102,11 @@ class InternalCameraCommand(CommandInterface):
                 responseStatusCallback(jsonObject)
 
     def execute(self, responseStatusCallback, jsonObject):
-        t1 = threading.Thread(target=self.execute_helper, args=(
-            responseStatusCallback, jsonObject,))
+        t1 = threading.Thread(
+            target=self.execute_helper,
+            args=(
+                responseStatusCallback,
+                jsonObject,
+            ),
+        )
         t1.start()

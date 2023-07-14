@@ -23,7 +23,7 @@ class ExternalCameraCommand(CommandInterface):
     def execute_helper(self, responseStatusCallback, jsonObject):
         try:
             if jsonObject["type"] == "single":
-                camera = cv2.VideoCapture(CONFIGURATIONS["USB_CAM_ID"])
+                camera = cv2.VideoCapture(config.USB_CAM_ID)
                 if "width" in jsonObject and "height" in jsonObject:
                     camera.set(cv2.CAP_PROP_FRAME_WIDTH, jsonObject["width"])
                     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, jsonObject["height"])
@@ -36,7 +36,7 @@ class ExternalCameraCommand(CommandInterface):
                 if "port" in jsonObject:
                     port = jsonObject["port"]
                 else:
-                    port = CONFIGURATIONS["DEFAULT_EXCAM_PORT"]
+                    port = config.DEFAULT_EXCAM_PORT
                 if "width" in jsonObject and "height" in jsonObject:
                     width = jsonObject["width"]
                     height = jsonObject["height"]
@@ -47,8 +47,8 @@ class ExternalCameraCommand(CommandInterface):
                     fps = jsonObject["fps"]
                 else:
                     fps = 25
-                self.pid = subprocess.Popen([CONFIGURATIONS["RTSP_COMMAND"], "-Q 1", "-P", str(
-                    port), "-W", str(width), "-H", str(height), "-F", str(fps), CONFIGURATIONS["USB_CAM_ID"]]).pid
+                self.pid = subprocess.Popen([config.RTSP_COMMAND, "-Q 1", "-P", str(
+                    port), "-W", str(width), "-H", str(height), "-F", str(fps), config.USB_CAM_ID]).pid
                 self.streaming = True
             if jsonObject["type"] == "continuous-stop" and self.streaming:
                 os.kill(self.pid, signal.SIGTERM)
