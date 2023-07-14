@@ -1,7 +1,12 @@
-*.pyc
-docs/build/*
-apriltag/_images/*
-.vscode/
-docs/source/_autosummary/
 .venv
+.vscode/
+.vscode/*
+*.pyc
+apriltag/_images/*
+apriltag/rs_cal_big/
+apriltag/rs_cal/
+docs/build/*
+docs/source/_autosummary/
+docs/source/_autosummary/*
 pi_log/client_key.json
+robot/resources/rs/librealsense2.so

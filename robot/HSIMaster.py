@@ -1,3 +1,9 @@
+"""
+Implementation of the main entry class for the HSI code. The responsibility of this class is to create various
+functional threads and do necessary initializations.
+
+CEI-LAB, Cornell University 2019
+"""
 # from SleepTwentySecsCommand import SleepTwentySecsCommand
 # from PrintHelloCommand import PrintHelloCommand
 # from BladderCommand import BladderCommand
@@ -27,6 +33,8 @@ import subprocess
 import threading
 
 home = os.path.expanduser("~pi")
+
+
 # sys.path.append(home + "/HSI/commands/")
 # sys.path.append(home + "/HSI/thread/")
 # sys.path.append(home + "/HSI/commands/text-to-speech-command")
@@ -70,8 +78,8 @@ from robot.commands.bladder.BladderCommand import BladderCommand
 
 # Command utilities
 from robot.commands.CommandInterface import CommandInterface
-from robot.commands.CommandRegistry.CommandRegistry import CommandRegistry
-from robot.commands.CommandExecuter.CommandExecuter import CommandExecuter
+from robot.commands.CommandRegistry import CommandRegistry
+from robot.commands.CommandExecuter import CommandExecuter
 
 # Resource classes
 from robot.resources.queues.CommandQueue import CommandQueue
@@ -80,14 +88,6 @@ from robot.resources.queues.StatusQueue import StatusQueue
 # Connections
 from robot.tcp_manager.TCPManager import TCPManager
 from robot.thread_manager.ThreadManager import ThreadManager
-
-
-"""
-Implementation of the main entry class for the HSI code. The responsibility of this class is to create various
-functional threads and do necessary initializations.
-
-CEI-LAB, Cornell University 2019
-"""
 
 
 class HSIMaster(object):

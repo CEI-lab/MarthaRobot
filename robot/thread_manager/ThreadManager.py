@@ -5,27 +5,32 @@ from threading import Thread
 import time
 
 
-class ThreadManager(Thread):
+class ThreadManager(threading.Thread):
     """
-    ThreadManager This class can be used to start new threads and log messages messages. It is important to note that in any code that 
-    leverages this thread manager should use the method "logging.debug()" instead of print. This allows messages to be 
+    ThreadManager This class can be used to start new threads and log messages messages. It is important to note that in any code that
+    leverages this thread manager should use the method "logging.debug()" instead of print. This allows messages to be
     displayed with thread and time info. (Legacy Code - Only manually tested and reviewed)
     """
+
     _instance = None
 
     def __new__(cls, *args, **kwargs):
+        """
+        Ensures only one instance of :class:`ThreadManager` is created.
+        """
         if not cls._instance:
-            cls._instance = super(ThreadManager, cls).__new__(
-                cls, *args, **kwargs)
+            cls._instance = super(ThreadManager, cls).__new__(cls, *args, **kwargs)
 
         return cls._instance
 
     def __init__(self):
-
+        """
+        Constructor
+        """
         # Call parent constructor
         Thread.__init__(self)
         self.daemon = True
-        self.name = 'Thread Manager'
+        self.name = "Thread Manager"
 
         # Global variables for storing theads and thread counts
         self.periodic_threads = []
@@ -34,7 +39,7 @@ class ThreadManager(Thread):
         self.onetime_count = 0
 
         self.monitor_threads = False
-        self.monitor_debug_period = 3.
+        self.monitor_debug_period = 3.0
         self.alive_count = 0
 
     def run(self):
@@ -43,24 +48,24 @@ class ThreadManager(Thread):
         """
 
         if not self.monitor_threads:
-            logging.debug('Thread Monitoring disabled for Thread Manager')
+            logging.debug("Thread Monitoring disabled for Thread Manager")
 
         # This block of code periodically monitors the status of each child thread
         while self.alive_count > 0:
-
             self.alive_count = sum([t.isAlive() for t in self.periodic_threads]) + sum(
-                [t.isAlive() for t in self.onetime_threads])
+                [t.isAlive() for t in self.onetime_threads]
+            )
 
             if self.monitor_threads:
                 logging.debug(
-                    'Number of active child threads: ' + str(self.alive_count))
+                    "Number of active child threads: " + str(self.alive_count)
+                )
                 for t in threading.enumerate():
                     logging.debug(t)
 
             time.sleep(self.monitor_debug_period)
 
     def stop_periodic_thread(self, thread_name):
-
         # This method stops a periodic thread with a given name
 
         found = False
@@ -71,11 +76,13 @@ class ThreadManager(Thread):
                 found = True
 
         if not found:
-            logging.error('No periodic child thread with name "' +
-                          thread_name + '" found. Unable to stop thread')
+            logging.error(
+                'No periodic child thread with name "'
+                + thread_name
+                + '" found. Unable to stop thread'
+            )
 
     def resume_periodic_thread(self, thread_name):
-
         # This method resumes a periodic thread with a given name
 
         found = False
@@ -86,24 +93,24 @@ class ThreadManager(Thread):
                 found = True
 
         if not found:
-            logging.error('No periodic child thread with name "' +
-                          thread_name + '" found. Unable to resume thread')
+            logging.error(
+                'No periodic child thread with name "'
+                + thread_name
+                + '" found. Unable to resume thread'
+            )
 
     def run_while_active(self):
-
         # This method should only be called from the main thread in order
         # to avoid the program becoming unresponsive
 
         while self.isAlive():
-            time.sleep(.1)
+            time.sleep(0.1)
 
     def set_monitor_debug_frequency(self, frequency):
-
         # Update monitor period
-        self.monitor_debug_period = 1. / frequency
+        self.monitor_debug_period = 1.0 / frequency
 
     def new_periodic(self, function, thread_name, frequency, daemonic=True, *argv):
-
         # This function is a factory that generates a new periodic thread. Threads
         # should be set to daemonic to avoid the an unresponsive program (unless
         # you don't want the thread to end with the main thread dies).
@@ -119,7 +126,6 @@ class ThreadManager(Thread):
         self.periodic_threads.append(per_thread)
 
     def new_onetime(self, function, thread_name, daemonic=True, *argv):
-
         # This function is a factory that generates a new thread. Threads
         # should be set to daemonic to avoid the an unresponsive program (unless
         # you don't want the thread to end with the main thread dies).
@@ -135,7 +141,6 @@ class ThreadManager(Thread):
         self.onetime_threads.append(ot_thread)
 
     def start_all(self):
-
         # This method calls "start()" for each thread in the global monitoring lists
 
         for t in self.periodic_threads:
@@ -145,7 +150,6 @@ class ThreadManager(Thread):
             t.start()
 
     def join_all(self):
-
         # This method calls "join()" for each thread in the global monitoring lists
 
         for t in self.periodic_threads:
@@ -155,7 +159,6 @@ class ThreadManager(Thread):
             t.join()
 
     def start_by_name(self, name):
-
         # This method calls "start()" for a thread with a specific name
 
         for t in self.periodic_threads:
@@ -167,7 +170,6 @@ class ThreadManager(Thread):
                 t.start()
 
     def join_by_name(self, name):
-
         # This method calls "join()" for a thread with a specific name
 
         for t in self.periodic_threads:
@@ -188,17 +190,15 @@ CEI-LAB, Cornell University 2019
 
 class OnetimeThread(Thread):
     def __init__(self, function, *argv):
-
         Thread.__init__(self)
         self.args = argv
         self.function = function
 
     def run(self):
-
         try:
             self.function(*self.args)
         except:
-            logging.error('OnetimeThread Error: ')
+            logging.error("OnetimeThread Error: ")
             logging.error(traceback.format_exc())
 
 
@@ -211,9 +211,7 @@ CEI-LAB, Cornell University 2019
 
 
 class PeriodicThread(Thread):
-
     def __init__(self, function, frequency, *argv):
-
         # Call parent constructor
         Thread.__init__(self)
 
@@ -227,14 +225,13 @@ class PeriodicThread(Thread):
         self.stop = False
 
     def run(self):
-
         while not self.stop:
             # Time exicution of target function in order to determin remaining wait time
             start_time = time.time()
             try:
                 self.function(*self.args)
             except:
-                logging.error('PeriodicThread Error: ')
+                logging.error("PeriodicThread Error: ")
                 logging.error(traceback.format_exc())
 
             # If execution time is greater than wait time, don't wait.
@@ -243,10 +240,8 @@ class PeriodicThread(Thread):
                 time.sleep(self.period)
 
     def stop_thread(self):
-
         self.stop = True
 
     def resume_thread(self):
-
         self.stop = False
         self.run()

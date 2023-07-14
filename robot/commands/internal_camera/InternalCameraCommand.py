@@ -1,3 +1,9 @@
+"""
+Implementation of FetchInternalCameraCaptureCommand that will continously capture and send
+image from the internal camera, over SCP (ssh copy) to provided destination.
+
+CEI-LAB, Cornell University 2019
+"""
 from pathlib import Path
 from multiprocessing import Lock
 import sys
@@ -16,33 +22,24 @@ import subprocess
 import os
 import signal
 
-"""
-Implementation of FetchInternalCameraCaptureCommand that will continously capture and send
-image from the internal camera, over SCP (ssh copy) to provided destination.
-
-CEI-LAB, Cornell University 2019
-"""
-
 
 class InternalCameraCommand(CommandInterface):
     streaming = False
 
     def execute_helper(self, responseStatusCallback, jsonObject):
-        """
-        This method will be called to capture images from the internal camera
+        """This method will be called to capture images from the internal camera
         and send it over SCP (ssh copy) to provided remote IP and remote folder name.
         This is a continous process until it breaks with flag keepSendingImages, set by
         the remote user.
 
-        Inputs:
-            responseStatusCallback : A callback function has to be passed, that will
-                send status of command execution. This callback will be passed by the
+        :param responseStatusCallback: A callback function has to be passed, that will
+                send status of command execution back to the controller. This callback will be passed by the
                 caller of execute().
-            jsonObject : A JSON object containing remote IP and remote folder.
-
-        Outputs:
-            None
+        :type responseStatusCallback: func
+        :param jsonObject: A JSON object initially containing the command json, modified to include response information.
+        :type jsonObject: dictionary
         """
+
         try:
             if jsonObject["type"] == "single":
                 camera = PiCamera()
@@ -102,6 +99,15 @@ class InternalCameraCommand(CommandInterface):
                 responseStatusCallback(jsonObject)
 
     def execute(self, responseStatusCallback, jsonObject):
+        """Entry point creates a thread handle an internalCameraCommand.
+
+        :param responseStatusCallback: A callback function has to be passed, that will
+                send status of command execution back to the controller. This callback will be passed by the
+                caller of execute().
+        :type responseStatusCallback: func()->None
+        :param jsonObject: A JSON object initially containing the command json, modified to include response information.
+        :type jsonObject: dict
+        """
         t1 = threading.Thread(
             target=self.execute_helper,
             args=(

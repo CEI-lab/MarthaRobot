@@ -10,7 +10,13 @@ from multiprocessing import Lock
 from pathlib import Path
 
 import gpiozero as gpio
-import RPi.GPIO as GPIO
+
+try:
+    import RPi.GPIO as GPIO
+except:
+    logging.warning("Could not import RPi.GPIO, importing MOCK module instead")
+    from robot.mock import MOCK_rpigpio as GPIO
+
 
 import qwiic_scmd
 
@@ -23,7 +29,6 @@ import serial
 
 
 class bladder_motor(object):
-
     def __init__(self, address, mot, event, enc1=None, enc2=None):
         """
         __init__ Motor controller for motors in the inflatable bladder.
@@ -70,7 +75,7 @@ class bladder_motor(object):
             self.motor.begin()
             self.motor.set_drive(self.mot, self.dir, 0)
             self.motor.enable()
-            time.sleep(.250)
+            time.sleep(0.250)
 
             self.mEvent = event
 
@@ -98,9 +103,9 @@ class bladder_motor(object):
                 self.stop()
 
     def set_direction(self, direction):
-        if direction == 'out' or direction == 1:
+        if direction == "out" or direction == 1:
             self.dir = 1
-        elif direction == 'in' or direction == 0:
+        elif direction == "in" or direction == 0:
             self.dir = 0
 
     def move_distance(self, direction, speed, distance):

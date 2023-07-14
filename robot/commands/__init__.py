@@ -1,5 +1,5 @@
 """
-Package containing command modules. 
+Package containing commands. All sub packages should contain a module that implements :mod:`robot.commands.CommandInterface`
 """
 
 # from robot.commands.tts.TextToSpeechCommand import TextToSpeechCommand

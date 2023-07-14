@@ -56,6 +56,7 @@ class TCPManager(object):
         self._my_status_queue = status_queue
         self._my_ip = config.LOOP_BACK_IP_ADDRESS
         # The address stays the same forever
+        # This seems to mean that if IP changes while running there may be issues
         self._my_raspi_ip = config.RASPI_IP_ADDRESS
         self._my_tcp_port = config.TCP_PORT
         self._my_last_ip = self._my_ip
@@ -241,7 +242,7 @@ class TCPManager(object):
                 None.
 
         """
-        # logging.info('TCPManager: check new IP')
+        logging.info("TCPManager: check new IP")
         try:
             self._my_ip = (
                 os.popen("ip addr show wlan0").read().split("inet ")[1].split("/")[0]

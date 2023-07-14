@@ -1,7 +1,6 @@
-
-
 from robot.HSIMaster import HSIMaster
 
-obj = HSIMaster()
-obj.initializeCommandRegistry()
-obj.startSystem()
+if __name__ == "__main__":
+    obj = HSIMaster()
+    obj.initializeCommandRegistry()
+    obj.startSystem()

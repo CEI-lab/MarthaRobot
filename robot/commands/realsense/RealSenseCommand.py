@@ -1,3 +1,10 @@
+"""
+Implementation of FetchInternalCameraCaptureCommand that will continously capture and send
+image from the internal camera, over SCP (ssh copy) to provided destination.
+
+CEI-LAB, Cornell University 2019
+"""
+
 from pathlib import Path
 from multiprocessing import Lock
 import sys
@@ -26,6 +33,15 @@ class RealSenseCommand(CommandInterface):
     streaming = False
 
     def execute_helper(self, responseStatusCallback, jsonObject):
+        """Handle a realsense command
+
+        :param responseStatusCallback: A callback function has to be passed, that will
+                send status of command execution back to the controller. This callback will be passed by the
+                caller of execute().
+        :type responseStatusCallback: func
+        :param jsonObject: A JSON object initially containing the command json, modified to include response information.
+        :type jsonObject: dictionary
+        """
         try:
             if jsonObject["type"] == "single":
                 LOG.debug("single RS command")
@@ -63,6 +79,15 @@ class RealSenseCommand(CommandInterface):
                 responseStatusCallback(jsonObject)
 
     def execute(self, responseStatusCallback, jsonObject):
+        """Entrypoint for realsense command handling
+
+        :param responseStatusCallback: A callback function has to be passed, that will
+                send status of command execution back to the controller. This callback will be passed by the
+                caller of execute().
+        :type responseStatusCallback: func
+        :param jsonObject: A JSON object initially containing the command json, modified to include response information.
+        :type jsonObject: dictionary
+        """
         if (
             (jsonObject["type"] == "stream" and self.streaming == False)
             or jsonObject["type"] == "single"
