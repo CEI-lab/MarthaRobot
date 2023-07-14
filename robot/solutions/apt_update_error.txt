@@ -1,9 +1,0 @@
-Issue: 
-One of the intel aero compute board get this error when "sudo apt update" and other "sudo apt ..."
-MESSAGE : could not get lock /var/lib/dpkg/lock - open (11 resource temporarily unavailable)
-
-Solution:
-https://askubuntu.com/questions/15433/unable-to-lock-the-administration-directory-var-lib-dpkg-is-another-process
-
-sudo fuser -cuk /var/lib/dpkg/lock (I only implement the first line, didn't do the second one. )
-sudo rm -f /var/lib/dpkg/lock
