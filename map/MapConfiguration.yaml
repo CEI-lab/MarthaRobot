@@ -1,3 +1,8 @@
 
+# https://www.intel.com/content/www/us/en/support/articles/000030385/emerging-technologies/intel-realsense-technology.html
+rsFOV: [-69,69]
 
-localization
+sigmaRSTheta:     0.1
+sigmaRSDist:      100
+pFalsePositive:   0.05 
+pFalseNegative:   0.1  

@@ -5,9 +5,10 @@ from multiprocessing import Lock
 from pathlib import Path
 
 import time
+import traceback
 
 import robot.configurations as config
-from robot.commands.set_speed import SpeedController
+from robot.commands.set_speed.SpeedController import SpeedController
 from robot.commands.CommandInterface import CommandInterface
 
 import logging
@@ -23,15 +24,18 @@ class SetSpeedCommand(CommandInterface):
     _lock = Lock()
 
     def __init__(self):
+        logging.debug(config.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID)
+        logging.debug(config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID)
         try:
             self._motor_left = SpeedController(
-                CONFIGURATIONS.get("LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID")
+                config.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID
             )
             self._motor_right = SpeedController(
-                CONFIGURATIONS.get("RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID")
+                config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID
             )
-        except:
-            logging.info("SetSpeedCommand : SpeedController objects not created")
+        except Exception as e:
+            logging.warning("SetSpeedCommand : SpeedController objects not created")
+            logging.warning((traceback.format_exc()))
 
     def _setSpeed(self, responseStatusCallback, jsonObject):
         """This method will be called to set speed for wheels.
@@ -43,7 +47,7 @@ class SetSpeedCommand(CommandInterface):
         :param jsonObject: A JSON object initially containing the command json, modified to include response information.
         :type jsonObject: dictionary
         """
-
+        logging.debug("Setting speed")
         try:
             self._lock.acquire()
             begin_time = time.time()
@@ -53,19 +57,28 @@ class SetSpeedCommand(CommandInterface):
             right_speed = jsonObject.get("rightSpeed")
             # print("1:{}".format(time.time()-begin_time))
             if left_speed is not None and right_speed is not None:
-                logging.info("Running script to set speed commands simultaneously.")
+                # logging.info("Running script to set speed commands simultaneously.")
                 jsonObject["response"] = "SUCCESS"
+                self._motor_left.set_speed(left_speed)
+                self._motor_right.set_speed(right_speed)
+                # subprocess.call([config.SPEED_CONTROLLER_COMMAND + " -d " +
+                #                    config.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID  + " " +
+                #                        '--speed ' + str(left_speed)])
+                # subprocess.call([config.SPEED_CONTROLLER_COMMAND + " -d " +
+                #                    config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID  + " " +
+                #                        '--speed ' + str(left_speed)])
+
                 # print("current_time is {}".format(time.time()))
-                subprocess.Popen(
-                    [
-                        "sudo",
-                        "/home/pi/HSI/commands/set-speed-command/./SetSpeed.sh",
-                        CONFIGURATIONS.get("LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"),
-                        str(left_speed),
-                        CONFIGURATIONS.get("RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID"),
-                        str(right_speed),
-                    ]
-                )
+                # subprocess.Popen(
+                #     [
+                #         "sudo",
+                #         "/home/pi/HSI/commands/set-speed-command/./SetSpeed.sh",
+                #         config.LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID,
+                #         str(left_speed),
+                #         config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID,
+                #         str(right_speed),
+                #     ]
+                # )
                 # print("2:{}".format(time.time()-begin_time))
             else:
                 if left_speed is not None:
