@@ -67,6 +67,11 @@ RTSP_COMMAND = "resources/v4l2rtspserver/v4l2rtspserver"
 # Bladder
 #####################################################################
 
+MOTOR_TIMEOUT = 1
+""" 
+Timeout for bladder motors end stops.  
+If the encoder doesn't update within this timeframe the motor will stop with the assumption that it has reached it's maximum retraction.
+"""
 
 # bladder motor 1
 DIR1_1_PIN = 10

@@ -5,22 +5,25 @@ CEI-LAB, Cornell University 2023
 """
 
 from __future__ import print_function
-import logging
+import asyncio
 import sys
 import time
 from multiprocessing import Lock
 from pathlib import Path
+import logging
+log = logging.getLogger(__name__)
 
 try:
     import RPi.GPIO as GPIO
 except:
-    logging.warning("Could not import RPi.GPIO, importing MOCK module instead")
+    log.warning("Could not import RPi.GPIO, importing MOCK module instead")
     from marthabot.robot.mock import MOCK_rpigpio as GPIO
 
 
 import marthabot.configurations.robot_config as config
 import threading
 from commands.command_interface import CommandInterface
+from marthabot.robot.resources.event_utils import ChildEvent, AndEvent
 
 
 from marthabot.robot.commands.bladder.bladder_motor import bladder_motor as motor_controller
@@ -36,33 +39,37 @@ class BladderCommand(CommandInterface):
         """
         GPIO.setmode(GPIO.BCM)
 
-        self.m1Event: threading.Event = threading.Event()
-        self.m2Event: threading.Event = threading.Event()
-        self.m3Event: threading.Event = threading.Event()
+        self._m1Event: ChildEvent = ChildEvent()
+        self._m2Event: ChildEvent = ChildEvent()
+        self._m3Event: ChildEvent = ChildEvent()
+
+        self._all_motor_event = AndEvent(self._m1Event,
+                                        self._m2Event,
+                                        self._m3Event,)
 
         self.m1: motor_controller = motor_controller(
             config.M1_ADDRESS,
             config.M1_SELECT,
-            self.m1Event,
+            self._m1Event,
             config.ENC1_1_PIN,
             config.ENC2_1_PIN,
         )
         self.m2: motor_controller = motor_controller(
             config.M2_ADDRESS,
             config.M2_SELECT,
-            self.m2Event,
+            self._m2Event,
             config.ENC1_2_PIN,
             config.ENC2_2_PIN,
         )
         self.m3: motor_controller = motor_controller(
             config.M3_ADDRESS,
             config.M3_SELECT,
-            self.m3Event,
+            self._m3Event,
             config.ENC1_3_PIN,
             config.ENC2_3_PIN,
         )
 
-        # logging.debug(self.m1,self.m2,self.m3)
+        # log.debug(self.m1,self.m2,self.m3)
         # Setup and start PWM on the fan pin, with 0 duty cycle
         GPIO.setup(config.FAN_PIN, GPIO.OUT)
         self.fan: GPIO.PWM = GPIO.PWM(config.FAN_PIN, 1000)
@@ -100,7 +107,9 @@ class BladderCommand(CommandInterface):
         self.m2.move(direction, speed)
         self.m3.move(direction, speed)
 
-    def move_all_dist(self, dist1, dist2, dist3, direction, speed):
+        
+
+    async def move_all_dist(self, dist1, dist2, dist3, direction, speed):
         """
         Move all bladder motors a distance in a specified direction, using :func:`.bladder.bladder_motor.bladder_motor.move_distance`
 
@@ -116,9 +125,22 @@ class BladderCommand(CommandInterface):
         :type dist3: int
         """
         # TODO distinct speed per motor, or scale all based on longest dist
+        log.debug("Moving bladder motors")
         self.m1.move_distance(direction, speed, dist1)
         self.m2.move_distance(direction, speed, dist2)
         self.m3.move_distance(direction, speed, dist3)
+
+        async with asyncio.TaskGroup() as tg:
+            tg: asyncio.TaskGroup = tg
+            tg.create_task(await self.m1.wait())
+            tg.create_task(await self.m2.wait())
+            tg.create_task(await self.m3.wait())
+        log.debug("Finished moving bladder motors")
+
+
+
+
+    
 
     def inflate(self):
         """
@@ -128,9 +150,9 @@ class BladderCommand(CommandInterface):
         # TODO make sure the encoder based endswitch code is carried over to this file
         self.fan.ChangeDutyCycle(100)
         time.sleep(10)
-        self.m1Event.clear()
-        self.m2Event.clear()
-        self.m3Event.clear()
+        self._m1Event.clear()
+        self._m2Event.clear()
+        self._m3Event.clear()
         self.move_all_dist(
             config.BLADDER_SIZE[0],
             config.BLADDER_SIZE[1],
@@ -138,18 +160,18 @@ class BladderCommand(CommandInterface):
             "out",
             config.BLADDER_SPEED,
         )
-        self.m1Event.wait()
-        self.m2Event.wait()
-        self.m3Event.wait()
+        self._m1Event.wait()
+        self._m2Event.wait()
+        self._m3Event.wait()
 
     def deflate(self):
         """
         Deflate the robots bladder completely
         """
         self.fan.ChangeDutyCycle(100)
-        self.m1Event.clear()
-        self.m2Event.clear()
-        self.m3Event.clear()
+        self._m1Event.clear()
+        self._m2Event.clear()
+        self._m3Event.clear()
         self.move_all_dist(
             config.BLADDER_SIZE[0],
             config.BLADDER_SIZE[1],
@@ -157,9 +179,9 @@ class BladderCommand(CommandInterface):
             "in",
             config.BLADDER_SPEED,
         )
-        self.m1Event.wait()
-        self.m2Event.wait()
-        self.m3Event.wait()
+        self._m1Event.wait()
+        self._m2Event.wait()
+        self._m3Event.wait()
         self.fan.ChangeDutyCycle(0)
 
     def _inflate_deflate(self, responseStatusCallback, jsonObject):
@@ -176,24 +198,24 @@ class BladderCommand(CommandInterface):
             jsonObject["response"] = "UNKNOWN_ERROR"
             try:
                 if jsonObject["action"] == "inflate":
-                    logging.info("Inflating...")
+                    log.info("Inflating...")
                     self.inflate()
-                    logging.info("BladderCommand : Inflate success")
+                    log.info("BladderCommand : Inflate success")
                     jsonObject["response"] = "INFLATE_SUCCESS"
                 elif jsonObject["action"] == "deflate":
-                    logging.info("Deflating...")
+                    log.info("Deflating...")
                     self.deflate()
-                    logging.info("BladderCommand : Deflate success")
+                    log.info("BladderCommand : Deflate success")
                     jsonObject["response"] = "DEFLATE_SUCCESS"
                 else:
-                    logging.info("Error...")
-                    logging.info(
+                    log.info("Error...")
+                    log.info(
                         "BladderCommand : There is a typo in the action field."
                     )
                     jsonObject["response"] = "INCORRECT_INFLATE_DEFLATE_FIELD"
 
             except:
-                logging.info("BladderCommand : can't open serial port.")
+                log.info("BladderCommand : can't open serial port.")
                 jsonObject["response"] = "SERIAL_CONNECTION_CLOSED"
 
             if responseStatusCallback is not None:
@@ -201,7 +223,7 @@ class BladderCommand(CommandInterface):
             else:
                 print(jsonObject)
         except:
-            logging.error(
+            log.error(
                 "BladderCommand : Error probably in responseStatus call or resource is busy"
             )
 
@@ -224,7 +246,7 @@ class BladderCommand(CommandInterface):
                     ),
                 )
                 self._t1.start()
-                logging.info("BladderCommand : Process bladder command")
+                log.info("BladderCommand : Process bladder command")
                 jsonObject["response"] = "PROCESS_BLADDER_COMMAND"
 
             if responseStatusCallback is not None:
@@ -232,7 +254,7 @@ class BladderCommand(CommandInterface):
             else:
                 print(jsonObject)
         except:
-            logging.error(
+            log.error(
                 "BladderCommand : Error no action or select field in json object"
             )
 

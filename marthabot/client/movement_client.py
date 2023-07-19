@@ -157,7 +157,8 @@ def parse_command(command: str) -> dict:
     -    image ["list","get","upload","display"] [string filename ()]
     -    internal ["single", "continuous-start", "continuous-stop"]
     -    external ["single", "continuous-start", "continuous-stop"]
-    -    bladder ["inflate","deflate",""] [int motor] [direction] [int distance]
+    -    bladder ["inflate","deflate"]
+    -    bladder ["calibrate"] [int motor] [direction] [int distance]
 
     :param command: A human readable/input command
     :type command: str
