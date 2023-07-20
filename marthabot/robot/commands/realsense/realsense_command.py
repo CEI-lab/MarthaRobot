@@ -11,7 +11,8 @@ import sys
 import os
 import threading
 import time
-import logging as LOG
+import logging
+log = logging.getlogger()
 import pyrealsense2 as rs
 import numpy as np
 import cv2
@@ -37,15 +38,15 @@ class RealSenseCommand(CommandInterface):
         """
         try:
             if jsonObject["type"] == "single":
-                LOG.debug("single RS command")
+                log.debug("single RS command")
                 pipeline = rs.pipeline()
                 pipeline.start()
-                LOG.debug("opened and started RS pipleine")
+                log.debug("opened and started RS pipleine")
                 time.sleep(0.1)
                 frames = pipeline.wait_for_frames()
                 depth = frames.get_depth_frame()
                 depth_data = depth.as_frame().get_data()
-                LOG.debug("Got data")
+                log.debug("Got data")
 
                 np_image = np.asanyarray(depth_data)
                 if "colorize" in jsonObject and jsonObject["colorize"] == 1:
@@ -65,8 +66,8 @@ class RealSenseCommand(CommandInterface):
                 # asyncore.close()
                 self.server.closeServer()
         except Exception as e:
-            LOG.error("RealSenseCommand : Error")
-            LOG.exception(e)
+            log.error("RealSenseCommand : Error")
+            log.exception(e)
         finally:
             if responseStatusCallback is not None:
                 responseStatusCallback(jsonObject)

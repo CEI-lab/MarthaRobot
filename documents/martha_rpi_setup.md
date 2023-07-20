@@ -424,7 +424,7 @@ mkdir  build
 cd build
 cmake .. -DBUILD_EXAMPLES=true -DCMAKE_BUILD_TYPE=Release -DFORCE_LIBUVC=true
 #
-make -j1
+make -j4
 sudo make install
 ```
 
@@ -434,15 +434,26 @@ sudo make install
 cd ~/librealsense/build
 
 cmake .. -DBUILD_PYTHON_BINDINGS=bool:true -DPYTHON_EXECUTABLE=$(which python3)
-make -j1
+make -j4
 
 sudo make install
+```
+
+Current versions of the makefile dont install to the correct directory. So the next step may be needed
+
+Find and copy "pyrealsense2.so" and "librealsense2.so" to a directory in your python installation.
+
+```bash
+cd /usr/local/lib/python3.7/site-packages/
+mkdir pyrealsense2
+
+cp pyrealsense2.cpython-37m-arm-linux-gnueabihf.so.2.54.1 pyrealsense2.cpython-37m-arm-linux-gnueabihf.so
 ```
 
 Append
 
 ```bash
-export PYTHONPATH=$PYTHONPATH:/usr/local/lib
+export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.7/site-packages/pyrealsense2
 ```
 
 to ~/.bashrc
