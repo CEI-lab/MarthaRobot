@@ -138,8 +138,19 @@ class Mapper:
         for tag in self.tags:
             tagid,x,y,z,heading,yaw,pitch,roll = tag
             card = 0 if heading < pi/4 and heading >= -pi/4 else 1 if heading < 3*pi/4 and heading >=pi/4 else 2 if heading >= 3*pi/4 or heading < -3*pi/4 else 3
-            plt.quiver(x,y,np.cos(heading),np.sin(heading))
-            plt.annotate(int(tagid),(x  if card in [0,2] else x + 20 ,y  if card in [1,3] else y + 20),ha='center',va='center')
+            plt.quiver(x,y,
+                       np.cos(heading),
+                       np.sin(heading),
+                       width=0.005,
+                       scale=50,
+                    )
+            plt.annotate(int(tagid),
+                         (x+10  if card in [0,2] else x + 20 ,y + 10  if card in [1,3] else y + 20),
+                         ha='center',
+                         va='center',
+                         size=6,
+                         weight='bold',
+                        )
 
         for pose in poses:
             label,x,y,heading = pose
