@@ -1,0 +1,5 @@
+ 20/07 18:51:04,691 ERROR [3069997120] (librealsense-exception.h:52) /dev/video10 is no video capture device Last Error: No such file or directory
+ 20/07 18:51:04,692 ERROR [3069997120] (sensor.cpp:664) acquire_power failed: /dev/video10 is no video capture device Last Error: No such file or directory
+ 20/07 18:51:04,694 WARNING [3069997120] (rs.cpp:310) null pointer passed for argument "device"
+ 20/07 18:51:04,701 ERROR [3069997120] (librealsense-exception.h:52) xioctl(VIDIOC_S_EXT_CTRLS) failed Last Error: Inappropriate ioctl for device
+ 20/07 18:51:04,702 WARNING [3069997120] (rs.cpp:310) null pointer passed for argument "device"

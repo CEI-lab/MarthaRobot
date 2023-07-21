@@ -23,13 +23,16 @@ def get_frame(pipeline):
     frames = pipeline.wait_for_frames()
     # take owner ship of the frame for further processing
     frames.keep()
-    depth = frames.get_depth_frame()
+    # depth = frames.get_depth_frame()
     rgb = frames.get_color_frame()
     # pose = frames.get_pose_data()
+    # color_image = cv2.resize(cv2.cvtColor(np.asanyarray(
+    #     rgb.get_data()), cv2.COLOR_BGR2GRAY), (3840, 2160), interpolation=INTER_CUBIC)
+    # color_image = cv2.resize(cv2.cvtColor(np.asanyarray(
+    #     rgb.get_data()), cv2.COLOR_BGR2GRAY), (1920, 1080), interpolation=INTER_CUBIC)
     color_image = cv2.resize(cv2.cvtColor(np.asanyarray(
-        rgb.get_data()), cv2.COLOR_BGR2GRAY), (1920, 1080), interpolation=INTER_CUBIC)
-    # color_image = cv2.resize(np.asanyarray(
-        # rgb.get_data()), (1280, 720), interpolation=INTER_CUBIC)
+        rgb.get_data()), cv2.COLOR_BGR2GRAY), (1280, 720), interpolation=INTER_CUBIC)
+    
     ts = frames.get_timestamp()
     return color_image, ts
 

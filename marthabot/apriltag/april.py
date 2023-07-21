@@ -12,7 +12,8 @@ detector = atag.Detector(families="tagStandard41h12")
 
 # read in image
 dir = "marthabot/apriltag/realsense/"
-name = "13.jpg"
+name = "14.jpg"
+
 image = cv2.imread(os.path.join(dir,name))
 
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -21,6 +22,14 @@ gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 fx, fy, cx, cy = (
     952., 952., 1920.0/2, 1080.0/2.
 )
+# fx, fy, cx, cy = (
+#     1335.5, 1335.5, 1920.0/2, 1080.0/2.
+# )
+
+# from realsense viewer 
+# fx, fy, cx, cy = (
+#     1335.5, 1335.5, 952., 556.
+# )
 camera_params = [fx, fy, cx, cy]
 k = [[fx,0,cx],[0,fy,cy],[0,0,1]]
 
@@ -33,6 +42,7 @@ with open("marthabot/apriltag/realsense/poses.csv","r") as f:
         filename = split[0]
         pose = np.ones((4,1))
         pose[:3] = np.array([float(s) for s in split[1:]]).reshape(3,1)
+        # pose[0] -= 18
         predictions[filename] = pose
         line = f.readline()
 
@@ -91,14 +101,20 @@ np.set_printoptions(precision=3, suppress=True, formatter={'float': '{: 0.3f}'.f
 
 print("Examining image: ",name)
 for tag in results:
+    if not tag.tag_id in m.tags[:,0]:
+        print("===============================")
+        print(f"Skipping tag {tag.tag_id} as it is not in the map file")
+        continue
     print("===============================")
     print(tag.tag_id)
     rt: np.ndarray = np.linalg.inv(combine_rt(tag.pose_R,tag.pose_t))
-    print("RT: \n", rt)
+    # print("RT: \n", rt)
     rz,ry,rx = rt2orientation(rt)
     print("orientation",rz,ry,rx)
     pose = np.array([0.,0.,0.,1.]).reshape((4,1)).astype(float)
-    print("Initial pose: ", pose.T)
+    print("Robot Frame: ", pose.T)
+    pose = m.robot2cam(pose)
+    print("Cam Frame: ", pose.T)
     pose = rt @ pose 
     print("Tag Frame: ", pose.T)
     pose = m.tag2world(pose,tag.tag_id)

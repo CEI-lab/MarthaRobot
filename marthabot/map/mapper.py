@@ -25,12 +25,19 @@ class Mapper:
 
         self.world = FrameSystem("world")
         self.robot = FrameSystem("robot")
-
+        
 
         with open(mapname,'r') as mapfile, open(confname,'r') as conffile:
             map = yaml.safe_load(mapfile)
             conf = yaml.safe_load(conffile)
 
+            self.cam_frame = Frame(
+                "camera",
+                self.robot,
+                [conf["CAMERA_X"],conf["CAMERA_Y"],conf["CAMERA_Z"]],
+                [conf["CAMERA_YAW"],conf["CAMERA_PITCH"],conf["CAMERA_ROLL"]-math.radians(conf["CAMERA_ROLL_OFFSET"])],
+            )
+            # print(math.degrees(conf["CAMERA_ROLL"]-math.radians(conf["CAMERA_ROLL_OFFSET"])))
 
             exteriors = [ point for point in map["EXTERIOR"] ]
             bodies = [ v for body in map["SOLID_BODIES"] for k,v in body.items()]
@@ -155,7 +162,6 @@ class Mapper:
         gridcells = [points[:, 0] / self.CELL_SIZE_X, points[:, 1] / self.CELL_SIZE_Y]
         return gridcells
 
-    
 
     def getTagByPoint(self, point):
         """Get the tag id of the first tags which is at the coordinates of each point
@@ -258,10 +264,23 @@ class Mapper:
         return np.array(self.tag_frames[tag].base2frame(pose)).astype(float)
     def tag2world(self, pose,tag):
         return np.array(self.tag_frames[tag].frame2base(pose)).astype(float)
+    
+    def robot2cam(self,pose):
+        return np.array(self.cam_frame.base2frame(pose)).astype(float)
+    def cam2robot(self,pose):
+        return np.array(self.cam_frame.frame2base(pose)).astype(float)
     def robot2world(self, pose,robot_pose):
-        pass
+        t = [robot_pose[0],robot_pose[1],0]
+        r = [robot_pose[2],0,0]
+        _, robot_rti = getTransformationMatrix(t,r)
+        return robot_rti @ pose
+
     def world2robot(self, pose,robot_pose):
-        pass
+        t = [robot_pose[0],robot_pose[1],0]
+        r = [robot_pose[2],0,0]
+        robot_rt, _ = getTransformationMatrix(t,r)
+        return robot_rt @ pose
+
 # robot x -> forward, y -> left, z -> up
 # rhodes hall map x -> north, y -> west, z -> up
 # points column vectors 4x1 [x, y, z, 1]T
@@ -448,9 +467,6 @@ def check_intersect(lines1, lines2):
     # assert intersects.shape == (n,m), str(intersects.shape) + " is not equal to " + str((n,m))
     return intersects.T
 
-def sweep(pose, angles):
-    """ create """
-    pass
 
 class point():
     def __init__(self, coordinates, frame):
@@ -463,9 +479,6 @@ class FrameSystem():
         self.frames = {}
         self.root = self.newFrame("name",[0,0,0],[0,0,0],"N/A")
         # self.frames = {"world",self.world}
-
-    # def __contains__(self,item):
-    #     return 
 
     def getNames(self):
         return self.frames.keys()
@@ -486,6 +499,7 @@ class FrameSystem():
         for name,frame in self.frames.items():
             rep += f"\n   {frame}"
         return rep
+
     
 class Frame():
 
@@ -526,7 +540,7 @@ class Frame():
         :type frames: FrameSystem
         :param origin: Origin of this frame in the base frame 
         :type origin: np.ndarray
-        :param orientation: Rotation from the base frame [rz,ry,rx]
+        :param orientation: Rotation in the current frame from the base frame [rz,ry,rx]
         :type orientation: np.ndarray
         :param base: The base this frame is relative to , defaults to None
         :type base: [str,Frame], optional

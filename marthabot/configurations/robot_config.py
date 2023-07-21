@@ -188,6 +188,14 @@ NUMBER_OF_AIRCHANNEL_PAIRS = 3  # Number of air-channel pairs or systems.
 DEFAULT_IMAGE_DEFAULT_LOCATION = "{}/HSI/resources/defaults/"
 DEFAULT_IMAGE_OTHER_LOCATION = "{}/Images/"
 
+#####################################################################
+# Localization
+#####################################################################
+
+
+MIN_ANGLE = -180.0
+MAX_ANGLE = 180.0
+assert MAX_ANGLE - MIN_ANGLE == 360.0
 
 def update(k: str, v: str):
     """Modify the :mod:`configurations.configurations` source file to update the value assigned to a variable.
