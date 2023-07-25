@@ -14,10 +14,10 @@ robotHeight: 36
 # camera position/orientation relative to robot
 # robot frame has x -> forward y -> left z -> up
 # cameraframe has x -> right y -> down z -> foward
-CAMERA_X    : 18
+CAMERA_X    : -18
 CAMERA_Y    : 0
-CAMERA_Z    : 12
+CAMERA_Z    : -12
 CAMERA_YAW  : -1.5707963267948966
 CAMERA_PITCH: 0
-CAMERA_ROLL : 1.5707963267948966
+CAMERA_ROLL : -1.5707963267948966
 CAMERA_ROLL_OFFSET : 0

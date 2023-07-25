@@ -8,12 +8,14 @@ import numpy as np
 import matplotlib
 import yaml
 import sympy as sym
+import seaborn as sns
 
 
-matplotlib.use("Agg")
+# matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from dataclasses import dataclass
 from numpy import pi
+from adjustText import adjust_text
 
 
 class Mapper:
@@ -82,6 +84,16 @@ class Mapper:
         # print(self.obstacles)
         # print(self.exteriors)
         
+        palette = sns.color_palette("bright", len(self.tags))
+        it = 0
+        self.c_dict = {}
+        for row in range(len(self.tags)):
+            id = self.tags[row,0]
+            self.c_dict[id] = palette[it]
+            it += 1
+
+
+
         
 
 
@@ -114,12 +126,18 @@ class Mapper:
 
 
 
-    def plot_map(self, out_filename: str, poses):
+    def plot_map(self, out_filename: str, poses, fig):
         """Plot the map and output to a png file
 
         :param filename: file to save the plot to without extension
         :type filename: str
         """    
+        plt.figure(fig)
+        ax = plt.gca()
+        ax.clear()
+        ax.set_aspect('equal', adjustable='box')
+        
+        
         for body in self.obstacles:
             x = body[[0,2]]
             y = body[[1,3]]
@@ -143,23 +161,78 @@ class Mapper:
                        np.sin(heading),
                        width=0.005,
                        scale=50,
+                       color=self.c_dict[tagid],
                     )
             plt.annotate(int(tagid),
                          (x+10  if card in [0,2] else x + 20 ,y + 10  if card in [1,3] else y + 20),
                          ha='center',
                          va='center',
-                         size=6,
+                         size=5,
                          weight='bold',
+                         color=self.c_dict[tagid],
+
                         )
+        pose_l = [str(p[0]) for p in poses]
+        pose_x = [float(p[1]) for p in poses]
+        pose_y = [float(p[2]) for p in poses]
+        pose_t = [float(p[3]) for p in poses]
+        pose_f = [float(p[4]) for p in poses]
 
-        for pose in poses:
-            label,x,y,heading = pose
-            x,y,heading = [float(x),float(y),float(heading)]
-            card = 0 if heading < pi/4 and heading >= -pi/4 else 1 if heading < 3*pi/4 and heading >=pi/4 else 2 if heading >= 3*pi/4 or heading < -3*pi/4 else 3
-            plt.quiver(x,y,np.cos(heading),np.sin(heading))
-            plt.annotate(label,(x  if card in [0,2] else x + 20 ,y  if card in [1,3] else y + 20),ha='center',va='center')
+        
+        quivs = [plt.quiver(pose_x[i],pose_y[i],
+                    np.cos(pose_t[i]),
+                    np.sin(pose_t[i]),
+                    width=0.005,
+                    scale=50,
+                    color=self.c_dict[pose_f[i]],
+                )
+                for i in range(len(poses))]
+        scats= [plt.scatter(pose_x[i]+20*np.cos(pose_t[i]),
+                            pose_y[i]+20*np.sin(pose_t[i]),
+                            alpha=0)
+                for i in range(len(poses))]
+        
+        end_x = [pose_x[i]+20*np.cos(pose_t[i])
+                for i in range(len(poses))]
+        end_y = [pose_y[i]+20*np.cos(pose_t[i])
+                for i in range(len(poses))]
+        
+        # texts = [plt.text(pose_x[i],pose_y[i],
+        #                  pose_l[i],
+        #                   ha='center',
+        #                   va='center', 
+        #                  size=5,
+        #                  weight='bold',
+        #                   )
+        #         for i in range(len(poses))]
 
-        plt.savefig(out_filename+".png")
+        # adjust_text(texts, 
+        #             end_x,
+        #             end_y,
+        #             add_objects=scats,
+        #             arrowprops=dict(arrowstyle="-", color='grey', lw=0.75, alpha = 0.5, linewidth=0.1))
+
+        # for pose in poses:
+        #     label,x,y,heading = pose
+        #     print(heading)
+        #     x,y,heading = [float(x),float(y),float(heading)]
+        #     card = 0 if heading < pi/4 and heading >= -pi/4 else 1 if heading < 3*pi/4 and heading >=pi/4 else 2 if heading >= 3*pi/4 or heading < -3*pi/4 else 3
+        #     plt.quiver(x,y,
+        #                np.cos(heading),
+        #                np.sin(heading),
+        #                width=0.002,
+        #                scale=38,)
+        #     plt.annotate(label,
+        #                  (x  if card in [0,2] else x + 20 ,
+        #                   y  if card in [1,3] else y + 20),
+        #                   ha='center',
+        #                   va='center',
+        #                  size=5,
+        #                  weight='bold',
+        #                   )
+        plt.gcf().show()
+        # print("writing map to '",out_filename+".png","'")
+        # plt.savefig(out_filename+".png")
 
 
     def coord2grid(self, points):
@@ -567,6 +640,8 @@ class Frame():
         self.orientation = np.array(orientation)
         self.frame_system = frames
         self.forward_m, self.backward_m = getTransformationMatrix(origin,orientation)
+
+
         # self.forward, self.backward = getTransformationMatrix([origin[0],origin[1],origin[2]],[orientation[0],orientation[1],orientation[2]])
 
         if base is None:
@@ -674,12 +749,6 @@ rotx = sym.Matrix([
 
 tr =   rotx @ roty @ rotz @ trans
 
-# sym.pprint(rotz)
-# print()
-# sym.pprint(roty)
-# print()
-# sym.pprint(rotx)
-
 # sym.pprint(tr)
 
 
@@ -712,30 +781,80 @@ def getTransformationMatrix(t,r):
 
     return np.array(ret), np.array(ret.inv())
 
-
-
 if __name__ == "__main__":
-    m = Mapper("RhodeMap.yaml","MapConfiguration.yaml")
-    l1 = np.array(
-        [
-            [0, 0, 1, 0],  # _
-            [0, 0, 1, 1],  # /
-            [0, 1, 1, 1],  # -
-            [0, 1, 1, 0],  # \
-            [0, 0, 0, 1],  # |_
-            [1, 0, 1, 1],  # _|
-        ]
-    )
-    l2 = np.array(
-        [
-            [5, 5, 6, 6],  # no intersect
-            [5, 5, 5, 6],  # no intersect
-            [5, 5, 6, 5],  # no intersect
-            [1, 0, 1, -1],  # intersect _ _| \
-            [0.5, 0, 0.5, -1],  # intersect _
-            [0.5, 1, 0.5, 2],  # intersect -
-        ]
-    )
+    m = Mapper("marthabot/map/RhodeMap.yaml","marthabot/map/MapConfiguration.yaml")
+    
+    np.set_printoptions(precision=3, suppress=True)
+
+
+
+
+    tag6 = m.getTag(6)
+
+    tag6 = np.array([1045,370.705,24,1]).reshape(4,1).astype(float)
+    origin = np.array([0,0,0,1]).reshape(4,1).astype(float)
+    offset = np.array([100,0,-100,0]).reshape(4,1).astype(float)
+    offsettag6 = tag6 + offset
+    # print("offset \n",(offset.T))
+    # print("global ref \n",( offsettag6.T))
+    # print("global tag6 \n",(tag6.T)          )
+    # print("tr \n", np.array(m.tag_frames[6].forward_m).astype(float))
+    # print("rt \n", np.array(m.tag_frames[6].backward_m).astype(float))
+    # print("global tag6 -> tag6 \n",         (m.world2tag(tag6,6).T))
+    # print("tag6 origin -> global \n",       (m.tag2world(origin,6).T))
+    # print("global origin -> tag6 \n",       (m.world2tag(origin,6).T))
+    # print("global offsettag6 -> tag6 \n",   (m.world2tag(offsettag6,6).T))
+    
+    p_tag6 = origin + offset
+    p_world = m.tag2world(p_tag6,6)
+
+    print("tag6",p_tag6.T)
+    print("world",p_world.T)
+    
+    # testframe = FrameSystem("test")
+    # translated = testframe.newFrame("translated",[1,1,1],[0,0,0])
+    # rotz = testframe.newFrame("rotz",[0,0,0],[pi/2,0,0])
+    # roty = testframe.newFrame("roty",[0,0,0],[0,pi/2,0])
+    # rotx = testframe.newFrame("rotx",[0,0,0],[0,0,pi/2])
+    # offset = np.array([1,0,0,1]).reshape(4,1)
+    # print("offset \n",offset.T)
+    # print("translated \n",(translated.forward_m @ offset).T)
+    # print("rotz \n",(rotz.forward_m @ offset).T)
+    # print("roty \n",(roty.forward_m @ offset).T)
+    # print("rotx \n",(rotx.forward_m @ offset).T)
+
+    poses = np.array([
+        # ["origin", 0,0,0],
+        ["p_world", p_world[0,0],p_world[1,0],0],
+    ])
+    m.plot_map("marthabot/map/map",poses)
+
+
+
+
+
+
+
+    # l1= np.array(
+    #     [
+    #         [0, 0, 1, 0],  # _
+    #         [0, 0, 1, 1],  # /
+    #         [0, 1, 1, 1],  # -
+    #         [0, 1, 1, 0],  # \
+    #         [0, 0, 0, 1],  # |_
+    #         [1, 0, 1, 1],  # _|
+    #     ]
+    # )
+    # l2 = np.array(
+    #     [
+    #         [5, 5, 6, 6],  # no intersect
+    #         [5, 5, 5, 6],  # no intersect
+    #         [5, 5, 6, 5],  # no intersect
+    #         [1, 0, 1, -1],  # intersect _ _| \
+    #         [0.5, 0, 0.5, -1],  # intersect _
+    #         [0.5, 1, 0.5, 2],  # intersect -
+    #     ]
+    # )
     # res = check_intersect(l1, l2)
     # assert res =
     # print(l1, "\nintersect with \n", l2, "\nat l1↓  l2→\n", res)
@@ -754,48 +873,3 @@ if __name__ == "__main__":
     # print(rays[:,2:])
     # print(dist(rays[:,:2],rays[:,2:]))
     # res = m.getVisibleTags([800, 300, 0], [-np.pi, np.pi])
-    np.set_printoptions(precision=3, suppress=True)
-    # res.dtype.names = ("tagid","angle","dist")
-    # print()
-
-
-    tag6 = m.getTag(6)
-
-    tag6 = np.array([1045,370.705,24,1]).reshape(4,1).astype(float)
-    origin = np.array([0,0,0,1]).reshape(4,1).astype(float)
-    offset = np.array([-1,0,0,0]).reshape(4,1).astype(float)
-    offsettag6 = tag6 + offset
-    print("offset \n",(offset.T))
-    print("global ref \n",( offsettag6.T))
-    print("global tag6 \n",(tag6.T)          )
-    print("tr \n", np.array(m.tag_frames[6].forward_m).astype(float))
-    print("rt \n", np.array(m.tag_frames[6].backward_m).astype(float))
-    print("global tag6 -> tag6 \n",         (m.world2tag(tag6,6).T))
-    print("tag6 origin -> global \n",       (m.tag2world(origin,6).T))
-    print("global origin -> tag6 \n",       (m.world2tag(origin,6).T))
-    print("global offsettag6 -> tag6 \n",   (m.world2tag(offsettag6,6).T))
-    
-    # testframe = FrameSystem("test")
-    # translated = testframe.newFrame("translated",[1,1,1],[0,0,0])
-    # rotz = testframe.newFrame("rotz",[0,0,0],[pi/2,0,0])
-    # roty = testframe.newFrame("roty",[0,0,0],[0,pi/2,0])
-    # rotx = testframe.newFrame("rotx",[0,0,0],[0,0,pi/2])
-    # offset = np.array([1,0,0,1]).reshape(4,1)
-    # print("offset \n",offset.T)
-    # print("translated \n",(translated.forward_m @ offset).T)
-    # print("rotz \n",(rotz.forward_m @ offset).T)
-    # print("roty \n",(roty.forward_m @ offset).T)
-    # print("rotx \n",(rotx.forward_m @ offset).T)
-
-    poses = np.array([
-        # ["origin", 0,0,0],
-        ["control", 200,200,0],
-    ])
-    m.plot_map("map",poses)
-
-
-    # cage = map.cage
-    # lines = path2lines(cage)
-
-    # print(cage)
-    # print(lines)

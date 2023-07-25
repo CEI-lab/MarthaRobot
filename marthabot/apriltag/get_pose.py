@@ -10,6 +10,7 @@ import dt_apriltags as atag
 import numpy as np
 from marthabot.map.mapper import Mapper
 import cv2
+import seaborn as sns
 
 def draw_pose(
     overlay,
@@ -102,15 +103,15 @@ def draw_pose(
     )
     if label:
         textwidth = (
-            cv2.getTextSize(label, font, textsize / 35, round(linewidth / 2))[0][0] / 2
+            cv2.getTextSize(label, font, textsize * 3, round(linewidth / 2))[0][0] / 2
         )
         ori = (round(ipoints[4][0] - textwidth), ipoints[4][1])
         cv2.putText(
             overlay,
-            f"[{label}]",
+            label,
             ori,
             font,
-            textsize ,
+            textsize * 3,
             (50, 255, 50),
             round(linewidth / 2),
             cv2.LINE_AA,
@@ -158,14 +159,15 @@ pipe = rsu.get_pipe()
 
 #camera intrinsics
 fx, fy, cx, cy = (
-    # 952., 952.,
+    952., 952.,
     # 952., 556.,
-    # 1920.0/2, 1080.0/2.,
+    1920.0/2, 1080.0/2.,
     # 1335.5, 1335.5,
     # 1280.0/2, 720.0/2,
-
     # 942.0,934.0,623.0,331.0
-    952.0,942.0,632.0,331.0 #output.jpg
+    # 952.0,942.0,632.0,331.0 #output.jpg
+    # 632.0,331.0,
+
 
 )
 camera_params = [fx, fy, cx, cy]
@@ -178,8 +180,9 @@ size = 8
 # convert outer edge size to tag size
 size = size / 9 * 5
 
-size = size *12 * ft2m
+size = size * 12 * ft2m
 
+# size = 0.112888
 
 def deg2vec(angle):
     return [np.cos(np.deg2rad(angle)),np.sin(np.deg2rad(angle))]
@@ -189,10 +192,14 @@ def vec2deg(vec):
 
 np.set_printoptions(precision=3, suppress=True, formatter={'float': '{: 0.3f}'.format})
 
+it = 1
 
 while True:
     print("===============================")
     i = (input("Hit enter to run:\n")).split()
+    if len(i) == 1:
+        if i[0] == "q":
+            exit(0)
     if len(i) == 2:
         if i[0] == "fx":
             fx = float(i[1])
@@ -202,28 +209,34 @@ while True:
             cx = float(i[1])
         if i[0] == "cy":
             cy = float(i[1])
+        if i[0] == "i":
+            it = int(i[1])
         camera_params = [fx, fy, cx, cy]
         print(camera_params)
     m = Mapper("marthabot/map/RhodeMap.yaml",
         "marthabot/map/MapConfiguration.yaml")
-
-
+    
+# TODO clear dict
     obs = {}
 
-    for i in range(1):
+    for i in range(it):
+        print("image",i)
         # image = cv2.imread("marthabot/apriltag/pre.png")
         # image = cv2.imread("marthabot/apriltag/post.png")
-        image = cv2.imread("marthabot/apriltag/realsense/14.jpg")
+        # image = cv2.imread("marthabot/apriltag/realsense/14.jpg")
 
         # image = cv2.imread("output.jpg")
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 
-        # image, _ = rsu.get_frame(pipe)
+        image, _ = rsu.get_frame(pipe)
+
+
 
         results = detector.detect(image,True,camera_params,size)
-        # results = detector.detect(image,True,[],size)
-        # image = cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
+
+        # use if drawing color onto image
+        image = cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
 
         # origin = np.array([0,0,100]).reshape((3,1)).astype(float)
         # draw_pose(
@@ -238,56 +251,112 @@ while True:
         #         label="Camera Frame",
         #     )
         
+        # debug = True
+        debug = False
 
         for tag in results:
             if not tag.tag_id in m.tags[:,0]:
                 print("===============================")
                 print(f"Skipping tag {tag.tag_id} as it is not in the map file")
                 continue
-            # print("===============================")
-            # print("Tag ", tag.tag_id)
-            rt: np.ndarray = np.linalg.inv(combine_rt(tag.pose_R,tag.pose_t))
-            # print("RT: \n", rt)
+            if debug: print("===============================")
+            if debug: print("Tag ", tag.tag_id)
+            rt = combine_rt(tag.pose_R,tag.pose_t)
+            rt = np.linalg.inv(rt)
+            # if debug: print("RT: \n", rt)
+            # TODO get rid of intermediate heading calcs
             rz,ry,rx = rt2orientation(rt)
-            # print("Orientation:",rz,ry,rx)
+            if debug: print("Translation:",round(rt[0,3]),round(rt[1,3]),round(rt[2,3]))
+            if debug: print("Orientation:",round(rz),round(ry),round(rx))
             pose = np.array([0.,0.,0.,1.]).reshape((4,1)).astype(float)
-            # print("Robot Frame: ", pose.T)
+            vec = np.array([50,0,0,1]).reshape((4,1)).astype(float)
+            # heading = 0
+            # obs[tag.tag_id].append([pose[0,0],pose[1,0],pose[2,0],pose[3,0],heading])
+            if debug: print("Robot Frame: ", pose.T)
+            # print("Robot vec: ", vec.T)
             pose = m.robot2cam(pose)
-            # print("Cam Frame: ", pose.T)
+            vec = m.robot2cam(vec)
+
+            # heading = np.arctan2(vec[1,0]-pose[1,0],vec[0,0]-pose[0,0])
+            # obs[tag.tag_id].append([pose[0,0],pose[1,0],pose[2,0],pose[3,0],heading])
+
+            if debug: print("Cam Frame: ", pose.T)
+            # print("Cam vec: ", vec.T)
             pose = rt @ pose 
-            # print("Tag Frame: ", pose.T)
+            vec = rt @ vec 
+
+            # heading = np.arctan2(vec[1,0]-pose[1,0],vec[0,0]-pose[0,0])
+            # obs[tag.tag_id].append([pose[0,0],pose[2,0],pose[1,0],pose[3,0],heading])
+
+            if debug: print("Tag Frame: ", pose.T)
+            # print("Tag vec: ", vec.T)
+
             # rvec, _ = cv2.Rodrigues(tag.pose_R)
             # print("rod: ",rvec)
             pose = m.tag2world(pose,tag.tag_id)
-            # print("World Frame: ", pose.T)
+            vec = m.tag2world(vec,tag.tag_id)
+
+            heading = np.arctan2(vec[1,0]-pose[1,0],vec[0,0]-pose[0,0])
+            # obs[tag.tag_id].append([pose[0,0],pose[1,0],pose[2,0],pose[3,0],heading])
+
+            heading = np.arctan2(vec[1,0]-pose[1,0],vec[0,0]-pose[0,0])
+            if debug: print("World Frame: ", pose.T)
+            # print("World vec: ", vec.T)
             print("Tag ", tag.tag_id, pose.T, round(rz), round(ry), round(rx))
+            # print("vec ", tag.tag_id, vec.T, heading)
+            # pose.extend(deg2vec(rz))
             pose = [p[0] for p in pose]
-            pose.extend(deg2vec(rz))
+            pose.append(heading)
             if tag.tag_id in obs:
-                obs[tag.tag_id].append(pose)
+                obs[tag.tag_id].append([pose[0],pose[1],pose[2],pose[3],heading])
             else:
-                obs[tag.tag_id] = [pose]
-            # draw_pose(
-            #     image,
-            #     camera_params,
-            #     tag_size=size,
-            #     pose_r=tag.pose_R,
-            #     pose_t=tag.pose_t,
-            #     linescale=1,
-            #     linewidth=2,
-            #     z_sign=-1,
-            #     label=str(tag.tag_id),
-            # )
-        # cv2.imwrite("output.jpg",image)
+                obs[tag.tag_id] = [[pose[0],pose[1],pose[2],pose[3],heading]]
+            draw_pose(
+                image,
+                camera_params,
+                tag_size=size,
+                pose_r=tag.pose_R,
+                pose_t=tag.pose_t,
+                linescale=1,
+                linewidth=2,
+                z_sign=-1,
+                # label=str(f"[{round(pose[0])},{round(pose[1])},{round(pose[2])}]"),   #include estimated pose
+                label=str(tag.tag_id), #just label with tagid
+            )
         if len(results) == 0:
             print("No tags detected")
-    # for id, ob in obs.items():
-    #     mx  = round(sum([p[0] for p in ob])/len(ob),1)
-    #     my  = round(sum([p[1] for p in ob])/len(ob),1)
-    #     mz  = round(sum([p[2] for p in ob])/len(ob),1)
-    #     mvx = sum([p[3] for p in ob])
-    #     mvy = sum([p[4] for p in ob])
-    #     mt = vec2deg([mvx,mvy])
 
+        poses = []
+        palette = sns.color_palette(None, len(obs))
+        p_i = 0
+        c_dict = {}
+        for id, ob in obs.items():
+            if id not in c_dict.keys():
+                c_dict[id] = palette[p_i]
+                p_i += 1
+            poses.extend([[str(id), ob[p][0],ob[p][1],ob[p][4],id] for p in range(len(ob))])
+            # mx  = round(sum([p[0] for p in ob])/len(ob),1)
+            # my  = round(sum([p[1] for p in ob])/len(ob),1)
+            # mz  = round(sum([p[2] for p in ob])/len(ob),1)
+            # mvx = sum([p[3] for p in ob])
+            # mvy = sum([p[4] for p in ob])
+            # mt = vec2deg([mvx,mvy])
+        poses = np.array(poses)
+
+    # print(f"saving {image.shape} image to /output.jpg")
+    # cv2.line(image,
+    #             (0,              round(cy)),
+    #             (image.shape[1], round(cy)),
+    #             color=(255,0,0)
+    # )
+    # cv2.line(image,
+    #             (round(cx), 0),
+    #             (round(cx), image.shape[0]),
+    #             color=(255,0,0)
+    # )
+    # cv2.imwrite("output.jpg",image)
+
+    # print("saving map to /map.png")
+    m.plot_map("marthabot/map/map",np.array(poses),c_dict)
 
         # print(id, "- World Frame: ",mx,my,mz, " - with yaw: ",mt)

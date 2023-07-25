@@ -12,8 +12,9 @@ ysize = 720
 def get_pipe():
     cfg = rs.config()
     # cfg.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-    cfg.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8 , 6)
-    # cfg.enable_stream(rs.stream.color, 1280, 720, rs.format.y16 , 6)
+    # cfg.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8 , 6)
+    # cfg.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8 , 15)
+    cfg.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8 , 6)
     pipeline = rs.pipeline()
     pipeline_profile = pipeline.start(cfg)
     sensor = pipeline_profile.get_device().first_depth_sensor()
@@ -28,10 +29,10 @@ def get_frame(pipeline):
     # pose = frames.get_pose_data()
     # color_image = cv2.resize(cv2.cvtColor(np.asanyarray(
     #     rgb.get_data()), cv2.COLOR_BGR2GRAY), (3840, 2160), interpolation=INTER_CUBIC)
-    # color_image = cv2.resize(cv2.cvtColor(np.asanyarray(
-    #     rgb.get_data()), cv2.COLOR_BGR2GRAY), (1920, 1080), interpolation=INTER_CUBIC)
     color_image = cv2.resize(cv2.cvtColor(np.asanyarray(
-        rgb.get_data()), cv2.COLOR_BGR2GRAY), (1280, 720), interpolation=INTER_CUBIC)
+        rgb.get_data()), cv2.COLOR_BGR2GRAY), (1920, 1080), interpolation=INTER_CUBIC)
+    # color_image = cv2.resize(cv2.cvtColor(np.asanyarray(
+    #     rgb.get_data()), cv2.COLOR_BGR2GRAY), (1280, 720), interpolation=INTER_CUBIC)
     
     ts = frames.get_timestamp()
     return color_image, ts
