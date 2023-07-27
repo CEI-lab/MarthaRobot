@@ -1,4 +1,6 @@
 #!/usr/bin/python
+from asyncio import sleep
+import asyncio
 import pyrealsense2 as rs
 import asyncore
 import numpy as np
@@ -9,71 +11,22 @@ import struct
 import time
 import logging
 import cv2
+import marthabot.configurations.robot_config as config
 
-# mc_ip_address = '224.0.0.1'
-# mc_ip_address = '10.49.33.92'
-mc_ip_address = '10.49.3.123'
-port = 1024
 # port = config.REALSENSE_PORT
 chunk_size = 4096
 
 
-def getDepthAndTimestamp(pipeline, depth_filter):
-    frames = pipeline.wait_for_frames()
-    # take owner ship of the frame for further processing
-    frames.keep()
-    depth = frames.get_depth_frame()
-    rgb = frames.get_color_frame()
-    if depth:
-        depth2 = depth_filter.process(depth)
-        # take owner ship of the frame for further processing
-        depth2.keep()
-        # represent the frame as a numpy array
-        depthData = depth2.as_frame().get_data()
-        depthMat = np.asanyarray(depthData)
-        color_image = cv2.resize(cv2.cvtColor(np.asanyarray(
-            rgb.get_data()), cv2.COLOR_BGR2GRAY), (320, 240))
-        ts = frames.get_timestamp()
-        return np.hstack((depthMat, color_image)), ts
-    else:
-        return None, None
 
-
-def openPipeline():
-    cfg = rs.config()
-    cfg.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-    cfg.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-    pipeline = rs.pipeline()
-    pipeline_profile = pipeline.start(cfg)
-    sensor = pipeline_profile.get_device().first_depth_sensor()
-    return pipeline
-
-
-class DevNullHandler(asyncore.dispatcher_with_send):
-
-    def handle_read(self):
-        logging.info(self.recv(1024))
-
-    def handle_close(self):
-        self.close()
-
-
-class RSStreamingServer(asyncore.dispatcher):
+class PoseServer(asyncore.dispatcher):
     def __init__(self, address):
         asyncore.dispatcher.__init__(self)
         logging.info("Launching Realsense Camera Server")
-        try:
-            self.pipeline = openPipeline()
-        except:
-            logging.error("Unexpected error: Real Sense Streaming Server")
+        
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        logging.info('sending acknowledgement to {}'.format(address))
-
-    # reduce the resolution of the depth image using post processing
-        self.decimate_filter = rs.decimation_filter()
-        self.decimate_filter.set_option(rs.option.filter_magnitude, 2)
-        self.frame_data = ''
-        self.connect((address[0], port))
+    
+        self.pose_data = ''
+        self.connect((config.CLIENT_IP, config.MAPPER_PORT))
         self.packet_id = 0
 
     def handle_connect(self):
@@ -83,11 +36,10 @@ class RSStreamingServer(asyncore.dispatcher):
         return True
 
     def update_frame(self):
-        depth, timestamp = getDepthAndTimestamp(
-            self.pipeline, self.decimate_filter)
-        if depth is not None:
+        message = "test"
+        if message is not None:
             # convert the depth image to a string for broadcast
-            data = pickle.dumps(depth)
+            data = pickle.dumps(message)
         # capture the lenght of the data portion of the message
             length = struct.pack('<I', len(data))
         # for the message for transmission
@@ -110,10 +62,10 @@ class RSStreamingServer(asyncore.dispatcher):
 
 
 class RSMulticastServer(asyncore.dispatcher):
-    def __init__(self, host=mc_ip_address, port=port):
+    def __init__(self):
         logging.info('MC Server init.')
         asyncore.dispatcher.__init__(self)
-        server_address = ('', port)
+        server_address = ('', config.MAPPER_PORT)
         self.create_socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.bind(server_address)
@@ -124,7 +76,7 @@ class RSMulticastServer(asyncore.dispatcher):
             logging.info(
                 'Recived Multicast message %s bytes from %s' % (data, addr))
            # Once the server recives the multicast signal, open the frame server
-            self.server = RSStreamingServer(addr)
+            self.server = PoseServer(addr)
         except:
             logging.error("?RS")
 
@@ -143,3 +95,14 @@ class RSMulticastServer(asyncore.dispatcher):
         asyncore.dispatcher.del_channel(self)
         self.server.close()
         self.close()
+
+async def main():
+    server = RSMulticastServer()
+    await asyncio.sleep(30)
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except:
+        print("Closing due to key combination")
+        

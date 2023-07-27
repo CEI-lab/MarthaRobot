@@ -11,7 +11,7 @@ import sympy as sym
 import seaborn as sns
 
 
-# matplotlib.use("Agg")
+matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from dataclasses import dataclass
 from numpy import pi
@@ -126,13 +126,14 @@ class Mapper:
 
 
 
-    def plot_map(self, out_filename: str, poses, fig):
+    def plot_map(self, out_filename: str, poses):
         """Plot the map and output to a png file
 
         :param filename: file to save the plot to without extension
         :type filename: str
         """    
-        plt.figure(fig)
+        # plt.figure(figsize=(10,5), dpi= 600, facecolor='w', edgecolor='k')
+        plt.figure(dpi= 300, facecolor='w', edgecolor='k')
         ax = plt.gca()
         ax.clear()
         ax.set_aspect('equal', adjustable='box')
@@ -182,9 +183,10 @@ class Mapper:
         quivs = [plt.quiver(pose_x[i],pose_y[i],
                     np.cos(pose_t[i]),
                     np.sin(pose_t[i]),
-                    width=0.005,
+                    width=0.003,
                     scale=50,
                     color=self.c_dict[pose_f[i]],
+                    alpha=0.6,
                 )
                 for i in range(len(poses))]
         scats= [plt.scatter(pose_x[i]+20*np.cos(pose_t[i]),
@@ -230,9 +232,9 @@ class Mapper:
         #                  size=5,
         #                  weight='bold',
         #                   )
-        plt.gcf().show()
+        # plt.gcf().show()
         # print("writing map to '",out_filename+".png","'")
-        # plt.savefig(out_filename+".png")
+        plt.savefig(out_filename+".png")
 
 
     def coord2grid(self, points):

@@ -8,7 +8,7 @@ import struct
 import cv2
 import time
 import logging as log
-import client.Configurations as config
+import marthabot.configurations.robot_config as config
 
 mode = ""
 port = ""

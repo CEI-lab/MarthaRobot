@@ -192,7 +192,10 @@ def vec2deg(vec):
 
 np.set_printoptions(precision=3, suppress=True, formatter={'float': '{: 0.3f}'.format})
 
-it = 1
+m = Mapper("marthabot/map/RhodeMap.yaml",
+    "marthabot/map/MapConfiguration.yaml")
+    
+it = 5
 
 while True:
     print("===============================")
@@ -213,14 +216,12 @@ while True:
             it = int(i[1])
         camera_params = [fx, fy, cx, cy]
         print(camera_params)
-    m = Mapper("marthabot/map/RhodeMap.yaml",
-        "marthabot/map/MapConfiguration.yaml")
-    
+
 # TODO clear dict
     obs = {}
 
     for i in range(it):
-        print("image",i)
+        # print("image",i)
         # image = cv2.imread("marthabot/apriltag/pre.png")
         # image = cv2.imread("marthabot/apriltag/post.png")
         # image = cv2.imread("marthabot/apriltag/realsense/14.jpg")
@@ -247,6 +248,7 @@ while True:
         #         pose_t= origin,
         #         linescale=1,
         #         linewidth=7,
+
         #         z_sign=-1,
         #         label="Camera Frame",
         #     )
@@ -276,23 +278,10 @@ while True:
             # print("Robot vec: ", vec.T)
             pose = m.robot2cam(pose)
             vec = m.robot2cam(vec)
-
-            # heading = np.arctan2(vec[1,0]-pose[1,0],vec[0,0]-pose[0,0])
-            # obs[tag.tag_id].append([pose[0,0],pose[1,0],pose[2,0],pose[3,0],heading])
-
             if debug: print("Cam Frame: ", pose.T)
-            # print("Cam vec: ", vec.T)
             pose = rt @ pose 
             vec = rt @ vec 
-
-            # heading = np.arctan2(vec[1,0]-pose[1,0],vec[0,0]-pose[0,0])
-            # obs[tag.tag_id].append([pose[0,0],pose[2,0],pose[1,0],pose[3,0],heading])
-
             if debug: print("Tag Frame: ", pose.T)
-            # print("Tag vec: ", vec.T)
-
-            # rvec, _ = cv2.Rodrigues(tag.pose_R)
-            # print("rod: ",rvec)
             pose = m.tag2world(pose,tag.tag_id)
             vec = m.tag2world(vec,tag.tag_id)
 
@@ -343,20 +332,20 @@ while True:
             # mt = vec2deg([mvx,mvy])
         poses = np.array(poses)
 
-    # print(f"saving {image.shape} image to /output.jpg")
-    # cv2.line(image,
-    #             (0,              round(cy)),
-    #             (image.shape[1], round(cy)),
-    #             color=(255,0,0)
-    # )
-    # cv2.line(image,
-    #             (round(cx), 0),
-    #             (round(cx), image.shape[0]),
-    #             color=(255,0,0)
-    # )
-    # cv2.imwrite("output.jpg",image)
+    print(f"saving {image.shape} image to /output.jpg")
+    cv2.line(image,
+                (0,              round(cy)),
+                (image.shape[1], round(cy)),
+                color=(255,0,0)
+    )
+    cv2.line(image,
+                (round(cx), 0),
+                (round(cx), image.shape[0]),
+                color=(255,0,0)
+    )
+    cv2.imwrite("output.jpg",image)
 
-    # print("saving map to /map.png")
-    m.plot_map("marthabot/map/map",np.array(poses),c_dict)
+    print("saving map to /map.png")
+    m.plot_map("marthabot/map/map",np.array(poses))
 
         # print(id, "- World Frame: ",mx,my,mz, " - with yaw: ",mt)

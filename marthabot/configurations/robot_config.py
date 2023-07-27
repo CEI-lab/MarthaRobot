@@ -140,12 +140,14 @@ EXT_CAM_PORT = 1028
 """Port for streaming the external camera"""
 INT_CAM_PORT = 1027
 """Port for streaming the internal camera"""
+MAPPER_PORT = 1029
 
 STREAM_PORTS = {
     "rs": REALSENSE_PORT,
     "tof": TOF_PORT,
     "ext": EXT_CAM_PORT,
     "int": INT_CAM_PORT,
+    "map": MAPPER_PORT
 }
 
 
@@ -156,7 +158,9 @@ NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS = 1000
 
 
 # Misc connection
-RASPI_IP_ADDRESS = "199.168.1.212"
+RASPI_IP_ADDRESS = "10.49.99.91"
+""" The IP address of the rover's RPi """
+CLIENT_IP_ADDRESS = "10.49.29.86"
 """ The IP address of the rover's RPi """
 LOOP_BACK_IP_ADDRESS = "127.0.0.1"
 """ Loopback address for the RPi """

@@ -22,7 +22,7 @@ from utils.printers import pp
 LOG = setup_logging("ble.log")
 
 
-import client.Configurations as config
+import marthabot.configurations.robot_config as config
 
 
 import atexit
