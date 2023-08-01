@@ -35,10 +35,10 @@ import pprint
 from marthabot.utils.custom_logger import setup_logging
 from utils.printers import pp
 
-LOG = setup_logging("__file__")
+LOG = setup_logging(__name__)
 
 
-import client.Configurations as config
+import marthabot.configurations.robot_config as config
 
 
 import atexit
@@ -134,214 +134,6 @@ def receiveResponse(command: str, port: int):
             LOG.warning("Problem receiving response")
             LOG.exception(e)
             pass
-
-
-# image = cv2.imread('137.png')
-
-
-def parse_command(command: str) -> dict:
-    """
-    Parse and respond to text commands from the user.
-
-    Commands
-
-    -    motor [int left] [int right]
-    -    hello
-    -    sleep
-    -    front [int speed]
-    -    right [int speed]
-    -    left [int speed]
-    -    back [int speed]
-    -    stop
-    -    tts [string message]
-    -    image ["list","get","upload","display"] [string filename ()]
-    -    internal ["single", "continuous-start", "continuous-stop"]
-    -    external ["single", "continuous-start", "continuous-stop"]
-    -    bladder ["inflate","deflate"]
-    -    bladder ["calibrate"] [int motor] [direction] [int distance]
-
-    :param command: A human readable/input command
-    :type command: str
-
-    :return: A dictionary with the needed metadata to send to a marthabot
-    :rtype: dict
-
-    """
-    if not command:
-        return []
-    split = command.split()
-    if not split:
-        command = [command, ""]
-    else:
-        command = split
-    if command[0] == "motor":
-        return {
-            "id": int(time.time()),
-            "cmd": "SetSpeedCommand",
-            "priority": 1,  # , Priority, type int
-            "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
-            "rightSpeed": int(command[2]),  # Right speed value, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "hello":
-        return {
-            "id": int(time.time()),
-            "cmd": "PrintHelloCommand",  # Command name
-            "type": "hello",
-            "height": 480,
-            "width": 640,
-            "count_period": 10,
-            "colorize": 1,
-            "priority": 1,  # , Priority, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "sleep":
-        return {
-            "id": int(time.time()),
-            "cmd": "SleepTwentySecsCommand",  # Command name
-            "type": "hello",
-            "height": 480,
-            "width": 640,
-            "count_period": 10,
-            "colorize": 1,
-            "priority": 1,  # , Priority, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "front":
-        return {
-            "id": int(time.time()),
-            "cmd": "SetSpeedCommand",
-            "priority": 1,  # , Priority, type int
-            "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
-            "rightSpeed": int(command[1]),  # Right speed value, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "back":
-        return {
-            "id": int(time.time()),
-            "cmd": "SetSpeedCommand",
-            "priority": 1,  # , Priority, type int
-            "leftSpeed": int(command[1]),  # Left speed value, type int
-            "rightSpeed": -1 * int(command[1]),  # Right speed value, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "left":
-        return {
-            "id": int(time.time()),
-            "cmd": "SetSpeedCommand",
-            "priority": 1,  # , Priority, type int
-            "leftSpeed": int(command[1]),  # Left speed value, type int
-            "rightSpeed": int(command[1]),  # Right speed value, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "right":
-        return {
-            "id": int(time.time()),
-            "cmd": "SetSpeedCommand",
-            "priority": 1,  # , Priority, type int
-            "leftSpeed": -1 * int(command[1]),  # Left speed value, type int
-            "rightSpeed": -1 * int(command[1]),  # Right speed value, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "stop":
-        return {
-            "id": int(time.time()),
-            "cmd": "SetSpeedCommand",
-            "priority": 1,  # , Priority, type int
-            "leftSpeed": 0,  # Left speed value, type int
-            "rightSpeed": 0,  # Right speed value, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "tts":
-        return {
-            "id": int(time.time()),
-            "cmd": "TextToSpeechCommand",
-            "text": " ".join(command[1:]),
-            "priority": 1,  # , Priority, type int
-        }
-    elif command[0] == "image":
-        if len(command) == 3:
-            name = command[2]
-        else:
-            name = ""
-        return {
-            "id": int(time.time()),
-            "cmd": "ImageCommand",  # Command name
-            "type": command[1],  # list, get, upload, display
-            "name": name,
-            "priority": 1,  # , Priority, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "internal":
-        return {
-            "id": int(time.time()),
-            "cmd": "InternalCameraCommand",  # Command name
-            "type": command[1],  # single, continuous-start, continuous-stop
-            "fps": 15,
-            "priority": 1,  # , Priority, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "external":
-        return {
-            "id": int(time.time()),
-            "cmd": "ExternalCameraCommand",  # Command name
-            "type": command[1],  # single, continuous-start, continuous-stop
-            "fps": 10,
-            "priority": 1,  # , Priority, type int
-            "receivingPort": config.RESPONSE_PORT,
-            "height": 64,
-            "width": 48,
-        }
-    elif command[0] == "rs":
-        return {
-            "id": int(time.time()),
-            "cmd": "RealSenseCommand",  # Command name
-            "type": command[1],  # single, continuous-start, continuous-stop
-            "priority": 1,  # , Priority, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "tof":
-        return {
-            "id": int(time.time()),
-            "cmd": "TimeofFlightCommand",  # Command name
-            "type": command[1],  # single, stream
-            "priority": 1,  # , Priority, type int
-            "receivingPort": config.RESPONSE_PORT,
-        }
-    elif command[0] == "bladder":
-        if len(command) == 5:
-            return {
-                "id": int(time.time()),
-                "cmd": "BladderCommand",  # Command name
-                "action": command[1],
-                "motor": command[2],
-                "direction": command[3],
-                "dist": command[4],
-                "priority": 1,  # , Priority, type int
-                "receivingPort": 28200,
-            }
-        elif len(command) == 3:
-            return {
-                "id": int(time.time()),
-                "cmd": "BladderCommand",  # Command name
-                "action": command[1],  # single, stream
-                "dist": command[2],
-                "priority": 1,  # , Priority, type int
-                "receivingPort": 28200,
-            }
-        else:
-            return {
-                "id": int(time.time()),
-                "cmd": "UnknownCommand",  # Command name
-                "action": command[1],  # single, stream
-                "priority": 1,  # , Priority, type int
-                "receivingPort": 28200,
-            }
-    elif command[0] in ["quit", "q"]:
-        exit(0)
-    else:
-        print("Invalid command")
-        return {}
 
 
 # emergency stop
@@ -441,8 +233,11 @@ def on_key_press(key):
         LOG.warning("Invalid command")
 
 
-with keyboard.Listener(on_press=on_key_press, on_release=on_key_release) as listener:
-    listener.join()
+if __name__ == "__main__":
+    with keyboard.Listener(
+        on_press=on_key_press, on_release=on_key_release
+    ) as listener:
+        listener.join()
 
 # if __name__ == "__main__":
 #     # If the program crashses or otherwise closes try to sent a stop command

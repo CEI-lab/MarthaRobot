@@ -19,7 +19,7 @@ import traceback
 from marthabot.utils.custom_logger import setup_logging
 from utils.printers import pp
 
-LOG = setup_logging("ble.log")
+LOG = setup_logging(__name__)
 
 
 import marthabot.configurations.robot_config as config
@@ -335,7 +335,7 @@ def exit_handler():
     sendObject(parse_command("stop"))
 
 
-if __name__ == "__main__":
+def main():
     # If the program crashses or otherwise closes try to sent a stop command
     atexit.register(exit_handler)
 
@@ -356,3 +356,7 @@ if __name__ == "__main__":
             LOG.warning("Error while sending command")
             LOG.exception(e)
         receiveResponse(command, config.RESPONSE_PORT)
+
+
+if __name__ == "__main__":
+    main()

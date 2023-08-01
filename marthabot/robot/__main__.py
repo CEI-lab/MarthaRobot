@@ -1,9 +1,10 @@
 import logging
 from utils.custom_logger import CustomLogRecord, CustomLogger, setup_logging
+
 # setup_logging()
 logging.setLoggerClass(CustomLogger)
 logging.setLogRecordFactory(CustomLogRecord)
-log = setup_logging()
+log = setup_logging(__name__)
 
 
 from marthabot.robot.HSIMaster import HSIMaster

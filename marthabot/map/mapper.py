@@ -11,7 +11,7 @@ import sympy as sym
 import seaborn as sns
 
 
-matplotlib.use("Agg")
+# matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from dataclasses import dataclass
 from numpy import pi
@@ -23,46 +23,59 @@ class Mapper:
     A class to hold a map and provide information about that map
     """
 
-    def __init__(self, mapname:str, confname:str):
-
+    def __init__(self, mapname: str, confname: str):
+        # plt.ion()
         self.world = FrameSystem("world")
         self.robot = FrameSystem("robot")
-        
-
-        with open(mapname,'r') as mapfile, open(confname,'r') as conffile:
+        self.plotted_poses = []
+        with open(mapname, "r") as mapfile, open(confname, "r") as conffile:
             map = yaml.safe_load(mapfile)
             conf = yaml.safe_load(conffile)
 
             self.cam_frame = Frame(
                 "camera",
                 self.robot,
-                [conf["CAMERA_X"],conf["CAMERA_Y"],conf["CAMERA_Z"]],
-                [conf["CAMERA_YAW"],conf["CAMERA_PITCH"],conf["CAMERA_ROLL"]-math.radians(conf["CAMERA_ROLL_OFFSET"])],
+                [conf["CAMERA_X"], conf["CAMERA_Y"], conf["CAMERA_Z"]],
+                [
+                    conf["CAMERA_YAW"],
+                    conf["CAMERA_PITCH"],
+                    conf["CAMERA_ROLL"] - math.radians(conf["CAMERA_ROLL_OFFSET"]),
+                ],
             )
             # print(math.degrees(conf["CAMERA_ROLL"]-math.radians(conf["CAMERA_ROLL_OFFSET"])))
 
-            exteriors = [ point for point in map["EXTERIOR"] ]
-            bodies = [ v for body in map["SOLID_BODIES"] for k,v in body.items()]
-            ghosts = [v for body in map["TRANSPARENT_BODIES"] for k,v in body.items()]
+            exteriors = [point for point in map["EXTERIOR"]]
+            bodies = [v for body in map["SOLID_BODIES"] for k, v in body.items()]
+            ghosts = [v for body in map["TRANSPARENT_BODIES"] for k, v in body.items()]
             tag_dict = map["APRIL_TAGS"]
 
             self.tags = []
             self.tag_frames = {}
             for tag in tag_dict:
-                self.tags.append([tag["id"],tag["x"],tag["y"],tag["z"],tag["heading"],tag["heading"],tag["pitch"],tag["roll"]])
+                self.tags.append(
+                    [
+                        tag["id"],
+                        tag["x"],
+                        tag["y"],
+                        tag["z"],
+                        tag["heading"],
+                        tag["heading"],
+                        tag["pitch"],
+                        tag["roll"],
+                    ]
+                )
                 self.tag_frames[tag["id"]] = self.world.newFrame(
                     str(tag["id"]),
-                    [-tag["x"],-tag["y"],-tag["z"]],
-                    [tag["yaw"],tag["pitch"],tag["roll"]],
-                    self.world.root)
-            self.tags = np.array(self.tags).reshape((-1,8))
-        
+                    [-tag["x"], -tag["y"], -tag["z"]],
+                    [tag["yaw"], tag["pitch"], tag["roll"]],
+                    self.world.root,
+                )
+            self.tags = np.array(self.tags).reshape((-1, 8))
 
             self.exteriors = []
             lines = path2lines(exteriors)
             self.exteriors.append(lines)
             self.exteriors = np.concatenate(self.exteriors).reshape(-1, 4)
-
 
             self.obstacles = []
             for body in bodies:
@@ -77,25 +90,20 @@ class Mapper:
             self.ghosts = np.concatenate(self.ghosts).reshape(-1, 4)
 
             fov = conf["rsFOV"]
-            self.fov = [fov[0]/180*np.pi,fov[1]/180*np.pi]
+            self.fov = [fov[0] / 180 * np.pi, fov[1] / 180 * np.pi]
 
             self.p_false_positive = conf["pFalsePositive"]
             self.p_false_negative = conf["pFalseNegative"]
         # print(self.obstacles)
         # print(self.exteriors)
-        
+
         palette = sns.color_palette("bright", len(self.tags))
         it = 0
         self.c_dict = {}
         for row in range(len(self.tags)):
-            id = self.tags[row,0]
+            id = self.tags[row, 0]
             self.c_dict[id] = palette[it]
             it += 1
-
-
-
-        
-
 
         self.CELL_SIZE_X = 50
         self.CELL_SIZE_Y = 50
@@ -119,96 +127,61 @@ class Mapper:
         :type rays: np.ndarray
         :return: Boolean array representing if each line passed in is clear
         :rtype: np.ndarray
-        """        
+        """
 
         intersections = check_intersect(rays, self.obstacles)
         return np.logical_not(intersections.any(axis=1))
 
+    def plot_poses(self, fig, poses):
+        plt.figure(fig)
 
+        for pose in self.plotted_poses:
+            pose.remove()
+        self.plotted_poses = []
 
-    def plot_map(self, out_filename: str, poses):
-        """Plot the map and output to a png file
-
-        :param filename: file to save the plot to without extension
-        :type filename: str
-        """    
-        # plt.figure(figsize=(10,5), dpi= 600, facecolor='w', edgecolor='k')
-        plt.figure(dpi= 300, facecolor='w', edgecolor='k')
-        ax = plt.gca()
-        ax.clear()
-        ax.set_aspect('equal', adjustable='box')
-        
-        
-        for body in self.obstacles:
-            x = body[[0,2]]
-            y = body[[1,3]]
-            plt.plot(x,y,c=(0,0,0))
-        
-        for body in self.ghosts:
-            x = body[[0,2]]
-            y = body[[1,3]]
-            plt.plot(x,y,c=(0,0,1))
-
-        for body in self.exteriors:
-            x = body[[0,2]]
-            y = body[[1,3]]
-            plt.plot(x,y,c=(0,1,0))
-
-        for tag in self.tags:
-            tagid,x,y,z,heading,yaw,pitch,roll = tag
-            card = 0 if heading < pi/4 and heading >= -pi/4 else 1 if heading < 3*pi/4 and heading >=pi/4 else 2 if heading >= 3*pi/4 or heading < -3*pi/4 else 3
-            plt.quiver(x,y,
-                       np.cos(heading),
-                       np.sin(heading),
-                       width=0.005,
-                       scale=50,
-                       color=self.c_dict[tagid],
-                    )
-            plt.annotate(int(tagid),
-                         (x+10  if card in [0,2] else x + 20 ,y + 10  if card in [1,3] else y + 20),
-                         ha='center',
-                         va='center',
-                         size=5,
-                         weight='bold',
-                         color=self.c_dict[tagid],
-
-                        )
         pose_l = [str(p[0]) for p in poses]
         pose_x = [float(p[1]) for p in poses]
         pose_y = [float(p[2]) for p in poses]
         pose_t = [float(p[3]) for p in poses]
         pose_f = [float(p[4]) for p in poses]
 
-        
-        quivs = [plt.quiver(pose_x[i],pose_y[i],
-                    np.cos(pose_t[i]),
-                    np.sin(pose_t[i]),
-                    width=0.003,
-                    scale=50,
-                    color=self.c_dict[pose_f[i]],
-                    alpha=0.6,
-                )
-                for i in range(len(poses))]
-        scats= [plt.scatter(pose_x[i]+20*np.cos(pose_t[i]),
-                            pose_y[i]+20*np.sin(pose_t[i]),
-                            alpha=0)
-                for i in range(len(poses))]
-        
-        end_x = [pose_x[i]+20*np.cos(pose_t[i])
-                for i in range(len(poses))]
-        end_y = [pose_y[i]+20*np.cos(pose_t[i])
-                for i in range(len(poses))]
-        
+        quivs = [
+            plt.quiver(
+                pose_x[i],
+                pose_y[i],
+                np.cos(pose_t[i]),
+                np.sin(pose_t[i]),
+                width=0.003,
+                scale=50,
+                color=self.getColor(pose_f[i]),
+                alpha=0.6,
+            )
+            for i in range(len(poses))
+        ]
+        self.plotted_poses = quivs
+
+        # scats = [
+        #     plt.scatter(
+        #         pose_x[i] + 20 * np.cos(pose_t[i]),
+        #         pose_y[i] + 20 * np.sin(pose_t[i]),
+        #         alpha=0,
+        #     )
+        #     for i in range(len(poses))
+        # ]
+
+        # end_x = [pose_x[i] + 20 * np.cos(pose_t[i]) for i in range(len(poses))]
+        # end_y = [pose_y[i] + 20 * np.cos(pose_t[i]) for i in range(len(poses))]
+
         # texts = [plt.text(pose_x[i],pose_y[i],
         #                  pose_l[i],
         #                   ha='center',
-        #                   va='center', 
+        #                   va='center',
         #                  size=5,
         #                  weight='bold',
         #                   )
         #         for i in range(len(poses))]
 
-        # adjust_text(texts, 
+        # adjust_text(texts,
         #             end_x,
         #             end_y,
         #             add_objects=scats,
@@ -232,10 +205,82 @@ class Mapper:
         #                  size=5,
         #                  weight='bold',
         #                   )
-        # plt.gcf().show()
-        # print("writing map to '",out_filename+".png","'")
-        plt.savefig(out_filename+".png")
 
+
+
+    def plot_map(self, fig):
+        """Plot the map and output to a png file
+
+        :param filename: file to save the plot to without extension
+        :type filename: str
+        """
+        plt.figure(fig)
+        # plt.figure(figsize=(10,5), dpi= 600, facecolor='w', edgecolor='k')
+        # plt.figure(dpi=300, facecolor="w", edgecolor="k")
+        ax = plt.gca()
+        ax.clear()
+        ax.set_aspect("equal", adjustable="box")
+
+        for body in self.obstacles:
+            x = body[[0, 2]]
+            y = body[[1, 3]]
+            plt.plot(x, y, c=(0, 0, 0))
+
+        for body in self.ghosts:
+            x = body[[0, 2]]
+            y = body[[1, 3]]
+            plt.plot(x, y, c=(0, 0, 1))
+
+        for body in self.exteriors:
+            x = body[[0, 2]]
+            y = body[[1, 3]]
+            plt.plot(x, y, c=(0, 1, 0))
+
+        for tag in self.tags:
+            tagid, x, y, z, heading, yaw, pitch, roll = tag
+            card = (
+                0
+                if heading < pi / 4 and heading >= -pi / 4
+                else 1
+                if heading < 3 * pi / 4 and heading >= pi / 4
+                else 2
+                if heading >= 3 * pi / 4 or heading < -3 * pi / 4
+                else 3
+            )
+            plt.quiver(
+                x,
+                y,
+                np.cos(heading),
+                np.sin(heading),
+                width=0.005,
+                scale=50,
+                color=self.getColor(tagid),
+            )
+            plt.annotate(
+                int(tagid),
+                (
+                    x + 10 if card in [0, 2] else x + 20,
+                    y + 10 if card in [1, 3] else y + 20,
+                ),
+                ha="center",
+                va="center",
+                size=5,
+                weight="bold",
+                color=self.getColor(tagid),
+            )
+
+        # plt.show()
+
+    def plot2file(self, out_filename):
+        print("writing map to '", out_filename + ".png", "'")
+
+        plt.savefig(out_filename + ".png")
+
+    def getColor(self, key):
+        if key in self.c_dict.keys():
+            return self.c_dict[key]
+        else:
+            return (0, 0, 0)
 
     def coord2grid(self, points):
         """Convert an array of points to gridcell indexes
@@ -248,7 +293,6 @@ class Mapper:
         gridcells = [points[:, 0] / self.CELL_SIZE_X, points[:, 1] / self.CELL_SIZE_Y]
         return gridcells
 
-
     def getTagByPoint(self, point):
         """Get the tag id of the first tags which is at the coordinates of each point
 
@@ -259,7 +303,9 @@ class Mapper:
         """
         # print(self.tags)
         # print(point)
-        matching = (self.tags[:,1:3] == point[2:]).all(axis=1) | (self.tags[:,1:3] == point[0:2]).all(axis=1)
+        matching = (self.tags[:, 1:3] == point[2:]).all(axis=1) | (
+            self.tags[:, 1:3] == point[0:2]
+        ).all(axis=1)
         #   self.tags[:,1:3] == point[:2]
         # for tagid in self.tags:
         #     if (point[0:2] == map.tags[tagid][1:3]).all() or (
@@ -267,17 +313,15 @@ class Mapper:
         #     ).all():
         #         return tagid
         # print(matching)
-        return self.tags[np.argmax(matching),0]
+        return self.tags[np.argmax(matching), 0]
 
     def getTag(self, tagNum):
-        idmatch = self.tags[:,0]==tagNum
-        return self.tags[idmatch,:].reshape(1,8)
-        
+        idmatch = self.tags[:, 0] == tagNum
+        return self.tags[idmatch, :].reshape(1, 8)
 
     def getTagRays(
         self, point: Sequence[float], center: float = 0, fov=[-np.pi, np.pi]
     ) -> np.ndarray:
-        
         res = np.empty((self.tags.shape[0], 4))
         res[:, 0:2] = point
         res[:, 2:] = self.tags[:, 1:3]
@@ -301,24 +345,24 @@ class Mapper:
         clear = self.checkLinesClear(rays)
         dists = dist(rays[:, :2], rays[:, 2:4])
         ids = np.array([m.getTagByPoint(ray) for ray in rays])
-        return [ids[clear],angles[clear],dists[clear]]
-    
+        return [ids[clear], angles[clear], dists[clear]]
+
     def pTagsGivenPose(self, pose, detection):
-        visible_tags,true_angles,true_dists = self.getVisibleTags(pose)
-        det_tags,det_angles,det_dists = detection
+        visible_tags, true_angles, true_dists = self.getVisibleTags(pose)
+        det_tags, det_angles, det_dists = detection
 
         plist = []
 
         for v in range(len(visible_tags)):
-            tag, angle, dist = visible_tags[v],true_angles[v],true_dists[v]
+            tag, angle, dist = visible_tags[v], true_angles[v], true_dists[v]
             if tag not in det_tags:
                 plist.append(self.p_false_negative)
                 plist.append(self.p_false_negative)
             else:
                 d = det_tags.find(tag)
-                dtag, dangle, ddist = det_tags[d],det_tags[d],det_tags[d]
-                plist.append(normpdf(dangle[d],angle[v],self.sigma_rs_theta))
-                plist.append(normpdf(ddist[d],dist[v],self.sigma_rs_dist))
+                dtag, dangle, ddist = det_tags[d], det_tags[d], det_tags[d]
+                plist.append(normpdf(dangle[d], angle[v], self.sigma_rs_theta))
+                plist.append(normpdf(ddist[d], dist[v], self.sigma_rs_dist))
         for d in range(len(det_tags)):
             # TODO consider scaling false positive/negative probabilities by distance to tag or similar
 
@@ -326,9 +370,9 @@ class Mapper:
             if tag not in visible_tags:
                 plist.append(self.p_false_positive)
                 plist.append(self.p_false_positive)
-        return sum(plist)/len(plist)
-    
-    def _frame2frame(origin1,orientation1,origin2,orientation2):
+        return sum(plist) / len(plist)
+
+    def _frame2frame(origin1, orientation1, origin2, orientation2):
         """Return a transformation matrix to convert from frame 1 to frame 2.
 
         TR = :func:`_frame2frame(origin1,orient1,origin2,orient2)`
@@ -336,7 +380,7 @@ class Mapper:
 
         :param origin1: 3x1 Origin of frame 1 in the world frame
         :type origin1: np.ndarray
-        :param orientation1: 3x1 Orientation of frame 1 in the world frame. 
+        :param orientation1: 3x1 Orientation of frame 1 in the world frame.
         :type orientation1: _type_
         :param origin2: _description_
         :type origin2: _type_
@@ -345,53 +389,57 @@ class Mapper:
         """
         pass
 
-
-    def world2tag(self, pose,tag):
+    def world2tag(self, pose, tag):
         return np.array(self.tag_frames[tag].base2frame(pose)).astype(float)
-    def tag2world(self, pose,tag):
+
+    def tag2world(self, pose, tag):
         return np.array(self.tag_frames[tag].frame2base(pose)).astype(float)
-    
-    def robot2cam(self,pose):
+
+    def robot2cam(self, pose):
         return np.array(self.cam_frame.base2frame(pose)).astype(float)
-    def cam2robot(self,pose):
+
+    def cam2robot(self, pose):
         return np.array(self.cam_frame.frame2base(pose)).astype(float)
-    def robot2world(self, pose,robot_pose):
-        t = [robot_pose[0],robot_pose[1],0]
-        r = [robot_pose[2],0,0]
-        _, robot_rti = getTransformationMatrix(t,r)
+
+    def robot2world(self, pose, robot_pose):
+        t = [robot_pose[0], robot_pose[1], 0]
+        r = [robot_pose[2], 0, 0]
+        _, robot_rti = getTransformationMatrix(t, r)
         return robot_rti @ pose
 
-    def world2robot(self, pose,robot_pose):
-        t = [robot_pose[0],robot_pose[1],0]
-        r = [robot_pose[2],0,0]
-        robot_rt, _ = getTransformationMatrix(t,r)
+    def world2robot(self, pose, robot_pose):
+        t = [robot_pose[0], robot_pose[1], 0]
+        r = [robot_pose[2], 0, 0]
+        robot_rt, _ = getTransformationMatrix(t, r)
         return robot_rt @ pose
+
 
 # robot x -> forward, y -> left, z -> up
 # rhodes hall map x -> north, y -> west, z -> up
 # points column vectors 4x1 [x, y, z, 1]T
 # transformation matrix:
-    # [
-    # [r r r t]
-    # [r r r t]
-    # [r r r t]
-    # [0 0 0 1]
-    # ]
-# 
-    # [
-    # [r r r t]   [x]   [x']
-    # [r r r t] @ [y] = [y']
-    # [r r r t]   [z]   [z']
-    # [0 0 0 1]   [1]   [1]
-    # ]
+# [
+# [r r r t]
+# [r r r t]
+# [r r r t]
+# [0 0 0 1]
+# ]
+#
+# [
+# [r r r t]   [x]   [x']
+# [r r r t] @ [y] = [y']
+# [r r r t]   [z]   [z']
+# [0 0 0 1]   [1]   [1]
+# ]
 
 
 def normpdf(x, mean, sd):
-    var = float(sd)**2
-    denom = (2*math.pi*var)**.5
-    num = math.exp(-(float(x)-float(mean))**2/(2*var))
-    return num/denom
-    
+    var = float(sd) ** 2
+    denom = (2 * math.pi * var) ** 0.5
+    num = math.exp(-((float(x) - float(mean)) ** 2) / (2 * var))
+    return num / denom
+
+
 def check_intersect(lines1, lines2):
     """Check for intersections between two sets of lines.  Intersections between two lines in the same set will not be reported.
 
@@ -403,7 +451,7 @@ def check_intersect(lines1, lines2):
     :return: nxm boolean array representing if each line from n intersects with the corresponding line in m.
     :rtype: np.ndarray
     """
-    
+
     def _onSegment_221(p: np.ndarray, q: np.ndarray, r: np.ndarray):
         psize = p.shape[0]
         rsize = r.shape[0]
@@ -425,7 +473,7 @@ def check_intersect(lines1, lines2):
         # assert res.shape == (psize,rsize), str(res.shape) + " is not equal to " + str((psize,rsize))
         return res
 
-    def _onSegment_112( p: np.ndarray, q: np.ndarray, r: np.ndarray):
+    def _onSegment_112(p: np.ndarray, q: np.ndarray, r: np.ndarray):
         psize = p.shape[0]
         rsize = r.shape[0]
 
@@ -446,9 +494,7 @@ def check_intersect(lines1, lines2):
         # assert res.shape == (psize,rsize), str(res.shape) + " is not equal to " + str((psize,rsize))
         return res
 
-    def _orientation_112(
-         p: np.ndarray, q: np.ndarray, r: np.ndarray
-    ) -> np.ndarray:
+    def _orientation_112(p: np.ndarray, q: np.ndarray, r: np.ndarray) -> np.ndarray:
         """Return the orientation of two points from lines1 and one from lines2
 
         Identical to :func:`_orientation_221` except return array is shaped differently.
@@ -485,9 +531,7 @@ def check_intersect(lines1, lines2):
         # assert res.shape == (psize,rsize), str(res.shape) + " is not equal to " + str((psize,rsize))
         return res
 
-    def _orientation_221(
-         p: np.ndarray, q: np.ndarray, r: np.ndarray
-    ) -> np.ndarray:
+    def _orientation_221(p: np.ndarray, q: np.ndarray, r: np.ndarray) -> np.ndarray:
         """Return the orientation of two points from lines2 and one from lines1
 
         Identical to :func:`_orientation_112` except return array is shaped differently.
@@ -554,77 +598,94 @@ def check_intersect(lines1, lines2):
     return intersects.T
 
 
-class point():
+class point:
     def __init__(self, coordinates, frame):
         self.coordinates = coordinates
         self.frame = frame
-    
-class FrameSystem():
-    def __init__(self,name:str):
+
+
+class FrameSystem:
+    def __init__(self, name: str):
         self.name = name
         self.frames = {}
-        self.root = self.newFrame("name",[0,0,0],[0,0,0],"N/A")
+        self.root = self.newFrame("name", [0, 0, 0], [0, 0, 0], "N/A")
         # self.frames = {"world",self.world}
 
     def getNames(self):
         return self.frames.keys()
-    
-    def __getitem__(self,name:str):
+
+    def __getitem__(self, name: str):
         return self.frames[name]
-    
+
     def __str__(self) -> str:
         return f"[Frame system '{self.name}']"
 
-    def newFrame(self, name: str, origin: np.ndarray, orientation: np.ndarray, base = None):
-        newf = Frame(name,self,origin,orientation,base)
+    def newFrame(
+        self, name: str, origin: np.ndarray, orientation: np.ndarray, base=None
+    ):
+        newf = Frame(name, self, origin, orientation, base)
         self.frames[name] = newf
         return newf
-    
+
     def __repr__(self) -> str:
         rep = f"Frame System: {self.name}"
-        for name,frame in self.frames.items():
+        for name, frame in self.frames.items():
             rep += f"\n   {frame}"
         return rep
 
-    
-class Frame():
 
+class Frame:
     def __str__(self):
         return f"[Frame '{self.name}' at {self.origin} in {self.frame_system}]"
-    
+
     def __repr__(self):
         return f"[Frame '{self.name}' at {self.origin} in {self.frame_system}]"
 
-
-    def __eq__(self,value):
-        if not isinstance(value,Frame):
+    def __eq__(self, value):
+        if not isinstance(value, Frame):
             return False
         else:
             return self.name == value.name and self.frame_system == value.frame_system
-    
-    def base2frame(self,point):
+
+    def base2frame(self, point):
         return self.forward_m @ point
-    def frame2base(self,point):
+
+    def frame2base(self, point):
         return self.backward_m @ point
 
     class InvalidSizeException(Exception):
-        def __init__ (self, expected, recieved, message=""):
-            super().__init__(f"Expected {expected} array, but got {recieved}.\n{message}")
-    class UnknownBaseFrame(Exception):
-        def __init__ (self, base, message=""):
-            super().__init__(f"{base} cannot be used as a base frame because it is not a known frame.\n{message}")
-    class InvalidNameException(Exception):
-        def __init__(self,name: str):
-            super().__init__(f"Cannot create frame named {name} because the name is already in use in the frame system.")
+        def __init__(self, expected, recieved, message=""):
+            super().__init__(
+                f"Expected {expected} array, but got {recieved}.\n{message}"
+            )
 
-    def __init__(self, name: str, frames: FrameSystem, origin: np.ndarray, orientation: np.ndarray, base = None):
-        """A coordinate frame that has its origin at :param:`origin` and rotated by :param:`orientation` in the coordinate frame :param:`base`. 
+    class UnknownBaseFrame(Exception):
+        def __init__(self, base, message=""):
+            super().__init__(
+                f"{base} cannot be used as a base frame because it is not a known frame.\n{message}"
+            )
+
+    class InvalidNameException(Exception):
+        def __init__(self, name: str):
+            super().__init__(
+                f"Cannot create frame named {name} because the name is already in use in the frame system."
+            )
+
+    def __init__(
+        self,
+        name: str,
+        frames: FrameSystem,
+        origin: np.ndarray,
+        orientation: np.ndarray,
+        base=None,
+    ):
+        """A coordinate frame that has its origin at :param:`origin` and rotated by :param:`orientation` in the coordinate frame :param:`base`.
 
         :param name: Name of the new coordinate frame
         :type name: str
-        :param frames: The system this frame will belong to 
+        :param frames: The system this frame will belong to
         :type frames: FrameSystem
-        :param origin: Origin of this frame in the base frame 
+        :param origin: Origin of this frame in the base frame
         :type origin: np.ndarray
         :param orientation: Rotation in the current frame from the base frame [rz,ry,rx]
         :type orientation: np.ndarray
@@ -633,38 +694,43 @@ class Frame():
         :raises Frame.UnknownBaseFrame: If :param:`base` is not a frame or frame name in :param:`frames`
         """
         assert name not in frames.getNames()
-        assert len(origin) == 3, f"Tried to create frame with origin of length {len(origin)} instead of 3"
-        assert len(orientation) == 3, f"Tried to create frame with orientation of length {len(orientation)} instead of 3"
-        
+        assert (
+            len(origin) == 3
+        ), f"Tried to create frame with origin of length {len(origin)} instead of 3"
+        assert (
+            len(orientation) == 3
+        ), f"Tried to create frame with orientation of length {len(orientation)} instead of 3"
+
         self.name = name
-        self.origin = np.array(origin) 
+        self.origin = np.array(origin)
         # print(f"{self.origin}")
         self.orientation = np.array(orientation)
         self.frame_system = frames
-        self.forward_m, self.backward_m = getTransformationMatrix(origin,orientation)
-
+        self.forward_m, self.backward_m = getTransformationMatrix(origin, orientation)
 
         # self.forward, self.backward = getTransformationMatrix([origin[0],origin[1],origin[2]],[orientation[0],orientation[1],orientation[2]])
 
         if base is None:
             self.base = frames.root
         else:
-            if isinstance(base,Frame):
+            if isinstance(base, Frame):
                 self.base = base
-            elif isinstance(base,str):
+            elif isinstance(base, str):
                 if base in self.frame_system.getNames():
                     self.base = self.frame_system[base]
                 elif base == "N/A":
                     self.base = None
                 else:
-                    raise Frame.UnknownBaseFrame(base,"(encountered during initialization of a new frame)")
+                    raise Frame.UnknownBaseFrame(
+                        base, "(encountered during initialization of a new frame)"
+                    )
             else:
-                raise Frame.UnknownBaseFrame(base,"(encountered during initialization of a new frame)")
+                raise Frame.UnknownBaseFrame(
+                    base, "(encountered during initialization of a new frame)"
+                )
 
 
-
-
-def scaleVectors(p1,p2,new_lengths):
+def scaleVectors(p1, p2, new_lengths):
     """Scale vectors to new lengths, maintining the starting point.
 
     :param p1: nx2 Starting point [x,y]
@@ -675,22 +741,24 @@ def scaleVectors(p1,p2,new_lengths):
     :type new_lengths: np.ndarray
     :return: Points that combine with :param:`p1` to form the scaled vectors
     :rtype: np.ndarray
-    """    
-    diffs = p2-p1
-    dists = dist(p1,p2)
-    return p1 + new_lengths * diffs / dists 
-    
+    """
+    diffs = p2 - p1
+    dists = dist(p1, p2)
+    return p1 + new_lengths * diffs / dists
+
+
 def dist(p1, p2):
     """The euclidian distance between `m` dimensional points :param:`p1` and :param:`p2`
 
     :param p1: nxm array of points
-    :type p1:  np.ndarray    
+    :type p1:  np.ndarray
     :param p2: nxm array of points
     :type p2: np.ndarray
     :return: nx1 array of distances
     :rtype: np.ndarray
-    """    
+    """
     return np.sqrt(np.sum(np.square(p1 - p2), axis=1))
+
 
 def path2lines(path, closepath=True):
     """Convert an array of points into an array of lines connecting sequential points.
@@ -701,9 +769,9 @@ def path2lines(path, closepath=True):
     :type path: list
     :param closepath: If the path should be closed, defaults to True
     :type closepath: bool, optional
-    :return: n(+1)x4 array of lines.  Each row is of the form [x1,y1,x2,y2] 
+    :return: n(+1)x4 array of lines.  Each row is of the form [x1,y1,x2,y2]
     :rtype: list
-    """        
+    """
     # print(path)
     if closepath and (path[-1] != path[0]):
         path = np.append(path, path[0]).reshape(-1, 2)
@@ -717,161 +785,119 @@ def path2lines(path, closepath=True):
     return lines
 
 
-tx,ty,tz = sym.symbols('tx,ty,tz')
-rx,ry,rz = sym.symbols('rx,ry,rz')
+tx, ty, tz = sym.symbols("tx,ty,tz")
+rx, ry, rz = sym.symbols("rx,ry,rz")
 
 cos = sym.cos
 sin = sym.sin
 
-trans = sym.Matrix([
-    [1,0,0,tx],
-    [0,1,0,ty],
-    [0,0,1,tz],
-    [0,0,0,1],
-])
-rotz = sym.Matrix([
-    [cos(rz),sin(rz),0,0],
-    [-sin(rz),cos(rz),0,0],
-    [0,0,1,0],
-    [0,0,0,1],
-])
-roty = sym.Matrix([
-    [cos(ry),0,-sin(ry),0],
-    [0,1,0,0],
-    [sin(ry),0,cos(ry),0],
-    [0,0,0,1],
-])
-rotx = sym.Matrix([
-    [1,0,0,0],
-    [0,cos(rx),sin(rx),0],
-    [0,-sin(rx),cos(rx),0],
-    [0,0,0,1],
-])
+trans = sym.Matrix(
+    [
+        [1, 0, 0, tx],
+        [0, 1, 0, ty],
+        [0, 0, 1, tz],
+        [0, 0, 0, 1],
+    ]
+)
+rotz = sym.Matrix(
+    [
+        [cos(rz), sin(rz), 0, 0],
+        [-sin(rz), cos(rz), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+    ]
+)
+roty = sym.Matrix(
+    [
+        [cos(ry), 0, -sin(ry), 0],
+        [0, 1, 0, 0],
+        [sin(ry), 0, cos(ry), 0],
+        [0, 0, 0, 1],
+    ]
+)
+rotx = sym.Matrix(
+    [
+        [1, 0, 0, 0],
+        [0, cos(rx), sin(rx), 0],
+        [0, -sin(rx), cos(rx), 0],
+        [0, 0, 0, 1],
+    ]
+)
 
 
-tr =   rotx @ roty @ rotz @ trans
+tr = rotx @ roty @ rotz @ trans
 
 # sym.pprint(tr)
 
 
-
-def getTransformationMatrix(t,r):
+def getTransformationMatrix(t, r):
     """Get a transformation matrix (and its inverse) composed of translation in the fixed frame of :param:`t` followed by rotation :param:`r` in the body frame.
 
     :note: :param:`r` has the order [rz,ry,rx] since that is the order the rotations are performed.
 
-    :param t: [tx,ty,tz] 
+    :param t: [tx,ty,tz]
     :type t: list
     :param r: [rz,ry,rx]
     :type r: list
     :return: 4x4 Homogenous transformation matrix
     :rtype: np.ndarray
-    """    
-    
-    tx,ty,tz = sym.symbols('tx,ty,tz')
-    rx,ry,rz = sym.symbols('rx,ry,rz')
+    """
+
+    tx, ty, tz = sym.symbols("tx,ty,tz")
+    rx, ry, rz = sym.symbols("rx,ry,rz")
 
     substitutions = {
-        tx:t[0],
-        ty:t[1],
-        tz:t[2],
-        rz:r[0],
-        ry:r[1],
-        rx:r[2],
+        tx: t[0],
+        ty: t[1],
+        tz: t[2],
+        rz: r[0],
+        ry: r[1],
+        rx: r[2],
     }
     ret = tr.subs(substitutions)
 
     return np.array(ret), np.array(ret.inv())
 
+
 if __name__ == "__main__":
-    m = Mapper("marthabot/map/RhodeMap.yaml","marthabot/map/MapConfiguration.yaml")
-    
+    # plt.ion()
+    # m = Mapper("marthabot/map/RhodeMap.yaml", "marthabot/map/MapConfiguration.yaml")
+    m = Mapper(
+        "C:/Users/63nem/Documents/MarthaRobot/marthabot/map/RhodeMap.yaml",
+        "C:/Users/63nem/Documents/MarthaRobot/marthabot/map/MapConfiguration.yaml",
+    )
+
     np.set_printoptions(precision=3, suppress=True)
 
-
-
-
-    tag6 = m.getTag(6)
-
-    tag6 = np.array([1045,370.705,24,1]).reshape(4,1).astype(float)
-    origin = np.array([0,0,0,1]).reshape(4,1).astype(float)
-    offset = np.array([100,0,-100,0]).reshape(4,1).astype(float)
-    offsettag6 = tag6 + offset
-    # print("offset \n",(offset.T))
-    # print("global ref \n",( offsettag6.T))
-    # print("global tag6 \n",(tag6.T)          )
-    # print("tr \n", np.array(m.tag_frames[6].forward_m).astype(float))
-    # print("rt \n", np.array(m.tag_frames[6].backward_m).astype(float))
-    # print("global tag6 -> tag6 \n",         (m.world2tag(tag6,6).T))
-    # print("tag6 origin -> global \n",       (m.tag2world(origin,6).T))
-    # print("global origin -> tag6 \n",       (m.world2tag(origin,6).T))
-    # print("global offsettag6 -> tag6 \n",   (m.world2tag(offsettag6,6).T))
-    
+    origin = np.array([0, 0, 0, 1]).reshape(4, 1).astype(float)
+    offset = np.array([100, 0, -100, 0]).reshape(4, 1).astype(float)
     p_tag6 = origin + offset
-    p_world = m.tag2world(p_tag6,6)
+    p_world = m.tag2world(p_tag6, 6)
 
-    print("tag6",p_tag6.T)
-    print("world",p_world.T)
-    
-    # testframe = FrameSystem("test")
-    # translated = testframe.newFrame("translated",[1,1,1],[0,0,0])
-    # rotz = testframe.newFrame("rotz",[0,0,0],[pi/2,0,0])
-    # roty = testframe.newFrame("roty",[0,0,0],[0,pi/2,0])
-    # rotx = testframe.newFrame("rotx",[0,0,0],[0,0,pi/2])
-    # offset = np.array([1,0,0,1]).reshape(4,1)
-    # print("offset \n",offset.T)
-    # print("translated \n",(translated.forward_m @ offset).T)
-    # print("rotz \n",(rotz.forward_m @ offset).T)
-    # print("roty \n",(roty.forward_m @ offset).T)
-    # print("rotx \n",(rotx.forward_m @ offset).T)
+    m.plot_map([])
 
-    poses = np.array([
-        # ["origin", 0,0,0],
-        ["p_world", p_world[0,0],p_world[1,0],0],
-    ])
-    m.plot_map("marthabot/map/map",poses)
+    while True:
+        input("show first point")
+        poses = np.array(
+            [
+                # ["origin", 0,0,0],
+                ["p_world", p_world[0, 0], p_world[1, 0], 0, 0],
+            ]
+        )
+        m.plot_poses(poses)
+        input("clear first pose")
+        # for qv in m.plotted_poses:
+        #     qv.remove()
+        # plt.show()
+        input("plot second pose")
+        poses = np.array(
+            [
+                ["origin", 0, 0, 0, 0],
+                # ["p_world", p_world[0, 0], p_world[1, 0], 0, 0],
+            ]
+        )
 
-
-
-
-
-
-
-    # l1= np.array(
-    #     [
-    #         [0, 0, 1, 0],  # _
-    #         [0, 0, 1, 1],  # /
-    #         [0, 1, 1, 1],  # -
-    #         [0, 1, 1, 0],  # \
-    #         [0, 0, 0, 1],  # |_
-    #         [1, 0, 1, 1],  # _|
-    #     ]
-    # )
-    # l2 = np.array(
-    #     [
-    #         [5, 5, 6, 6],  # no intersect
-    #         [5, 5, 5, 6],  # no intersect
-    #         [5, 5, 6, 5],  # no intersect
-    #         [1, 0, 1, -1],  # intersect _ _| \
-    #         [0.5, 0, 0.5, -1],  # intersect _
-    #         [0.5, 1, 0.5, 2],  # intersect -
-    #     ]
-    # )
-    # res = check_intersect(l1, l2)
-    # assert res =
-    # print(l1, "\nintersect with \n", l2, "\nat l1↓  l2→\n", res)
-
-    # poi = np.array([300, 300])
-
-    # rays = np.array(m.getTagRays([800,300]))
-    # rays = np.array(m.getTagRays([800, 300], 0, (-np.pi / 8, np.pi / 8)))
-
-    # print(rays)
-
-    # print([m.getTag(ray) for ray in rays])
-
-    # print(m.checkRaysClear(rays))
-    # print(rays[:,:2])
-    # print(rays[:,2:])
-    # print(dist(rays[:,:2],rays[:,2:]))
-    # res = m.getVisibleTags([800, 300, 0], [-np.pi, np.pi])
+        m.plot_poses(poses)
+        input("clear second pose")
+        # for qv in m.plotted_poses:
+        #     qv.remove()

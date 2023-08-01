@@ -21,9 +21,10 @@ def main(argv):
     :param argv: not currently used
     :type argv: _type_
     """
-    while mode not in config.ports.keys["tof", "rs", "ext"]:
+    global mode
+    while mode not in config.STREAM_PORTS.keys():
         mode = input("Select mode (tof, rs, ext)")
-    port = config.ports[mode]
+    port = config.STREAM_PORTS[mode]
 
     # Send a message to get things started
     multi_cast_message(config.MC_IP_ADDRESS, port, "boop")
@@ -145,7 +146,7 @@ class ExtStreamingClient(asyncore.dispatcher):
 class RSStreamingClient(asyncore.dispatcher):
     def __init__(self):
         asyncore.dispatcher.__init__(self)
-        self.server_address = ("", port)
+        self.server_address = ("", config.REALSENSE_PORT)
         # create a socket for TCP connection between the client and server
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.settimeout(5)
@@ -238,8 +239,10 @@ def multi_cast_message(ip_address, port, message):
 
     except socket.timeout:
         log.warning("timed out, no more responses")
+    except Exception as e:
+        log.exception(e)
     finally:
-        log.info(sys.stderr, "closing socket")
+        log.info("closing socket")
         sock.close()
 
 
