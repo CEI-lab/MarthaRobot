@@ -59,8 +59,8 @@ from commands import (
     CommandInterface,
     CommandRegistry,
     CommandExecuter,
-)
-from commands import (
+# )
+# from commands import (
     BladderCommand,
     ExternalCameraCommand,
     ImageCommand,
@@ -88,9 +88,9 @@ from robot.thread_manager.ThreadManager import ThreadManager
 # logging.setLogRecordFactory(CustomLogRecord)
 # log = logging.getLogger("marthabot")
 
-loggers = [logging.getLogger(name) for name in logging.root.manager.loggerDict]
-for logger in loggers:
-    print(logger, logger.handlers)
+# loggers = [logging.getLogger(name) for name in logging.root.manager.loggerDict]
+# for logger in loggers:
+#     print(logger, logger.handlers)
 
 
 class HSIMaster(object):

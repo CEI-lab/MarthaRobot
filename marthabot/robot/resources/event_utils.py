@@ -5,9 +5,9 @@
 
 
 
-import threading.Event
+from threading import Event
 
-class ChildEvent(threading.Event):
+class ChildEvent(Event):
   def __init__(self,parent = None):
     super().__init()
     self._parent = parent
@@ -24,7 +24,7 @@ class ChildEvent(threading.Event):
     self._parent.update()
 
 
-class AndEvent(threading.Event):
+class AndEvent(Event):
     
   def __init__(self, *events):
     super().__init__()
@@ -42,7 +42,7 @@ class AndEvent(threading.Event):
   def addChild(self, child):
     self._children.append(child)
   
-class OrEvent(threading.Event):
+class OrEvent(Event):
     
   def __init__(self, *events):
     super().__init__()
