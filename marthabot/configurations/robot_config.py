@@ -160,7 +160,7 @@ NUMBER_OF_ALLOWED_FAILED_TCP_CONNECTIONS = 1000
 # Misc connection
 RASPI_IP_ADDRESS = "10.49.99.91"
 """ The IP address of the rover's RPi """
-CLIENT_IP_ADDRESS = "10.49.29.86"
+CLIENT_IP_ADDRESS = "10.49.23.77"
 """ The IP address of the rover's RPi """
 LOOP_BACK_IP_ADDRESS = "127.0.0.1"
 """ Loopback address for the RPi """

@@ -14,7 +14,6 @@ from commands.command_interface import CommandInterface
 
 import logging
 
-print(__name__)
 log = logging.getLogger(__name__)
 
 """

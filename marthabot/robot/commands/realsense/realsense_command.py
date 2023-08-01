@@ -12,7 +12,7 @@ import os
 import threading
 import time
 import logging
-log = logging.getlogger()
+log = logging.getLogger()
 import pyrealsense2 as rs
 import numpy as np
 import cv2

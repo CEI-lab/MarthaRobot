@@ -11,7 +11,6 @@ from colorama import Fore, Back, Style
 
 from marthabot.configurations import log_config as config
 
-def get_logger(name):
     
 
 class CustomLogRecord(logging.LogRecord):
@@ -33,43 +32,49 @@ class CustomLogRecord(logging.LogRecord):
 class CustomLogger(logging.Logger):
     def __init__(self,name: str=os.path.basename(__file__),stream_log_level=config.DEFAULT_STREAM_LOG_LEVEL) -> None:
         super().__init__(name)
-        self.wrapper = textwrap.TextWrapper(initial_indent=' '*config.OVERFLOW_INDENT, width=config.OVERFLOW_WIDTH,
+        if name in logging.root.manager.loggerDict:
+            print(name,"already exists")
+
+        else:
+            self.wrapper = textwrap.TextWrapper(initial_indent=' '*config.OVERFLOW_INDENT, width=config.OVERFLOW_WIDTH,
                                subsequent_indent=' '*config.OVERFLOW_INDENT)
-        # Stream Handler
-        stream_handler = StreamHandler(sys.stdout)
-        stream_handler.setLevel(stream_log_level)
-        # TODO consider which parts of message should be colored
-        format = (
-            "|%(color)s"       
-            "[%(asctime)s%(msecs)03d]" 
-            "%(levelname)-8s|"
-            f"[Thread: %(threadName){config.THREAD_NAME_LENGTH}s]" 
-            # f"%(funcName){config.FUNC_NAME_LENGTH}s in " 
-            "[%(filename)s:%(lineno)d]" 
-            " %(message)s" 
-            "%(reset)s" 
-            "%(overflow)s" 
-        )
-        if config.LOGGER_NAMES_ENABLE:
-            format += "\n|--- Logged by logger: %(name)s"
-        if config.FUNC_NAME_ENABLE:
-            format += "\n|--- Called in function: %(funcName)s"
+            # Stream Handler
+            stream_handler = StreamHandler(sys.stdout)
+            stream_handler.setLevel(stream_log_level)
+            # TODO consider which parts of message should be colored
+            format = (
+                "|%(color)s"       
+                "[%(asctime)s%(msecs)03d]" 
+                "%(levelname)-8s|"
+                f"[Thread: %(threadName){config.THREAD_NAME_LENGTH}s]" 
+                # f"%(funcName){config.FUNC_NAME_LENGTH}s in " 
+                "[%(filename)s:%(lineno)d]" 
+                " %(message)s" 
+                "%(reset)s" 
+                "%(overflow)s" 
+            )
+            if config.LOGGER_NAMES_ENABLE:
+                format += "\n|--- Logged by logger: %(name)s"
+            if config.FUNC_NAME_ENABLE:
+                format += "\n|--- Called in function: %(funcName)s"
 
-        stream_formatter = ColoredFormatter(
-            format,
-            colors={
-                "DEBUG": Fore.CYAN,
-                "INFO": Fore.GREEN,
-                "WARNING": Fore.YELLOW,
-                "ERROR": Fore.RED,
-                "CRITICAL": Fore.RED + Back.WHITE + Style.BRIGHT,
-            },
-            datefmt="%H:%M:%S.",
-        )
+            stream_formatter = ColoredFormatter(
+                format,
+                colors={
+                    "DEBUG": Fore.CYAN,
+                    "INFO": Fore.GREEN,
+                    "WARNING": Fore.YELLOW,
+                    "ERROR": Fore.RED,
+                    "CRITICAL": Fore.RED + Back.WHITE + Style.BRIGHT,
+                },
+                datefmt="%H:%M:%S.",
+            )
 
-        stream_handler.setFormatter(stream_formatter)
-        self.addHandler(stream_handler)
-        self.setLevel(logging.DEBUG)
+            stream_handler.setFormatter(stream_formatter)
+            if (self.hasHandlers()):
+                self.handlers.clear()
+            self.addHandler(stream_handler)
+            self.setLevel(logging.DEBUG)
 
     # TODO These overrides only work in python 3.8 (currently project is using 3.7)
     # def info(self, msg,stacklevel=2, overflow = "", *args, **kwargs):
@@ -117,3 +122,5 @@ def setup_logging(name="marthabot"):
     return logging.getLogger(name)
     
 
+
+logging.basi

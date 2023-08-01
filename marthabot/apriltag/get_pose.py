@@ -5,6 +5,7 @@ scratch script to
     report predicted location
 """
 
+import time
 import marthabot.utils.realsense_utils as rsu
 import dt_apriltags as atag
 import numpy as np
@@ -195,49 +196,41 @@ np.set_printoptions(precision=3, suppress=True, formatter={'float': '{: 0.3f}'.f
 m = Mapper("marthabot/map/RhodeMap.yaml",
     "marthabot/map/MapConfiguration.yaml")
     
-it = 5
 
-while True:
-    print("===============================")
-    i = (input("Hit enter to run:\n")).split()
-    if len(i) == 1:
-        if i[0] == "q":
-            exit(0)
-    if len(i) == 2:
-        if i[0] == "fx":
-            fx = float(i[1])
-        if i[0] == "fy":
-            fy = float(i[1])
-        if i[0] == "cx":
-            cx = float(i[1])
-        if i[0] == "cy":
-            cy = float(i[1])
-        if i[0] == "i":
-            it = int(i[1])
-        camera_params = [fx, fy, cx, cy]
-        print(camera_params)
+it = 1
+
+def get_pose():
+# while True:
+#     print("===============================")
+#     i = (input("Hit enter to run:\n")).split()
+#     if len(i) == 1:
+#         if i[0] == "q":
+#             exit(0)
+#     if len(i) == 2:
+#         if i[0] == "fx":
+#             fx = float(i[1])
+#         if i[0] == "fy":
+#             fy = float(i[1])
+#         if i[0] == "cx":
+#             cx = float(i[1])
+#         if i[0] == "cy":
+#             cy = float(i[1])
+#         if i[0] == "i":
+#             it = int(i[1])
+#         camera_params = [fx, fy, cx, cy]
+#         print(camera_params)
 
 # TODO clear dict
     obs = {}
 
     for i in range(it):
-        # print("image",i)
-        # image = cv2.imread("marthabot/apriltag/pre.png")
-        # image = cv2.imread("marthabot/apriltag/post.png")
-        # image = cv2.imread("marthabot/apriltag/realsense/14.jpg")
-
-        # image = cv2.imread("output.jpg")
-        # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
 
         image, _ = rsu.get_frame(pipe)
-
-
 
         results = detector.detect(image,True,camera_params,size)
 
         # use if drawing color onto image
-        image = cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
+        # image = cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
 
         # origin = np.array([0,0,100]).reshape((3,1)).astype(float)
         # draw_pose(
@@ -258,8 +251,8 @@ while True:
 
         for tag in results:
             if not tag.tag_id in m.tags[:,0]:
-                print("===============================")
-                print(f"Skipping tag {tag.tag_id} as it is not in the map file")
+                if debug: print("===============================")
+                if debug: print(f"Skipping tag {tag.tag_id} as it is not in the map file")
                 continue
             if debug: print("===============================")
             if debug: print("Tag ", tag.tag_id)
@@ -286,66 +279,121 @@ while True:
             vec = m.tag2world(vec,tag.tag_id)
 
             heading = np.arctan2(vec[1,0]-pose[1,0],vec[0,0]-pose[0,0])
-            # obs[tag.tag_id].append([pose[0,0],pose[1,0],pose[2,0],pose[3,0],heading])
 
-            heading = np.arctan2(vec[1,0]-pose[1,0],vec[0,0]-pose[0,0])
             if debug: print("World Frame: ", pose.T)
-            # print("World vec: ", vec.T)
-            print("Tag ", tag.tag_id, pose.T, round(rz), round(ry), round(rx))
-            # print("vec ", tag.tag_id, vec.T, heading)
-            # pose.extend(deg2vec(rz))
+            if debug: print("Tag ", tag.tag_id, pose.T, round(rz), round(ry), round(rx))
+
             pose = [p[0] for p in pose]
             pose.append(heading)
             if tag.tag_id in obs:
                 obs[tag.tag_id].append([pose[0],pose[1],pose[2],pose[3],heading])
             else:
                 obs[tag.tag_id] = [[pose[0],pose[1],pose[2],pose[3],heading]]
-            draw_pose(
-                image,
-                camera_params,
-                tag_size=size,
-                pose_r=tag.pose_R,
-                pose_t=tag.pose_t,
-                linescale=1,
-                linewidth=2,
-                z_sign=-1,
-                # label=str(f"[{round(pose[0])},{round(pose[1])},{round(pose[2])}]"),   #include estimated pose
-                label=str(tag.tag_id), #just label with tagid
-            )
+            # draw_pose(
+            #     image,
+            #     camera_params,
+            #     tag_size=size,
+            #     pose_r=tag.pose_R,
+            #     pose_t=tag.pose_t,
+            #     linescale=1,
+            #     linewidth=2,
+            #     z_sign=-1,
+            #     # label=str(f"[{round(pose[0])},{round(pose[1])},{round(pose[2])}]"),   #include estimated pose
+            #     label=str(tag.tag_id), #just label with tagid
+            # )
         if len(results) == 0:
             print("No tags detected")
 
-        poses = []
-        palette = sns.color_palette(None, len(obs))
-        p_i = 0
-        c_dict = {}
-        for id, ob in obs.items():
-            if id not in c_dict.keys():
-                c_dict[id] = palette[p_i]
-                p_i += 1
-            poses.extend([[str(id), ob[p][0],ob[p][1],ob[p][4],id] for p in range(len(ob))])
-            # mx  = round(sum([p[0] for p in ob])/len(ob),1)
-            # my  = round(sum([p[1] for p in ob])/len(ob),1)
-            # mz  = round(sum([p[2] for p in ob])/len(ob),1)
-            # mvx = sum([p[3] for p in ob])
-            # mvy = sum([p[4] for p in ob])
-            # mt = vec2deg([mvx,mvy])
-        poses = np.array(poses)
+    poses = []
+    palette = sns.color_palette(None, len(obs))
+    p_i = 0
+    c_dict = {}
+    for id, ob in obs.items():
+        if id not in c_dict.keys():
+            c_dict[id] = palette[p_i]
+            p_i += 1
+        poses.extend([[str(id), ob[p][0],ob[p][1],ob[p][4],id] for p in range(len(ob))])
+        # mx  = round(sum([p[0] for p in ob])/len(ob),1)
+        # my  = round(sum([p[1] for p in ob])/len(ob),1)
+        # mz  = round(sum([p[2] for p in ob])/len(ob),1)
+        # mhead = sum([p[3] for p in ob])/len(ob)
+    poses = np.array(poses)
+    return poses
 
-    print(f"saving {image.shape} image to /output.jpg")
-    cv2.line(image,
-                (0,              round(cy)),
-                (image.shape[1], round(cy)),
-                color=(255,0,0)
-    )
-    cv2.line(image,
-                (round(cx), 0),
-                (round(cx), image.shape[0]),
-                color=(255,0,0)
-    )
-    cv2.imwrite("output.jpg",image)
+    # print(f"saving {image.shape} image to /output.jpg")
+    # cv2.line(image,
+    #             (0,              round(cy)),
+    #             (image.shape[1], round(cy)),
+    #             color=(255,0,0)
+    # )
+    # cv2.line(image,
+    #             (round(cx), 0),
+    #             (round(cx), image.shape[0]),
+    #             color=(255,0,0)
+    # )
+    # cv2.imwrite("output.jpg",image)
 
     print("saving map to /map.png")
     m.plot_map("marthabot/map/map",np.array(poses))
 
         # print(id, "- World Frame: ",mx,my,mz, " - with yaw: ",mt)
+
+import logging
+import sys
+import asyncio_dgram as aiod
+sys.path.append("/home/pi/HSI/marthabot/utils")
+from custom_logger import setup_logging
+sys.path.append("/home/pi/HSI/marthabot/configurations")
+import robot_config as config
+import asyncio
+import pickle
+
+log = setup_logging(__name__)
+log = logging.getLogger(__name__)
+active = asyncio.Event()
+
+
+async def udp_reciever(port):
+    stream = await aiod.bind((config.RASPI_IP_ADDRESS, port))
+    log.info(f"Recieving on {stream.sockname}")
+    
+    while True:
+        data, remote_addr = await stream.recv()
+        data = data.decode()
+        log.info(f"Recieved: {data} on port {port}")
+        if data == "enable":
+            log.info("enabling")
+            active.set()
+        elif data == "disable":
+            log.info("disabling")
+            active.clear()
+        else:
+            log.warning("Unknown command.")
+        log.debug(f"active event: {active.is_set()}")
+        await asyncio.sleep(0.01)
+
+async def udp_dispatcher(port):
+    stream = await aiod.connect((config.CLIENT_IP_ADDRESS, port))
+    log.info(f"Sending to {stream.peername}")
+    while True:
+        
+        log.info("Waiting for stream to be enabled")
+        await active.wait()
+        while active.is_set():
+            log.info("Sending new pose data")
+            data = pickle.dumps((time.time(),get_pose())) 
+            await stream.send(data)
+            await asyncio.sleep(0.1)
+            
+        logging.root.setLevel(logging.WARNING)
+
+
+
+try:
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.gather(udp_reciever(config.MAPPER_PORT), udp_dispatcher(config.MAPPER_PORT)))
+
+except KeyboardInterrupt:
+    log.warning("Closing due to key combination")
+    
