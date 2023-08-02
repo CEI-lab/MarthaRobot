@@ -11,6 +11,7 @@ import black
 
 
 home = os.path.join("~","HSI","marthabot","")
+HOME_DIRECTORY = os.path.join("/home","pi","HSI","marthabot","")
 """Base directory of source code"""
 
 #####################################################################
@@ -47,6 +48,12 @@ LEFT_WHEEL_SPEED_CONTROLLER_SERIAL_ID = "52FF-6B06-8365-5650-2936-2167"
 """ Serial ID to send commands to the left motor controller """
 RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID = "52FF-6C06-8365-5650-4238-2167"
 """ Serial ID to send commands to the right motor controller """
+
+MAX_SPEED = 3200            
+""" Maximum speed that can be sent to the drive motor controllers"""
+MIN_SPEED = -3200           
+""" Minimum speed that can be sent to the drive motor controllers"""
+
 
 #####################################################################
 # Sensors/Cameras
