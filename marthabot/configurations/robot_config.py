@@ -61,7 +61,11 @@ MIN_SPEED = -3200
 
 # Time of flight sensors
 TOF_PINS = [13, 26, 27]  # BCM [left middle right] (Possibly disable/enable pins)
+TOF_DEFAULT_ADDR = 0x29
 TOF_ADDR = [0x2A, 0x2C, 0x2E]
+# TOF_ADDR = [0x5d, 0x5e, ]
+# TOF_ADDR = [0x147, 0x148, ]
+
 # Keep reading=time-of-flight measurements and only send periodically on reading count.
 TIMEOFFLIGHT_COUNT_PERIOD = 0.5
 

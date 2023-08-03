@@ -122,5 +122,3 @@ def setup_logging(name="marthabot"):
     return logging.getLogger(name)
     
 
-
-logging.basi
