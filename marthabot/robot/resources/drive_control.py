@@ -145,6 +145,8 @@ class SingletonDriveControl:
     def is_locked(self, key = None):
         return self._lock is not None or self._lock == key
     
+    def check_access(self, key = None):
+        return not self.is_e_locked(key) and not self.is_locked(key)
 
     def set_speed(self, left, right, lock=None):
         if self._e_lock is not None:
