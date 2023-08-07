@@ -54,6 +54,7 @@ MAX_SPEED = 3200
 MIN_SPEED = -3200           
 """ Minimum speed that can be sent to the drive motor controllers"""
 
+WHEEL_BASE_LENGTH = 30
 
 #####################################################################
 # Sensors/Cameras

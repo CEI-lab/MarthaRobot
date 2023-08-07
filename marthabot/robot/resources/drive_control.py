@@ -98,24 +98,9 @@ def send_command(cmd):
     command_string += f"{command} -d {config.RIGHT_WHEEL_SPEED_CONTROLLER_SERIAL_ID} {cmd} & "
     subprocess.Popen(command_string,shell=True)
    
-
-check_config()
-send_command("--resume")
-set_speed_script(1000,1000)
-time.sleep(1)
-brake_script(32,32)
-time.sleep(1)
-
-for i in range(32):
-    print(i+1)
-    set_speed_script((i+1)*100,(i+1)*100)
-    time.sleep(10)
-    brake_script(32,32)
-    time.sleep(3)
-
-brake_script(0,0)
-send_command("--stop")
-
+def vel2motor(velocity):
+    return int(velocity)
+# TODO fix vel2motor
 
 class SingletonDriveControl:
     _instance = None
@@ -164,8 +149,8 @@ class SingletonDriveControl:
 
         self._l_speed = left
         self._r_speed = right
-        self.l_state = MotorState.MOVING if left != 0 else MotorState.OFF
-        self.r_state = MotorState.MOVING if right != 0 else MotorState.OFF
+        # self.l_state = MotorState.MOVING if left != 0 else MotorState.OFF
+        # self.r_state = MotorState.MOVING if right != 0 else MotorState.OFF
 
         set_speed_script(left,right)
 
@@ -175,6 +160,17 @@ class SingletonDriveControl:
         self._update_event = threading.Event()
 
         return self._update_event
+    
+
+
+    def set_fwd_ang(self, fwd, ang, lock = None):
+        diff = ang * config.WHEEL_BASE_LENGTH
+        vr = fwd + diff / 2
+        vl = fwd - diff / 2
+        
+        right = vel2motor(vr)
+        left = vel2motor(vl)
+        self.set_speed(left,right,lock)
 
     def emergency_brake(self, locker, enable, left = True, right = True, braking=True):
         if self.is_e_locked() and locker != self._e_lock:
@@ -222,3 +218,25 @@ class SingletonDriveControl:
     @property
     def r_state(self):
         return self._r_state
+
+
+
+
+check_config()
+send_command("--resume")
+# set_speed_script(1000,1000)
+
+dc = SingletonDriveControl()
+# dc.set_speed(200,200)
+dc.set_fwd_ang(1000,3)
+time.sleep(1)
+
+# for i in range(32):
+#     print(i+1)
+#     set_speed_script((i+1)*100,(i+1)*100)
+#     time.sleep(10)
+#     brake_script(32,32)
+#     time.sleep(3)
+
+brake_script(32,32)
+send_command("--stop")

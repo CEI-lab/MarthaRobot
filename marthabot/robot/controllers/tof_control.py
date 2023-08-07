@@ -51,13 +51,17 @@ class SingletonTOFControl:
         return cls.__instance
 
 
-    def __init__(self):
+    def __init__(self, drive_controller = None):
         if self.__initialized:
             log.warning("Attempted to re-initialize the SingletonTOFControl")
             return
         else:
             self.__initialized = True
+        
         log.info("Initializing SingletonTOFControl. ")
+
+        self.drive_controller = drive_controller
+        
         self.shutdown_pins = config.TOF_PINS
 
         GPIO.setmode(GPIO.BCM)
@@ -84,22 +88,8 @@ class SingletonTOFControl:
 
         self._dists = [0, 0, 0]
     
-    def _update(self):
-        # TODO check if we really need to restart the sensors each time we update......
-        
-        for i in range(3):
-            distance = self.tof_objects[self.shutdown_pins[i]].get_distance()
-            while distance == -1:
-                GPIO.output(self.shutdown_pins[i], GPIO.LOW)
-                time.sleep(0.1)
-                GPIO.output(self.shutdown_pins[i], GPIO.HIGH)
-                time.sleep(0.1)
-                # self.tof_objects[self.shutdown_pins[i]].start_ranging(
-                    # VL53L0X.VL53L0X_BETTER_ACCURACY_MODE
-                # )
-            
-            self._dists[i] = distance
 
+    
 
     def get_dists(self):
         # bogus = [1.0,2.0,3.0]
